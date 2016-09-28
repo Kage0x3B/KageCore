@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
 import de.syscy.bguilib.components.BGComponent;
@@ -16,10 +17,13 @@ import de.syscy.bguilib.container.BGContainer;
 import de.syscy.bguilib.container.BGPanel;
 import de.syscy.bguilib.container.BGTabbedPanel;
 import de.syscy.bguilib.util.Util;
+import de.syscy.kagecore.KageCorePlugin;
 import lombok.Getter;
 import lombok.Setter;
 
 public class BGGUI {
+	public static final int HOPPER_INVENTORY_SIZE = 5;
+	
 	protected @Getter Player player;
 	protected @Getter Inventory inventory;
 	protected @Getter BGInventory bgInventory;
@@ -47,7 +51,13 @@ public class BGGUI {
 		this.hidden = false;
 		this.open = true;
 		this.player = player;
-		this.inventory = Bukkit.createInventory(player, this.size, this.title);
+		
+		if(size == HOPPER_INVENTORY_SIZE) {
+			this.inventory = Bukkit.createInventory(player, InventoryType.HOPPER, this.title);
+		} else {
+			this.inventory = Bukkit.createInventory(player, this.size, this.title);
+		}
+		
 		this.bgInventory = new BGInventory(inventory);
 		player.openInventory(this.inventory);
 		this.container.render();
@@ -104,13 +114,29 @@ public class BGGUI {
 			}
 		}
 	}
-
+	
+	/**
+	 * Set the size of the inventory
+	 * @param size The size (actual slot count)
+	 */
+	public void setSize(int size) {
+		if(size == HOPPER_INVENTORY_SIZE || size % 9 == 0) {
+			this.size = size;
+		} else {
+			KageCorePlugin.debugMessage("Invalid inventory size \"" + size + "\" in \"" + inventory.getTitle() + "\"!");
+		}
+	}
+	
+	/**
+	 * Sets the height of the inventory
+	 * @param height The height (not slot count)
+	 */
 	public void setHeight(int height) {
 		if(this.container instanceof BGTabbedPanel) {
 			height++;
 		}
 
-		this.size = height * 9;
+		setHeight(size * 9);
 	}
 	
 	public void setContainer(BGContainer container) {

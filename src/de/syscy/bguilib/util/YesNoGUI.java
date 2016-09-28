@@ -1,25 +1,24 @@
-package de.syscy.bguilib;
+package de.syscy.bguilib.util;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import de.syscy.bguilib.BGGUI;
 import de.syscy.bguilib.callbacks.YesNoCallback;
 import de.syscy.bguilib.components.BGButton;
-import de.syscy.bguilib.components.BGLabel;
 import de.syscy.bguilib.components.icon.ItemIcon;
 import de.syscy.bguilib.components.listener.ButtonClickListener;
 
 public class YesNoGUI extends BGGUI {
 	private BGGUI guiBefore = null;
 	private YesNoCallback callback;
-	private boolean result = false;
 
-	public YesNoGUI(YesNoCallback callback, String message, String title) {
-		this(null, callback, message, title);
+	public YesNoGUI(YesNoCallback callback, String message) {
+		this(null, callback, message);
 	}
-
-	public YesNoGUI(BGGUI guiBefore, YesNoCallback callback, String message, String title) {
+	
+	public YesNoGUI(BGGUI guiBefore, YesNoCallback callback, String message) {
 		this.guiBefore = guiBefore;
 		this.callback = callback;
 		
@@ -27,37 +26,32 @@ public class YesNoGUI extends BGGUI {
 			guiBefore.hide();
 		}
 		
-		setTitle(title);
-		setHeight(5);
+		setTitle(message);
+		setSize(HOPPER_INVENTORY_SIZE);
 
-		BGLabel messageLabel = new BGLabel(0, 0, 9, 2, message);
-		add(messageLabel);
-
-		BGButton yesButton = new BGButton(0, 2, "Yes");
+		BGButton yesButton = new BGButton(0, 0, "Yes");
 		yesButton.setButtonIcon(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 5)));
-		yesButton.setSize(5, 3);
+		yesButton.setSize(2, 1);
 		yesButton.addClickListener(new ButtonClickListener() {
 			public void onClick(Player player) {
-				YesNoGUI.this.result = true;
-				YesNoGUI.this.onResult();
+				YesNoGUI.this.handleResult(true);
 			}
 		});
 		add(yesButton);
 
-		BGButton noButton = new BGButton(5, 2, "No");
+		BGButton noButton = new BGButton(0, 3, "No");
 		noButton.setButtonIcon(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 14)));
-		noButton.setSize(4, 3);
+		noButton.setSize(2, 1);
 		noButton.addClickListener(new ButtonClickListener() {
 			public void onClick(Player player) {
-				YesNoGUI.this.result = false;
-				YesNoGUI.this.onResult();
+				YesNoGUI.this.handleResult(false);
 			}
 		});
 		add(noButton);
 	}
 
-	private void onResult() {
-		this.callback.onResult(this.result);
+	private void handleResult(boolean result) {
+		this.callback.onResult(result);
 
 		close();
 		

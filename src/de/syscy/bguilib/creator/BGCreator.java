@@ -13,12 +13,12 @@ import org.bukkit.entity.Player;
 import de.syscy.bguilib.BGGUI;
 import de.syscy.bguilib.BGHotbarGUI;
 import de.syscy.bguilib.BGUILib;
-import de.syscy.bguilib.YesNoGUI;
 import de.syscy.bguilib.callbacks.YesNoCallback;
 import de.syscy.bguilib.creator.gui.EditGUI;
 import de.syscy.bguilib.creator.guidata.GUIData;
 import de.syscy.bguilib.creator.hgui.EditHotbarGUI;
 import de.syscy.bguilib.creator.hotbarguidata.HotbarGUIData;
+import de.syscy.bguilib.util.YesNoGUI;
 import de.syscy.kagecore.KageCorePlugin;
 import de.syscy.kagecore.translation.Translator;
 import lombok.Getter;
@@ -118,7 +118,7 @@ public class BGCreator {
 								player.sendMessage("Deleted the gui!");
 							}
 						}
-					}, "Do you really want to delete the \"" + name + "\" gui?", "Delete gui");
+					}, "Do you really want to delete the \"" + name + "\" gui?");
 
 					BGUILib.showGUI(prompt, player);
 				} else {
@@ -213,7 +213,7 @@ public class BGCreator {
 								Translator.sendMessage(player, "bggui.deletedHGUI", name);
 							}
 						}
-					}, "Do you really want to delete the \"" + name + "\" hotbar gui?", "Delete hotbar gui");
+					}, "Do you really want to delete the \"" + name + "\" hotbar gui?");
 
 					BGUILib.showGUI(prompt, player);
 				} else {

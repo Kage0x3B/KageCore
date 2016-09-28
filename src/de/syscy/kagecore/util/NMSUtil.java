@@ -20,10 +20,12 @@ public class NMSUtil {
 
 	public static Class<?> getNMSClass(String name) {
 		String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		
 		try {
 			return Class.forName("net.minecraft.server." + version + "." + name);
 		} catch(ClassNotFoundException ex) {
 			ex.printStackTrace();
+			
 			return null;
 		}
 	}
