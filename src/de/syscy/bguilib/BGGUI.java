@@ -136,7 +136,7 @@ public class BGGUI {
 			height++;
 		}
 
-		setHeight(size * 9);
+		setSize(height * 9);
 	}
 	
 	public void setContainer(BGContainer container) {

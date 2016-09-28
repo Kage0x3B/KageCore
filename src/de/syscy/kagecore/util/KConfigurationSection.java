@@ -35,7 +35,7 @@ public class KConfigurationSection {
 				if(!Modifier.isFinal(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
 					field.setAccessible(true);
 
-					String path = this.path;
+					String path = "";
 
 					if(KConfigurationSection.class.isAssignableFrom(field.getType())) {
 						field.set(this, field.getType().getConstructor(KConfiguration.class).newInstance(this));
@@ -51,7 +51,7 @@ public class KConfigurationSection {
 						path = field.getAnnotation(ConfigValue.class).path();
 					}
 
-					if(!path.endsWith(".")) {
+					if(!path.isEmpty() && !path.endsWith(".")) {
 						path += ".";
 					}
 

@@ -119,7 +119,7 @@ public class BGSlider extends BGComponent {
 	}
 
 	public void onValueChange() {
-		this.lore.setLine(0, "Current value: " + this.value);
+		this.lore.setTemporaryFirstLine("Current value: " + this.value);
 
 		for(SliderValueChangeListener listener : listeners) {
 			listener.onValueChange(this);

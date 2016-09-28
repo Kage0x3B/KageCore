@@ -19,7 +19,7 @@ public class ItemIcon {
 	public ItemStack getItem(String title, Lore lore) {
 		ItemMeta newItemMeta = this.itemStack.getItemMeta();
 		newItemMeta.setDisplayName(title);
-		newItemMeta.setLore(lore.toArray());
+		newItemMeta.setLore(lore.getAsList());
 		this.itemStack.setItemMeta(newItemMeta);
 
 		return this.itemStack;

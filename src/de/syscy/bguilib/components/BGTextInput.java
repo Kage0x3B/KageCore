@@ -19,7 +19,7 @@ public class BGTextInput extends BGComponent implements ChatInputCallback {
 	private List<TextInputListener> listeners = new ArrayList<>();
 	private @Getter @Setter ItemIcon buttonIcon;
 	private @Getter @Setter String title;
-	private @Getter @Setter Lore lore = new Lore("Click to edit...");
+	private @Getter @Setter Lore lore = new Lore();
 	private @Getter String text = "";
 
 	public BGTextInput(int x, int y, String title) {
@@ -27,6 +27,7 @@ public class BGTextInput extends BGComponent implements ChatInputCallback {
 
 		this.title = title;
 		this.setButtonIcon(new ItemIcon(new ItemStack(Material.BOOK_AND_QUILL)));
+		this.lore.setTemporaryFirstLine("Click to edit...");
 	}
 
 	public void update() {
@@ -50,7 +51,7 @@ public class BGTextInput extends BGComponent implements ChatInputCallback {
 		}
 
 		this.text = text;
-		this.lore = new Lore(new String[] { text });
+		this.lore.setTemporaryFirstLine(text);
 	}
 
 	public void addTextInputListener(TextInputListener listener) {
@@ -59,6 +60,6 @@ public class BGTextInput extends BGComponent implements ChatInputCallback {
 
 	public void setText(String text) {
 		this.text = text;
-		this.lore = new Lore(new String[] { text });
+		this.lore.setTemporaryFirstLine(text);
 	}
 }

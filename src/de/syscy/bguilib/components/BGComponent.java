@@ -40,9 +40,10 @@ public abstract class BGComponent {
 	}
 
 	public void renderItem(BGInventory inventory, int x, int y, int width, int height, ItemIcon item, String title, Lore lore, boolean forceUpdate) {
-		for(int i = x; i < x + width; ++i) {
-			for(int j = y; j < y + height; ++j) {
+		for(int i = x; i < x + width; i++) {
+			for(int j = y; j < y + height; j++) {
 				int slot = Util.toSlotCoordinate(i + this.offsetX, j + this.offsetY);
+				
 				if(slot < inventory.getSize()) {
 					inventory.setItem(slot, item.getItem(title, lore), forceUpdate);
 				}
@@ -50,7 +51,7 @@ public abstract class BGComponent {
 		}
 	}
 
-	public abstract void onClick(Player var1, int var2, int var3);
+	public abstract void onClick(Player player, int localX, int localY);
 
 	public void setWidth(int width) {
 		if(width > 9 - this.x) {
@@ -77,7 +78,7 @@ public abstract class BGComponent {
 	}
 
 	public void setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
+		setWidth(width);
+		setHeight(height);
 	}
 }
