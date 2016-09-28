@@ -1,0 +1,20 @@
+command.denyAccess=&cYou do not have access to this command!
+command.playerRequired=&cYou must be a player to use this command!
+command.playerNotFound=Player &4"%s" &cwas not found!
+command.usage=&cUsage: &7%s %s %s
+command.exempt=&4%s &c is exempt from this command!
+
+command.enableDebug=[Bukkit GUI] Debug mode has been enabled
+command.disableDebug=[Bukkit GUI] Debug mode has been disabled
+command.guiCreatorDisabled="The gui creator is disabled! Enable it by setting the config value "useGUICreator" to "true"
+
+bggui.createdGUI=&2Created gui "%s"!
+bggui.deletedGUI=&Deleted gui "%s"!
+bggui.boundHGUI=&8Successfully bound the hotbar "%s" to the world "%s"
+bggui.deletedHGUI=&Deleted hotbar gui "%s"!
+bggui.allGuis=All guis:
+bggui.allHotbarGuis=All hotbar guis:
+
+bggui.notExistingGUI=&4Error: There is no gui with the name "%s"!
+bggui.notExistingHotbarGUI=&4Error: There is no hotbar gui with the name "%s"!
+bggui.notExistingWorld=&4Error: There is no world with the name "%s"!
