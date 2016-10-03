@@ -154,7 +154,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			List<String> allCommands = new ArrayList<String>();
 
 			for(CommandBase commandBase : commands) {
-				if(commandBase.isAuthorized(sender)) {
+				if(commandBase.getCommand().toLowerCase().startsWith(args[0].toLowerCase()) && commandBase.isAuthorized(sender)) {
 					allCommands.add(commandBase.getCommand());
 				}
 			}

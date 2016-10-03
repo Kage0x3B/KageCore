@@ -65,7 +65,7 @@ public abstract class CommandBase implements TabCompleter {
 	}
 
 	protected boolean isAuthorized(CommandSender sender) {
-		return (sender.hasPermission(commandManager.getCommandName() + "." + getCommand().trim())) || (sender.isOp());
+		return sender.hasPermission(commandManager.getCommandName() + "." + getCommand().trim()) || sender.isOp();
 	}
 
 	protected boolean isExempt(CommandSender sender) {

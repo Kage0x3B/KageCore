@@ -1,4 +1,4 @@
-package de.syscy.kagecore.util;
+package de.syscy.kagecore.util.config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -12,11 +12,9 @@ public class KConfiguration {
 
 	public KConfiguration(FileConfiguration config) {
 		this.config = config;
-
-		populateFields();
 	}
 
-	private void populateFields() {
+	public void init() {
 		for(Field field : getClass().getDeclaredFields()) {
 			try {
 				if(!Modifier.isFinal(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
@@ -25,6 +23,7 @@ public class KConfiguration {
 					if(KConfigurationSection.class.isAssignableFrom(field.getType())) {
 						if(field.get(this) == null) {
 							field.set(this, field.getType().getConstructor(KConfiguration.class).newInstance(this));
+							((KConfigurationSection) field.get(this)).populateFields(this);
 						} else {
 							((KConfigurationSection) field.get(this)).populateFields(this);
 						}

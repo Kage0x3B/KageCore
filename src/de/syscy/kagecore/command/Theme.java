@@ -2,8 +2,8 @@ package de.syscy.kagecore.command;
 
 import org.bukkit.ChatColor;
 
-import de.syscy.kagecore.util.KConfiguration;
-import de.syscy.kagecore.util.KConfigurationSection;
+import de.syscy.kagecore.util.config.KConfiguration;
+import de.syscy.kagecore.util.config.KConfigurationSection;
 import lombok.Getter;
 
 public class Theme {

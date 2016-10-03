@@ -2,28 +2,22 @@ package de.syscy.bguilib.listener;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.syscy.bguilib.BGHotbarGUI;
 import de.syscy.bguilib.BGUILib;
-import de.syscy.bguilib.creator.BGCreator;
-import de.syscy.bguilib.creator.hotbarguidata.HotbarGUIData;
-import de.syscy.kagecore.KageCorePlugin;
 
 public class HotbarGUIListener implements Listener {
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		this.updatePlayerHotbar(event.getPlayer());
-	}
+//	@EventHandler
+//	public void onPlayerJoin(PlayerJoinEvent event) {
+//		this.updatePlayerHotbar(event.getPlayer());
+//	}
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
@@ -32,29 +26,29 @@ public class HotbarGUIListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-		this.updatePlayerHotbar(event.getPlayer());
-	}
-
-	public void updatePlayerHotbar(Player player) {
-		String worldName = player.getLocation().getWorld().getName();
-		String worldHotbar = KageCorePlugin.getPluginConfig().getString("hotbar." + worldName);
-
-		if(worldHotbar != null) {
-			if(!worldHotbar.isEmpty()) {
-				HotbarGUIData gui = (HotbarGUIData) BGCreator.getHotbarGuis().get(worldHotbar);
-
-				if(gui != null) {
-					BGUILib.setHotbarGUI(gui.toHGUI(), player);
-				}
-			} else if(BGUILib.getCurrentHotbarGuis().containsKey(player)) {
-				BGUILib.removeHotbarGUI(player);
-			}
-		} else if(BGUILib.getCurrentHotbarGuis().containsKey(player)) {
-			BGUILib.removeHotbarGUI(player);
-		}
-	}
+//	@EventHandler(priority = EventPriority.LOWEST)
+//	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+//		this.updatePlayerHotbar(event.getPlayer());
+//	}
+//
+//	public void updatePlayerHotbar(Player player) {
+//		String worldName = player.getLocation().getWorld().getName();
+//		String worldHotbar = KageCore.getPluginConfig().getString("hotbar." + worldName);
+//
+//		if(worldHotbar != null) {
+//			if(!worldHotbar.isEmpty()) {
+//				HotbarGUIData gui = (HotbarGUIData) BGCreator.getHotbarGuis().get(worldHotbar);
+//
+//				if(gui != null) {
+//					BGUILib.setHotbarGUI(gui.toHGUI(), player);
+//				}
+//			} else if(BGUILib.getCurrentHotbarGuis().containsKey(player)) {
+//				BGUILib.removeHotbarGUI(player);
+//			}
+//		} else if(BGUILib.getCurrentHotbarGuis().containsKey(player)) {
+//			BGUILib.removeHotbarGUI(player);
+//		}
+//	}
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {

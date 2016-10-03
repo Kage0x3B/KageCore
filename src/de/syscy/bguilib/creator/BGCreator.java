@@ -19,7 +19,7 @@ import de.syscy.bguilib.creator.guidata.GUIData;
 import de.syscy.bguilib.creator.hgui.EditHotbarGUI;
 import de.syscy.bguilib.creator.hotbarguidata.HotbarGUIData;
 import de.syscy.bguilib.util.YesNoGUI;
-import de.syscy.kagecore.KageCorePlugin;
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.translation.Translator;
 import lombok.Getter;
 
@@ -29,7 +29,7 @@ public class BGCreator {
 	private static @Getter Map<String, HotbarGUIData> hotbarGuis = new HashMap<>();
 
 	public static void init() {
-		File guiDirectory = new File(KageCorePlugin.getPluginDirectory(), "gui");
+		File guiDirectory = new File(KageCore.getPluginDirectory(), "gui");
 
 		File[] guiFiles = guiDirectory.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
@@ -292,7 +292,7 @@ public class BGCreator {
 				return false;
 			}
 
-			KageCorePlugin.getPluginConfig().set("hotbar." + worldName, hotbarName);
+//			KageCore.getPluginConfig().set("hotbar." + worldName, hotbarName);
 
 			Translator.sendMessage(sender, "bggui.boundHGUI", hotbarName, worldName);
 

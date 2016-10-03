@@ -6,57 +6,76 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comphenix.packetwrapper.WrapperPlayClientSettings;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+
 import de.syscy.bguilib.BGUILib;
-import de.syscy.bguilib.creator.BGCreator;
+import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.translation.Translator;
+import de.syscy.kagecore.util.BungeeUtil.BungeePluginMessageListener;
+import de.syscy.kagecore.util.TranslatorUtil;
 import lombok.Getter;
 import lombok.Setter;
 
-public class KageCorePlugin extends JavaPlugin {
-	private static @Getter KageCorePlugin instance;
+public class KageCore extends JavaPlugin {
+	private static @Getter KageCore instance;
 
 	private static @Getter File pluginDirectory;
-	private static @Getter FileConfiguration pluginConfig;
 	private static @Getter @Setter boolean debug = true;
-	private static @Getter @Setter boolean useGUICreator = false;
+
+	private @Getter KageCoreConfig kageCoreConfig;
 
 	public void onEnable() {
 		instance = this;
 
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeePluginMessageListener());
 
 		pluginDirectory = this.getDataFolder();
+		
+		saveDefaultConfig();
+		
+		kageCoreConfig = new KageCoreConfig(getConfig());
+		kageCoreConfig.init();
 
 		Translator.addLanguageFiles(this, new File(pluginDirectory, "lang"));
-
-		this.saveDefaultConfig();
 
 		for(World world : Bukkit.getWorlds()) {
 			this.getConfig().addDefault("hotbar." + world.getName(), "");
 		}
 
-		pluginConfig = this.getConfig();
-		setUseGUICreator(this.getConfig().getBoolean("useGUICreator"));
 		BGUILib.init(this);
-
-		if(isUseGUICreator()) {
-			BGCreator.init();
-		}
+		
+		initPacketListening();
 	}
 
 	public void onDisable() {
 		super.onDisable();
 
-		if(isUseGUICreator()) {
-			BGCreator.dispose();
-		}
-
 		BGUILib.dispose();
+	}
+	
+	private void initPacketListening() {
+		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+		
+		protocolManager.addPacketListener(new PacketAdapter(this, PacketType.Play.Client.SETTINGS) {
+			@Override
+			public void onPacketReceiving(PacketEvent event) {
+				WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
+				
+				Translator.getPlayerLanguages().put(event.getPlayer(), wrapper.getLocale());
+				
+				Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), wrapper.getLocale()));
+			}
+		});
+		
+		TranslatorUtil.initPacketRewriting(this, protocolManager);
 	}
 
 	public static void debugMessage(String message) {
@@ -71,19 +90,5 @@ public class KageCorePlugin extends JavaPlugin {
 
 			Bukkit.getLogger().info("[DEBUG (" + Thread.currentThread().getStackTrace()[2].getFileName() + "." + Thread.currentThread().getStackTrace()[2].getMethodName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + ")] " + " " + message);
 		}
-	}
-
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(cmd.getName().equalsIgnoreCase("toggleDebug")) {
-			debug = !debug;
-
-			Translator.sendMessage(sender, debug ? "command.enableDebug" : "command.disableDebug");
-		} else if(isUseGUICreator()) {
-			return BGCreator.onCommand(sender, cmd, label, args);
-		} else {
-			Translator.sendMessage(sender, "command.guiCreatorDisabled");
-		}
-
-		return true;
 	}
 }

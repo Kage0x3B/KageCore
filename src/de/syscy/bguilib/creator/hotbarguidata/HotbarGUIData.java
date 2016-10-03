@@ -18,7 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.syscy.bguilib.BGHotbarGUI;
-import de.syscy.kagecore.KageCorePlugin;
+import de.syscy.kagecore.KageCore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +34,7 @@ public class HotbarGUIData {
 	}
 
 	public HotbarGUIData(String guiName) {
-		this.guiFile = new File(KageCorePlugin.getPluginDirectory() + "/gui/" + guiName + ".hgd");
+		this.guiFile = new File(KageCore.getPluginDirectory() + "/gui/" + guiName + ".hgd");
 		this.load();
 	}
 

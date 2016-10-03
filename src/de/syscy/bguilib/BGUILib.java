@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,17 +15,15 @@ import lombok.Getter;
 
 public class BGUILib {
 	private static @Getter JavaPlugin plugin;
-	private static HotbarGUIListener hotbarGUIListener;
 	private static @Getter Map<Player, BGGUI> currentGuis = new HashMap<>();
 	private static @Getter Map<Player, BGHotbarGUI> currentHotbarGuis = new HashMap<>();
-	private static boolean initialized = false;
 
 	public static void init(JavaPlugin plugin) {
 		BGUILib.plugin = plugin;
 
 		plugin.getServer().getPluginManager().registerEvents(new GUIListener(), plugin);
 		plugin.getServer().getPluginManager().registerEvents(new ChatListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(hotbarGUIListener = new HotbarGUIListener(), plugin);
+		plugin.getServer().getPluginManager().registerEvents(new HotbarGUIListener(), plugin);
 		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
 				BGUILib.update();
@@ -63,14 +60,6 @@ public class BGUILib {
 	}
 
 	private static void update() {
-		if(!initialized) {
-			for(Player player : Bukkit.getOnlinePlayers()) {
-				hotbarGUIListener.updatePlayerHotbar(player);
-			}
-
-			initialized = true;
-		}
-
 		for(BGGUI gui : currentGuis.values()) {
 			gui.update();
 		}

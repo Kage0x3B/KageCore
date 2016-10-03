@@ -7,7 +7,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.List;
@@ -21,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.base.Splitter;
 
-import de.syscy.kagecore.KageCorePlugin;
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.util.Util;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +32,8 @@ public class Translator {
 	private static @Getter String defaultLocale = "en";
 
 	private static Map<String, Map<String, String>> translations = new HashMap<>();
+	
+	private static @Getter Map<Player, String> playerLanguages = new HashMap<>();
 
 	public static void addLanguageFiles(JavaPlugin plugin, File languageDirectory) {
 		if(!languageDirectory.exists()) {
@@ -78,7 +79,11 @@ public class Translator {
 			}
 
 			if(!currentTranslations.isEmpty()) {
-				translations.put(locale, currentTranslations);
+				if(!translations.containsKey(locale)) {
+					translations.put(locale, currentTranslations);
+				} else {
+					translations.get(locale).putAll(currentTranslations);
+				}
 			}
 		}
 	}
@@ -127,10 +132,8 @@ public class Translator {
 
 		if(translations.containsKey(language) && translations.get(language).containsKey(key)) {
 			text = ChatColor.translateAlternateColorCodes('&', translations.get(language).get(key));
-		} else {
-			if(translations.get(defaultLocale).containsKey(key)) {
-				text = ChatColor.translateAlternateColorCodes('&', translations.get(defaultLocale).get(key));
-			}
+		} else if(translations.get(defaultLocale).containsKey(key)) {
+			text = ChatColor.translateAlternateColorCodes('&', translations.get(defaultLocale).get(key));
 		}
 
 		if(args != null && !text.equals(key)) {
@@ -145,7 +148,7 @@ public class Translator {
 
 				argsString = argsString.isEmpty() ? argsString : argsString.substring(0, argsString.length() - 2);
 
-				KageCorePlugin.debugMessage("Format error: " + text + " (" + key + ") with " + args.length + " args: " + argsString);
+				KageCore.debugMessage("Format error: " + text + " (" + key + ") with " + args.length + " args: " + argsString);
 			}
 		}
 
@@ -153,17 +156,6 @@ public class Translator {
 	}
 
 	private static String getLanguage(Player player) {
-		try {
-			Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
-			Field localeField = nmsPlayer.getClass().getDeclaredField("locale");
-			localeField.setAccessible(true);
-			String language = (String) localeField.get(nmsPlayer);
-
-			return language.split("_")[0];
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return defaultLocale;
+		return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
 	}
 }

@@ -6,7 +6,7 @@ import de.syscy.bguilib.BGGUI;
 import de.syscy.bguilib.components.icon.ItemIcon;
 import de.syscy.bguilib.util.Lore;
 import de.syscy.bguilib.util.Util;
-import de.syscy.kagecore.KageCorePlugin;
+import de.syscy.kagecore.KageCore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,7 +44,8 @@ public abstract class BGComponent {
 			for(int j = y; j < y + height; j++) {
 				int slot = Util.toSlotCoordinate(i + this.offsetX, j + this.offsetY);
 				
-				if(slot < inventory.getSize()) {
+				if(slot >= 0 && slot < inventory.getSize()) {
+					KageCore.debugMessage("rendering "+ this + " at " + x + ", " + y);
 					inventory.setItem(slot, item.getItem(title, lore), forceUpdate);
 				}
 			}
@@ -71,7 +72,7 @@ public abstract class BGComponent {
 		}
 
 		if(height > 6) {
-			KageCorePlugin.debugMessage("Warning! If the height of a gui is greater than 6, it may look weird!");
+			KageCore.debugMessage("Warning! If the height of a gui is greater than 6, it may look weird!");
 		}
 
 		this.height = height;

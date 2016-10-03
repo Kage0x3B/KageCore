@@ -17,13 +17,12 @@ import de.syscy.bguilib.container.BGContainer;
 import de.syscy.bguilib.container.BGPanel;
 import de.syscy.bguilib.container.BGTabbedPanel;
 import de.syscy.bguilib.util.Util;
-import de.syscy.kagecore.KageCorePlugin;
 import lombok.Getter;
 import lombok.Setter;
 
 public class BGGUI {
 	public static final int HOPPER_INVENTORY_SIZE = 5;
-	
+
 	protected @Getter Player player;
 	protected @Getter Inventory inventory;
 	protected @Getter BGInventory bgInventory;
@@ -51,13 +50,13 @@ public class BGGUI {
 		this.hidden = false;
 		this.open = true;
 		this.player = player;
-		
+
 		if(size == HOPPER_INVENTORY_SIZE) {
 			this.inventory = Bukkit.createInventory(player, InventoryType.HOPPER, this.title);
 		} else {
 			this.inventory = Bukkit.createInventory(player, this.size, this.title);
 		}
-		
+
 		this.bgInventory = new BGInventory(inventory);
 		player.openInventory(this.inventory);
 		this.container.render();
@@ -85,7 +84,7 @@ public class BGGUI {
 		this.hidden = false;
 		BGUILib.showGUI(this, this.getPlayer());
 	}
-	
+
 	public void add(BGComponent component) {
 		this.container.add(component);
 		component.init(this);
@@ -114,19 +113,19 @@ public class BGGUI {
 			}
 		}
 	}
-	
+
 	/**
 	 * Set the size of the inventory
 	 * @param size The size (actual slot count)
 	 */
 	public void setSize(int size) {
-		if(size == HOPPER_INVENTORY_SIZE || size % 9 == 0) {
-			this.size = size;
+		if(size <= 5) {
+			this.size = 5;
 		} else {
-			KageCorePlugin.debugMessage("Invalid inventory size \"" + size + "\" in \"" + inventory.getTitle() + "\"!");
+			this.size = size % 9 == 0 ? size : (int) Math.ceil((float) size / 9.0f) * 9;
 		}
 	}
-	
+
 	/**
 	 * Sets the height of the inventory
 	 * @param height The height (not slot count)
@@ -138,7 +137,7 @@ public class BGGUI {
 
 		setSize(height * 9);
 	}
-	
+
 	public void setContainer(BGContainer container) {
 		this.container = container;
 		this.container.init(this);

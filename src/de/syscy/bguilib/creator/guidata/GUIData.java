@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.syscy.bguilib.BGGUI;
-import de.syscy.kagecore.KageCorePlugin;
+import de.syscy.kagecore.KageCore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +34,7 @@ public class GUIData {
 	}
 
 	public GUIData(String guiName) {
-		this.guiFile = new File(KageCorePlugin.getPluginDirectory() + "/gui/" + guiName + ".gd");
+		this.guiFile = new File(KageCore.getPluginDirectory() + "/gui/" + guiName + ".gd");
 		this.load();
 	}
 
