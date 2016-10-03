@@ -1,12 +1,11 @@
-package de.syscy.kagecore.util;
+package de.syscy.kagecore.util.bungee;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
@@ -17,10 +16,13 @@ import com.google.common.io.ByteStreams;
 import de.syscy.kagecore.KageCore;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 public class BungeeUtil {
-	private static ArrayListMultimap<String, ResponseListener<?>> responseListeners = ArrayListMultimap.create();
+	private static @Getter(value=AccessLevel.PROTECTED) ArrayListMultimap<String, ResponseListener<?>> responseListeners = ArrayListMultimap.create();
+	
+	public static void registerServerMessageListener(String subChannel, ServerMessageListener serverMessageListener) {
+		BungeePluginMessageListener.getServerMessageListeners().put(subChannel.toLowerCase(), serverMessageListener);
+	}
 
 	public static void sendPlayerToServer(Player player, String serverName) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -105,7 +107,7 @@ public class BungeeUtil {
 			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
 		}
 	}
-	
+
 	public static void getServers(final ResponseListener<String[]> listener) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("GetServers");
@@ -125,7 +127,7 @@ public class BungeeUtil {
 			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
 		}
 	}
-	
+
 	public static void sendMessage(String playerName, String message) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Message");
@@ -138,7 +140,7 @@ public class BungeeUtil {
 			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
 		}
 	}
-	
+
 	public static void getCurrentServerName(final ResponseListener<String> listener) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("GetServer");
@@ -159,31 +161,44 @@ public class BungeeUtil {
 		}
 	}
 
-	public static void sendServerMessage(String receiver, String channel, ByteArrayOutputStream data) {
-		sendServerMessage(receiver, channel, data, null);
-	}
-	
-	public static void sendServerMessage(String receiver, String subChannel, ByteArrayOutputStream data, final ResponseListener<String> listener) {
+	/**
+	 * Forwards a message to all other servers on the network, a specific server or all servers which are online
+	 * @param receiver ALL, ONLINE or a server name
+	 * @param subChannel A subchannel for this message
+	 * @param data The data
+	 */
+	public static void forwardServerMessage(String receiver, String subChannel, ByteArrayOutputStream data) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Forward");
 		out.writeUTF(receiver);
-		out.writeUTF(subChannel);
-		
+		out.writeUTF(subChannel.toLowerCase());
+
 		byte[] dataByteArray = data.toByteArray();
 		out.writeShort(dataByteArray.length);
 		out.write(dataByteArray);
-		
-		if(listener != null) {
-			listener.setResponseHandler(new ResponseHandler() {
-				public void handleResponse(ByteArrayDataInput in) {
-					String serverName = in.readUTF();
 
-					listener.onResponse(serverName);
-				}
-			});
-			listener.setSubChannel(subChannel);
-			responseListeners.put("Forward", listener);
+		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+
+		if(player != null) {
+			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
 		}
+	}
+	
+	/**
+	 * Forwards a message to the server the specified player plays on.
+	 * @param playerName A player name
+	 * @param subChannel A subchannel for this message
+	 * @param data The data
+	 */
+	public static void forwardServerMessageThroughPlayer(String playerName, String subChannel, ByteArrayOutputStream data) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("ForwardToPlayer");
+		out.writeUTF(playerName);
+		out.writeUTF(subChannel.toLowerCase());
+
+		byte[] dataByteArray = data.toByteArray();
+		out.writeShort(dataByteArray.length);
+		out.write(dataByteArray);
 
 		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
@@ -192,54 +207,96 @@ public class BungeeUtil {
 		}
 	}
 
-	public static abstract class ResponseListener<T> {
-		private @Getter(value = AccessLevel.PRIVATE) @Setter(value = AccessLevel.PRIVATE) Player player;
-		private @Getter(value = AccessLevel.PRIVATE) @Setter(value = AccessLevel.PRIVATE) boolean playerSpecific = false;
-		private @Getter(value = AccessLevel.PRIVATE) @Setter(value = AccessLevel.PRIVATE) String subChannel = "";
-		private @Getter(value = AccessLevel.PRIVATE) @Setter(value = AccessLevel.PRIVATE) ResponseHandler responseHandler;
+	/**
+	 * Gets the UUID of the specified player. But using {@link Player#getUniqueId()} should give the same result when the IP/UUID is forwarded.
+	 * @param player
+	 * @param listener
+	 */
+	public static void getUUID(Player player, final ResponseListener<UUID> listener) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("UUID");
 
+		listener.setResponseHandler(new ResponseHandler() {
+			public void handleResponse(ByteArrayDataInput in) {
+				String uuid = in.readUTF();
 
-		/**
-		 * @return if the ResponseListener handled the right response and can be removed
-		 */
-		public abstract boolean onResponse(T response);
+				listener.onResponse(UUID.fromString(uuid));
+			}
+		});
+		responseListeners.put("UUID", listener);
+
+		player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
 	}
 
-	private static interface ResponseHandler {
-		/**
-		 * @return if the ResponseHandler handled the right response and can be removed
-		 */
-		public void handleResponse(ByteArrayDataInput in);
+	/**
+	 * Gets the UUID of any player on the server network
+	 * @param playerName
+	 * @param listener
+	 */
+	public static void getUUID(String playerName, final ResponseListener<UUID> listener) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("UUIDOther");
+		out.writeUTF(playerName);
+
+		listener.setResponseHandler(new ResponseHandler() {
+			public void handleResponse(ByteArrayDataInput in) {
+				in.readUTF(); //Read player name
+				String uuid = in.readUTF();
+
+				listener.onResponse(UUID.fromString(uuid));
+			}
+		});
+		responseListeners.put("UUIDOther", listener);
+
+		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+
+		if(player != null) {
+			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
+		}
 	}
 
-	public static class BungeePluginMessageListener implements PluginMessageListener {
-		@Override
-		public void onPluginMessageReceived(String mainChannel, Player player, byte[] data) {
-			ByteArrayDataInput in = ByteStreams.newDataInput(data);
+	/**
+	 * Gets the address of a server in the network
+	 * @param serverName
+	 * @param listener
+	 */
+	public static void getServerIP(String serverName, final ResponseListener<InetSocketAddress> listener) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("ServerIP");
 
-			String bungeeCordChannel = in.readUTF();
-			String bungeeCordSubChannel = "";
-			
-			if(bungeeCordChannel.equalsIgnoreCase("Forward")) {
-				bungeeCordSubChannel = in.readUTF();
+		listener.setResponseHandler(new ResponseHandler() {
+			public void handleResponse(ByteArrayDataInput in) {
+				in.readUTF(); //Read server name
+				String ip = in.readUTF();
+				short port = in.readShort();
+
+				listener.onResponse(new InetSocketAddress(ip, port));
 			}
+		});
+		responseListeners.put("ServerIP", listener);
 
-			List<ResponseListener<?>> allListeners = responseListeners.get(bungeeCordChannel);
+		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
-			ResponseListener<?> finalResponseListener = null;
+		if(player != null) {
+			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
+		}
+	}
 
-			for(ResponseListener<?> responseListener : allListeners) {
-				if(bungeeCordSubChannel.equals(responseListener.getSubChannel()) && (!responseListener.isPlayerSpecific() || responseListener.getPlayer().equals(player))) {
-					finalResponseListener = responseListener;
+	/**
+	 * Kicks a player from the server network
+	 * @param playerName
+	 * @param reason
+	 */
+	public static void kickPlayer(String playerName, String reason) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("KickPlayer");
+		out.writeUTF(playerName);
+		out.writeUTF(reason);
 
-					break;
-				}
-			}
+		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
-			if(finalResponseListener != null) {
-				finalResponseListener.getResponseHandler().handleResponse(in);
-				responseListeners.remove(bungeeCordChannel, finalResponseListener);
-			}
+		if(player != null) {
+			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
 		}
 	}
 }

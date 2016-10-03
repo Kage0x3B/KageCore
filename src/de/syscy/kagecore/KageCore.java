@@ -18,8 +18,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.syscy.bguilib.BGUILib;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.translation.Translator;
-import de.syscy.kagecore.util.BungeeUtil.BungeePluginMessageListener;
 import de.syscy.kagecore.util.TranslatorUtil;
+import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import lombok.Getter;
 import lombok.Setter;
 
