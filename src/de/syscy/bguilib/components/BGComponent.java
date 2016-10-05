@@ -1,6 +1,8 @@
 package de.syscy.bguilib.components;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 import de.syscy.bguilib.BGGUI;
 import de.syscy.bguilib.components.icon.ItemIcon;
@@ -33,26 +35,28 @@ public abstract class BGComponent {
 	public abstract void update();
 
 	public abstract void render(BGInventory inventory);
-	
 
 	public void renderItem(BGInventory inventory, int x, int y, int width, int height, ItemIcon item, String title, Lore lore) {
 		renderItem(inventory, x, y, width, height, item, title, lore, false);
 	}
 
 	public void renderItem(BGInventory inventory, int x, int y, int width, int height, ItemIcon item, String title, Lore lore, boolean forceUpdate) {
+		renderItem(inventory, x, y, width, height, item.getItem(title, lore), forceUpdate);
+	}
+
+	public void renderItem(BGInventory inventory, int x, int y, int width, int height, ItemStack item, boolean forceUpdate) {
 		for(int i = x; i < x + width; i++) {
 			for(int j = y; j < y + height; j++) {
 				int slot = Util.toSlotCoordinate(i + this.offsetX, j + this.offsetY);
-				
+
 				if(slot >= 0 && slot < inventory.getSize()) {
-					KageCore.debugMessage("rendering "+ this + " at " + x + ", " + y);
-					inventory.setItem(slot, item.getItem(title, lore), forceUpdate);
+					inventory.setItem(slot, item, forceUpdate);
 				}
 			}
 		}
 	}
 
-	public abstract void onClick(Player player, int localX, int localY);
+	public abstract void onClick(InventoryClickEvent event, Player player, int localX, int localY);
 
 	public void setWidth(int width) {
 		if(width > 9 - this.x) {

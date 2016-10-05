@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 public class BungeePluginMessageListener implements PluginMessageListener {
-	private static @Getter(value=AccessLevel.PROTECTED) ArrayListMultimap<String, ServerMessageListener> serverMessageListeners = ArrayListMultimap.create();
+	private static @Getter(value=AccessLevel.PROTECTED) ArrayListMultimap<String, BungeeMessageListener> bungeeMessageListeners = ArrayListMultimap.create();
 	
 	@Override
 	public void onPluginMessageReceived(String mainChannel, Player player, byte[] data) {
@@ -24,8 +24,8 @@ public class BungeePluginMessageListener implements PluginMessageListener {
 		if(bungeeCordChannel.equals("Forward") || bungeeCordChannel.equals("ForwardToPlayer")) {
 			String bungeeCordSubChannel = in.readUTF().toLowerCase();
 			
-			for(ServerMessageListener serverMessageListener : serverMessageListeners.get(bungeeCordSubChannel)) {
-				serverMessageListener.handleServerMessage(bungeeCordChannel, bungeeCordSubChannel, player, in);
+			for(BungeeMessageListener bungeeMessageListener : bungeeMessageListeners.get(bungeeCordSubChannel)) {
+				bungeeMessageListener.handleMessage(bungeeCordChannel, bungeeCordSubChannel, player, in);
 			}
 			
 			return;

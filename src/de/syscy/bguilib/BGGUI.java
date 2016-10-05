@@ -95,11 +95,12 @@ public class BGGUI {
 	}
 
 	public void onClick(InventoryClickEvent event) {
-		event.setCancelled(true);
-
 		if(event.getSlot() >= 0 && event.getRawSlot() < this.size) {
+			event.setCancelled(true);
+			
 			int[] coordinates = Util.toXYCoordinate(event.getSlot());
-			this.container.onClick(coordinates[0], coordinates[1]);
+			
+			this.container.onClick(event, coordinates[0], coordinates[1]);
 		}
 	}
 

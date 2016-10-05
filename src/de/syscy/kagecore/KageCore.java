@@ -18,7 +18,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.syscy.bguilib.BGUILib;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.translation.Translator;
-import de.syscy.kagecore.util.TranslatorUtil;
+import de.syscy.kagecore.translation.TranslatorUtil;
+import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,9 @@ public class KageCore extends JavaPlugin {
 
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeePluginMessageListener());
+		
+		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "KageCore");
+		this.getServer().getMessenger().registerIncomingPluginChannel(this, "KageCore", new KagePluginMessageListener());
 
 		pluginDirectory = this.getDataFolder();
 		
@@ -66,12 +70,24 @@ public class KageCore extends JavaPlugin {
 		
 		protocolManager.addPacketListener(new PacketAdapter(this, PacketType.Play.Client.SETTINGS) {
 			@Override
-			public void onPacketReceiving(PacketEvent event) {
-				WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
-				
-				Translator.getPlayerLanguages().put(event.getPlayer(), wrapper.getLocale());
-				
-				Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), wrapper.getLocale()));
+			public void onPacketReceiving(final PacketEvent event) {
+				Bukkit.getScheduler().runTaskLater(KageCore.this, new Runnable() {
+					public void run() {
+						WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
+						
+						String language = wrapper.getLocale().substring(0, 2);
+						String lastLanguage = Translator.getPlayerLanguages().get(event.getPlayer());
+						
+						if(lastLanguage == null || lastLanguage.isEmpty()) {
+							lastLanguage = Translator.getDefaultLocale();
+						}
+						
+						Translator.getPlayerLanguages().put(event.getPlayer(), language);
+						
+						Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
+						debugMessage("Set " + event.getPlayer().getName() + "'s language to " + language);
+					}
+				}, 1);
 			}
 		});
 		

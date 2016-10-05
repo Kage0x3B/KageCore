@@ -1,4 +1,4 @@
-package de.syscy.kagecore.util;
+package de.syscy.kagecore.translation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ import com.comphenix.protocol.wrappers.nbt.NbtList;
 import com.comphenix.protocol.wrappers.nbt.NbtType;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.translation.Translator;
 
 @SuppressWarnings("unused")
 public class TranslatorUtil {
@@ -71,7 +70,7 @@ public class TranslatorUtil {
 		return string.startsWith(packetTranslatorSign) ? Translator.translate(player, string.substring(1)) : string;
 	}
 
-	private static List<WrappedWatchableObject> translateWatchableObjects(List<WrappedWatchableObject> watchableObjects, Player player) {
+	public static List<WrappedWatchableObject> translateWatchableObjects(List<WrappedWatchableObject> watchableObjects, Player player) {
 		for(WrappedWatchableObject watchableObject : watchableObjects) {
 			watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
 		}
@@ -79,7 +78,7 @@ public class TranslatorUtil {
 		return watchableObjects;
 	}
 	
-	private static WrappedDataWatcher translateDataWatcher(WrappedDataWatcher dataWatcher, Player player) {
+	public static WrappedDataWatcher translateDataWatcher(WrappedDataWatcher dataWatcher, Player player) {
 		for(WrappedWatchableObject watchableObject : dataWatcher) {
 			watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
 		}
@@ -88,7 +87,7 @@ public class TranslatorUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static NbtBase<?> translateNBT(NbtBase<?> nbt, Player player) {
+	public static NbtBase<?> translateNBT(NbtBase<?> nbt, Player player) {
 		if(nbt.getType().equals(NbtType.TAG_STRING)) {
 			return translateNBTString((NbtBase<String>) nbt, player);
 		} else if(nbt.getType().equals(NbtType.TAG_COMPOUND)) {

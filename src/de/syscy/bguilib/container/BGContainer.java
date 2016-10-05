@@ -1,6 +1,7 @@
 package de.syscy.bguilib.container;
 
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.syscy.bguilib.BGGUI;
@@ -26,7 +27,7 @@ public abstract class BGContainer {
 
 	public abstract void render();
 
-	public abstract void onClick(int x, int y);
+	public abstract void onClick(InventoryClickEvent event, int x, int y);
 
 	protected void clear() {
 		this.gui.getBgInventory().clear();

@@ -3,6 +3,7 @@ package de.syscy.bguilib.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
 import de.syscy.bguilib.BGGUI;
@@ -49,13 +50,13 @@ public class BGTabbedPanel extends BGContainer {
 		inventory.setItem(Util.toSlotCoordinate(x, y), item.getItem(title, lore));
 	}
 
-	public void onClick(int x, int y) {
+	public void onClick(InventoryClickEvent event, int x, int y) {
 		if(y == 0) {
 			if(x < this.tabs.size()) {
 				this.setCurrentTab(x);
 			}
 		} else {
-			this.tabs.get(this.currentTab).onClick(x, y);
+			this.tabs.get(this.currentTab).onClick(event, x, y);
 		}
 
 	}

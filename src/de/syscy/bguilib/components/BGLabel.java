@@ -2,6 +2,7 @@ package de.syscy.bguilib.components;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.syscy.bguilib.components.icon.ItemIcon;
@@ -34,7 +35,7 @@ public class BGLabel extends BGComponent {
 		this.renderItem(inventory, this.x, this.y, this.width, this.height, this.labelIcon, this.title, this.lore);
 	}
 
-	public void onClick(Player player, int localX, int localY) {
+	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
 
 	}
 }

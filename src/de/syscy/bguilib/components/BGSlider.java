@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.syscy.bguilib.components.icon.ItemIcon;
@@ -65,7 +66,7 @@ public class BGSlider extends BGComponent {
 		this.renderItem(inventory, this.x + this.width - 1, this.y, 1, this.height, this.arrowIcon, this.title, this.lore, true);
 	}
 
-	public void onClick(Player player, int localX, int localY) {
+	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
 		if(localX == 0) {
 			this.decreaseValue();
 		} else if(localX == this.width - 1) {

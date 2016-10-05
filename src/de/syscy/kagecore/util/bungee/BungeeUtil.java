@@ -20,16 +20,30 @@ import lombok.Getter;
 public class BungeeUtil {
 	private static @Getter(value=AccessLevel.PROTECTED) ArrayListMultimap<String, ResponseListener<?>> responseListeners = ArrayListMultimap.create();
 	
-	public static void registerServerMessageListener(String subChannel, ServerMessageListener serverMessageListener) {
-		BungeePluginMessageListener.getServerMessageListeners().put(subChannel.toLowerCase(), serverMessageListener);
+	/**
+	 * Registers the listener for communicating with other servers in the network via Forward/ForwardToPlayer
+	 * @param subChannel
+	 * @param bungeeMessageListener
+	 */
+	public static void registerBungeeMessageListener(String subChannel, BungeeMessageListener bungeeMessageListener) {
+		BungeePluginMessageListener.getBungeeMessageListeners().put(subChannel.toLowerCase(), bungeeMessageListener);
+	}
+	
+	/**
+	 * Registers the listener for communicating with the BungeeCord server
+	 * @param subChannel
+	 * @param kageMessageListener
+	 */
+	public static void registerKageMessageListener(String subChannel, KageMessageListener kageMessageListener) {
+		KagePluginMessageListener.getKageMessageListeners().put(subChannel.toLowerCase(), kageMessageListener);
 	}
 
 	public static void sendPlayerToServer(Player player, String serverName) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Connect");
 		out.writeUTF(serverName);
-
-		player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
+		
+		sendPluginMessage("BungeeCord", out, player);
 	}
 
 	public static void sendPlayerToServer(String playerName, String serverName) {
@@ -37,12 +51,8 @@ public class BungeeUtil {
 		out.writeUTF("ConnectOther");
 		out.writeUTF(playerName);
 		out.writeUTF(serverName);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	public static void getRealIP(Player player, final ResponseListener<InetSocketAddress> listener) {
@@ -60,8 +70,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("IP", listener);
-
-		player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
+		
+		sendPluginMessage("BungeeCord", out, player);
 	}
 
 	public static void getPlayerCount(String serverName, final ResponseListener<Integer> listener) {
@@ -78,12 +88,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("PlayerCount", listener);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	public static void getPlayerList(String serverName, final ResponseListener<String[]> listener) {
@@ -100,12 +106,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("PlayerList", listener);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	public static void getServers(final ResponseListener<String[]> listener) {
@@ -120,12 +122,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("GetServers", listener);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	public static void sendMessage(String playerName, String message) {
@@ -133,12 +131,8 @@ public class BungeeUtil {
 		out.writeUTF("Message");
 		out.writeUTF(playerName);
 		out.writeUTF(message);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	public static void getCurrentServerName(final ResponseListener<String> listener) {
@@ -153,12 +147,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("GetServer", listener);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	/**
@@ -176,12 +166,8 @@ public class BungeeUtil {
 		byte[] dataByteArray = data.toByteArray();
 		out.writeShort(dataByteArray.length);
 		out.write(dataByteArray);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 	
 	/**
@@ -199,12 +185,8 @@ public class BungeeUtil {
 		byte[] dataByteArray = data.toByteArray();
 		out.writeShort(dataByteArray.length);
 		out.write(dataByteArray);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	/**
@@ -224,8 +206,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("UUID", listener);
-
-		player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
+		
+		sendPluginMessage("BungeeCord", out, player);
 	}
 
 	/**
@@ -247,12 +229,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("UUIDOther", listener);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	/**
@@ -274,12 +252,8 @@ public class BungeeUtil {
 			}
 		});
 		responseListeners.put("ServerIP", listener);
-
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
-		}
+		
+		sendPluginMessage("BungeeCord", out);
 	}
 
 	/**
@@ -292,11 +266,29 @@ public class BungeeUtil {
 		out.writeUTF("KickPlayer");
 		out.writeUTF(playerName);
 		out.writeUTF(reason);
+		
+		sendPluginMessage("BungeeCord", out);
+	}
+	
+	public static void sendMessageToBungeeCord(String subChannel, ByteArrayDataOutput out) {
+		ByteArrayDataOutput finalOut = ByteStreams.newDataOutput();
+		finalOut.writeUTF(subChannel);
+		finalOut.write(out.toByteArray());
+		
+		sendPluginMessage("KageCore", finalOut);
+	}
 
-		Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
+	public static void sendPluginMessage(String channel, ByteArrayDataOutput out) {
+		sendPluginMessage(channel, out, null);
+	}
+	
+	public static void sendPluginMessage(String channel, ByteArrayDataOutput out, Player player) {
+		if(player == null) {
+			player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+		}
+		
 		if(player != null) {
-			player.sendPluginMessage(KageCore.getInstance(), "BungeeCord", out.toByteArray());
+			player.sendPluginMessage(KageCore.getInstance(), channel, out.toByteArray());
 		}
 	}
 }

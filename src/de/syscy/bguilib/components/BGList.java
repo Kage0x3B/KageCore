@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.syscy.bguilib.components.icon.ItemIcon;
@@ -50,7 +51,7 @@ public class BGList extends BGComponent {
 		}
 	}
 
-	public void onClick(Player player, int localX, int localY) {
+	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
 		if(totalPages > 1 && localX == 0 && localY == height - 1) { //Clicked on the previous page button
 			if(currentPage > 0) {
 				currentPage--;
@@ -62,14 +63,14 @@ public class BGList extends BGComponent {
 		} else if(localY < height) {
 			for(BGComponent component : currentPageComponents) {
 				if(component.getX() == this.x + localX && component.getY() == this.y + localY) {
-					component.onClick(player, 0, 0);
+					component.onClick(event, player, 0, 0);
 				}
 			}
 		}
 	}
 
 	public void addComponent(BGComponent component) {
-		if(!(component instanceof BGButton || component instanceof BGLabel || component instanceof BGCheckButton)) {
+		if(!(component instanceof BGButton || component instanceof BGLabel || component instanceof BGCheckButton || component instanceof BGItemContainer)) {
 			throw new IllegalArgumentException("Invalid component for a list: " + component);
 		}
 

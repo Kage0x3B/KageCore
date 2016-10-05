@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.io.ByteArrayDataInput;
 
-public interface ServerMessageListener {
+public interface BungeeMessageListener {
 	/**
 	 * 
 	 * @param bungeeCordChannel Forward or ForwardToPlayer
@@ -12,5 +12,5 @@ public interface ServerMessageListener {
 	 * @param player The player the message was sent through
 	 * @param in The data input
 	 */
-	public void handleServerMessage(String bungeeCordChannel, String bungeeCordSubChannel, Player player, ByteArrayDataInput in);
+	public void handleMessage(String bungeeCordChannel, String bungeeCordSubChannel, Player player, ByteArrayDataInput in);
 }

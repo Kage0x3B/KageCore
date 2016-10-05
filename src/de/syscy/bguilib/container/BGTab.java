@@ -3,6 +3,8 @@ package de.syscy.bguilib.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.event.inventory.InventoryClickEvent;
+
 import de.syscy.bguilib.BGGUI;
 import de.syscy.bguilib.components.BGComponent;
 import de.syscy.bguilib.components.icon.ItemIcon;
@@ -65,10 +67,10 @@ public class BGTab {
 		}
 	}
 
-	public void onClick(int x, int y) {
+	public void onClick(InventoryClickEvent event, int x, int y) {
 		for(BGComponent component : components) {
 			if(Util.pointInBoundingBox(x, y - 1, component.getX(), component.getY(), component.getWidth() > 1 ? component.getWidth() + 1 : component.getWidth(), component.getHeight())) {
-				component.onClick(this.gui.getPlayer(), x - component.getX(), y - component.getY() - 1);
+				component.onClick(event, this.gui.getPlayer(), x - component.getX(), y - component.getY() - 1);
 			}
 		}
 	}

@@ -9,8 +9,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LanguageChangeEvent extends org.bukkit.event.Event {
 	private static final HandlerList handlerList = new HandlerList();
+	
 	private final @Getter Player player;
+	
 	private final @Getter String language;
+	private final @Getter String lastLanguage;
 
 	@Override
 	public HandlerList getHandlers() {

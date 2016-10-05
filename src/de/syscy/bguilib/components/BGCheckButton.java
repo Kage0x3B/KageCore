@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.syscy.bguilib.components.icon.ItemIcon;
@@ -47,7 +48,7 @@ public class BGCheckButton extends BGComponent {
 		this.renderItem(inventory, this.x, this.y, this.width, this.height, this.isEnabled() ? this.enabledIcon : this.disabledIcon, this.isEnabled() ? this.enabledTitle : this.disabledTitle, this.isEnabled() ? this.enabledLore : this.disabledLore);
 	}
 
-	public void onClick(Player player, int localX, int localY) {
+	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
 		this.enabled = !this.isEnabled();
 		this.getGui().render();
 
