@@ -39,7 +39,7 @@ public class YesNoGUI extends BGGUI {
 		});
 		add(yesButton);
 
-		BGButton noButton = new BGButton(0, 3, "No");
+		BGButton noButton = new BGButton(3, 0, "No");
 		noButton.setButtonIcon(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 14)));
 		noButton.setSize(2, 1);
 		noButton.addClickListener(new ButtonClickListener() {

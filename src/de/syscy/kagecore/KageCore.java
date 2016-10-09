@@ -19,8 +19,8 @@ import de.syscy.bguilib.BGUILib;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.translation.TranslatorUtil;
-import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
+import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -85,7 +85,6 @@ public class KageCore extends JavaPlugin {
 						Translator.getPlayerLanguages().put(event.getPlayer(), language);
 						
 						Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
-						debugMessage("Set " + event.getPlayer().getName() + "'s language to " + language);
 					}
 				}, 1);
 			}

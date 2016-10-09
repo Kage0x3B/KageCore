@@ -6,7 +6,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.bukkit.ChatColor;
+
 import com.huskehhh.mysql.Database;
+
+import de.syscy.kagecore.KageCore;
 
 /**
  * Connects to and uses a SQLite database
@@ -31,14 +35,16 @@ public class SQLiteDatabase extends Database {
 			return connection;
 		}
 
-		File dataFolder = new File("sqlite-db/");
-		
+		KageCore.debugMessage(ChatColor.RED + "WARNING! Currently using sqlite as the database type. " + ChatColor.GOLD + "Only use this for testing purposes and only with a single server accessing it!");
+
+		File dataFolder = new File(KageCore.getPluginDirectory().getParentFile(), "pluginDatabases/");
+
 		if(!dataFolder.exists()) {
 			dataFolder.mkdirs();
 		}
 
 		File file = new File(dataFolder, dbLocation);
-		
+
 		if(!(file.exists())) {
 			try {
 				file.createNewFile();
@@ -46,10 +52,10 @@ public class SQLiteDatabase extends Database {
 				System.out.println("Unable to create database!");
 			}
 		}
-		
+
 		Class.forName("org.sqlite.JDBC");
 		connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder + "/" + dbLocation);
-		
+
 		return connection;
 	}
 }

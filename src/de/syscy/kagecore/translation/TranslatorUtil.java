@@ -1,6 +1,5 @@
 package de.syscy.kagecore.translation;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +7,7 @@ import org.bukkit.entity.Player;
 
 import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving;
-import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
-import com.comphenix.packetwrapper.WrapperPlayServerWorldEvent;
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -24,7 +20,6 @@ import com.comphenix.protocol.wrappers.nbt.NbtType;
 
 import de.syscy.kagecore.KageCore;
 
-@SuppressWarnings("unused")
 public class TranslatorUtil {
 	private static String packetTranslatorSign;
 
@@ -49,12 +44,16 @@ public class TranslatorUtil {
 	}
 
 	private static void handlePacket(PacketEvent event) {
-		if(event.getPacketType().equals(PacketType.Play.Server.SPAWN_ENTITY_LIVING)) {
-			handleSpawnEntityLiving(event);
-		} else if(event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
-			handleEntityMetadata(event);
-		} else if(event.getPacketType().equals(PacketType.Play.Server.TILE_ENTITY_DATA)) {
-			handleTileEntityData(event);
+		try {
+			if(event.getPacketType().equals(PacketType.Play.Server.SPAWN_ENTITY_LIVING)) {
+				handleSpawnEntityLiving(event);
+			} else if(event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
+				handleEntityMetadata(event);
+			} else if(event.getPacketType().equals(PacketType.Play.Server.TILE_ENTITY_DATA)) {
+				handleTileEntityData(event);
+			}
+		} catch(Exception ex) {
+			
 		}
 	}
 
@@ -63,10 +62,6 @@ public class TranslatorUtil {
 	}
 
 	private static String tryTranslateString(String string, Player player) {
-		if(string.startsWith(packetTranslatorSign)) {
-			KageCore.debugMessage("translating " + string + " to " + Translator.translate(player, string.substring(1)));
-		}
-		
 		return string.startsWith(packetTranslatorSign) ? Translator.translate(player, string.substring(1)) : string;
 	}
 
@@ -140,10 +135,10 @@ public class TranslatorUtil {
 	}
 
 	private static void handleTileEntityData(PacketEvent event) {
-		WrapperPlayServerTileEntityData wrapper = new WrapperPlayServerTileEntityData(event.getPacket());
-
-		if(wrapper.getAction() == 9) { //Sign text changed
-			wrapper.setNbtData(translateNBT(wrapper.getNbtData(), event.getPlayer()));
-		}
+		//TODO
+//		WrapperPlayServerTileEntityData wrapper = new WrapperPlayServerTileEntityData(event.getPacket());
+//		if(wrapper.getAction() == 9) { //Sign text changed
+//			wrapper.setNbtData(translateNBT(wrapper.getNbtData(), event.getPlayer()));
+//		}
 	}
 }
