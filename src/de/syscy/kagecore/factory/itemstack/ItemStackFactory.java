@@ -6,16 +6,16 @@ import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import de.syscy.kagecore.factory.AbstractAdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
-	private final JavaPlugin plugin;
+	private final IFactoryProviderPlugin plugin;
 
 	protected Map<String, ItemStack> cache = new HashMap<>();
 
@@ -58,6 +58,13 @@ public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
 		}
 
 		return null;
+	}
+	
+	@Override
+	public void reload() {
+		cache.clear();
+		
+		super.reload();
 	}
 
 	@Override

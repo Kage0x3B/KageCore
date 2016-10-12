@@ -6,14 +6,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
+import com.comphenix.packetwrapper.WrapperPlayServerOpenWindow;
+import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
+import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving;
+import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
+import com.comphenix.packetwrapper.WrapperPlayServerWindowItems;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.comphenix.protocol.wrappers.nbt.NbtBase;
@@ -22,14 +28,13 @@ import com.comphenix.protocol.wrappers.nbt.NbtList;
 import com.comphenix.protocol.wrappers.nbt.NbtType;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class PacketTranslator {
-	private static char packetTranslatorSign = '%';
-	private static Pattern tsPattern = Pattern.compile(packetTranslatorSign + "[\\w\\d.]+(:[A-Za-z0-9 ]+)*:"); //Matches parts of strings like "%test:" or "%test:arg1:2:arg3:" to translate
+	private static char packetTranslatorSign = '§';
+	private static Pattern tsPattern = Pattern.compile(packetTranslatorSign + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;"); //Matches parts of strings like "§test;" or "§test;arg1:2;arg3;" to translate
 
 	private final KageCore plugin;
 	private final ProtocolManager protocolManager;
@@ -39,8 +44,9 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packetTypes.add(PacketType.Play.Server.ENTITY_METADATA);
 		packetTypes.add(PacketType.Play.Server.TILE_ENTITY_DATA);
-		packetTypes.add(PacketType.Play.Server.BOSS);
-		packetTypes.add(PacketType.Play.Server.CHAT);
+		packetTypes.add(PacketType.Play.Server.OPEN_WINDOW);
+		packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
+		packetTypes.add(PacketType.Play.Server.SET_SLOT);
 
 		protocolManager.addPacketListener(new PacketAdapter(plugin, packetTypes) {
 			public void onPacketSending(PacketEvent event) {
@@ -54,51 +60,44 @@ public class PacketTranslator {
 		Player player = event.getPlayer();
 
 		try {
-			handleStructureModifier(packet.getStrings(), StringStructureHandler.instance, player);
-			handleStructureModifierArray(packet.getStringArrays(), StringStructureHandler.instance, player);
-			handleStructureModifier(packet.getNbtModifier(), NBTStructureHandler.instance, player);
-			handleStructureModifierList(packet.getListNbtModifier(), NBTStructureHandler.instance, player);
-			handleStructureModifier(packet.getChatComponents(), ChatComponentStructureHandler.instance, player);
-//			handleStructureModifierArray(packet.getChatComponentArrays(), ChatComponentStructureHandler.instance, player);
-			handleStructureModifier(packet.getDataWatcherModifier(), DataWatcherStructureHandler.instance, player);
-			handleStructureModifierList(packet.getWatchableCollectionModifier(), WatchableObjectStructureHandler.instance, player);
+			if(event.getPacketType().equals(PacketType.Play.Server.SPAWN_ENTITY_LIVING)) {
+				WrapperPlayServerSpawnEntityLiving wrapper = new WrapperPlayServerSpawnEntityLiving(packet);
+				wrapper.setMetadata(translateDataWatcher(wrapper.getMetadata(), player));
+			} else if(event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
+				WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(packet);
+				List<WrappedWatchableObject> metadata = new ArrayList<>();
+
+				for(WrappedWatchableObject watchableObject : wrapper.getEntityMetadata()) {
+					metadata.add(translateWatchableObject(watchableObject, player));
+				}
+
+				wrapper.setEntityMetadata(metadata);
+			} else if(event.getPacketType().equals(PacketType.Play.Server.TILE_ENTITY_DATA)) {
+				WrapperPlayServerTileEntityData wrapper = new WrapperPlayServerTileEntityData(packet);
+
+				if(wrapper.getNbtData() != null) {
+					wrapper.setNbtData(translateNBT(wrapper.getNbtData(), player));
+				}
+			} else if(event.getPacketType().equals(PacketType.Play.Server.OPEN_WINDOW)) {
+				WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(packet);
+				wrapper.setWindowTitle(tryTranslateString(wrapper.getWindowTitle(), player));
+			} else if(event.getPacketType().equals(PacketType.Play.Server.WINDOW_ITEMS)) {
+				WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(packet);
+
+				ItemStack[] newItemStacks = wrapper.getItems();
+
+				for(int i = 0; i < newItemStacks.length; i++) {
+					newItemStacks[i] = translateItemStack(newItemStacks[i], player);
+				}
+
+				wrapper.setItems(newItemStacks);
+			} else if(event.getPacketType().equals(PacketType.Play.Server.SET_SLOT)) {
+				WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(packet);
+				wrapper.setSlotData(translateItemStack(wrapper.getSlotData(), player));
+			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	private <T> void handleStructureModifierArray(StructureModifier<T[]> structureModifierList, StructureHandler<T> structureHandler, Player player) {
-		for(int i = 0; i < structureModifierList.size(); i++) {
-			T[] objectArray = structureModifierList.read(i);
-			
-			for(int j = 0; j < objectArray.length; j++) {
-				objectArray[j] = structureHandler.handleStructure(objectArray[j], player);
-			}
-			
-			structureModifierList.write(i, objectArray);
-		}
-	}
-
-	private <T> void handleStructureModifierList(StructureModifier<List<T>> structureModifierList, StructureHandler<T> structureHandler, Player player) {
-		for(int i = 0; i < structureModifierList.size(); i++) {
-			List<T> objectList = structureModifierList.read(i);
-			
-			for(int j = 0; j < objectList.size(); j++) {
-				objectList.set(j, structureHandler.handleStructure(objectList.get(j), player));
-			}
-			
-			structureModifierList.write(i, objectList);
-		}
-	}
-
-	private <T> void handleStructureModifier(StructureModifier<T> structureModifier, StructureHandler<T> structureHandler, Player player) {
-		for(int i = 0; i < structureModifier.size(); i++) {
-			structureModifier.write(i, structureHandler.handleStructure(structureModifier.read(i), player));
-		}
-	}
-
-	private interface StructureHandler<T> {
-		public T handleStructure(T object, Player player);
 	}
 
 	private static Object tryTranslateObject(Object object, Player player) {
@@ -163,12 +162,28 @@ public class PacketTranslator {
 
 		public void append(StringBuilder stringBuilder, String language) {
 			string = string.substring(1, string.length() - 1);
-			String[] parts = string.split(":");
+			String[] parts = string.split(";");
 			Object[] args = new Object[parts.length - 1];
 
 			for(int i = 1; i < parts.length; i++) {
-				if(Util.isNumber(parts[i])) {
-					args[i - 1] = Float.parseFloat(parts[i]);
+				String part = parts[i];
+				
+				if(part.startsWith("!")) {
+					part = part.substring(1);
+					
+					char partType = part.charAt(0);
+					part = part.substring(1);
+					
+					switch(partType) {
+						case 'i':
+							int intArg = Integer.parseInt(part);
+							args[i - 1] = intArg;
+							break;
+						case 'd':
+							double doubleArg = Double.parseDouble(part);
+							args[i - 1] = doubleArg;
+							break;
+					}
 				} else {
 					args[i - 1] = parts[i];
 				}
@@ -177,58 +192,45 @@ public class PacketTranslator {
 			stringBuilder.append(Translator.translate(language, parts[0], args));
 		}
 	}
-	
-	private static class StringStructureHandler implements StructureHandler<String> {
-		private static StructureHandler<String> instance = new StringStructureHandler();
 
-		@Override
-		public String handleStructure(String string, Player player) {
-			return tryTranslateString(string, player);
+	private static ItemStack translateItemStack(ItemStack itemStack, Player player) {
+		if(itemStack == null || !itemStack.hasItemMeta()) {
+			return itemStack;
 		}
-	}
 
-	private static class ChatComponentStructureHandler implements StructureHandler<WrappedChatComponent> {
-		private static StructureHandler<WrappedChatComponent> instance = new ChatComponentStructureHandler();
+		ItemMeta itemMeta = itemStack.getItemMeta();
 
-		@Override
-		public WrappedChatComponent handleStructure(WrappedChatComponent chatComponent, Player player) {
-			return WrappedChatComponent.fromJson(tryTranslateString(chatComponent.getJson(), player));
+		if(itemMeta.hasDisplayName()) {
+			itemMeta.setDisplayName(tryTranslateString(itemMeta.getDisplayName(), player));
 		}
-	}
-	
-	private static class WatchableObjectStructureHandler implements StructureHandler<WrappedWatchableObject> {
-		private static StructureHandler<WrappedWatchableObject> instance = new WatchableObjectStructureHandler();
 
-		@Override
-		public WrappedWatchableObject handleStructure(WrappedWatchableObject watchableObject, Player player) {
-			watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
+		if(itemMeta.hasLore()) {
+			List<String> newLore = new ArrayList<>();
 
-			return watchableObject;
-		}
-	}
-	
-	private static class DataWatcherStructureHandler implements StructureHandler<WrappedDataWatcher> {
-		private static StructureHandler<WrappedDataWatcher> instance = new DataWatcherStructureHandler();
-
-		@Override
-		public WrappedDataWatcher handleStructure(WrappedDataWatcher dataWatcher, Player player) {
-			for(WrappedWatchableObject watchableObject : dataWatcher) {
-				watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
+			for(String loreString : itemMeta.getLore()) {
+				newLore.add(tryTranslateString(loreString, player));
 			}
 
-			return dataWatcher;
+			itemMeta.setLore(newLore);
 		}
+
+		itemStack.setItemMeta(itemMeta);
+
+		return itemStack;
 	}
-	
-	private static class NBTStructureHandler implements StructureHandler<NbtBase<?>> {
-		private static StructureHandler<NbtBase<?>> instance = new NBTStructureHandler();
 
-		@Override
-		public NbtBase<?> handleStructure(NbtBase<?> nbt, Player player) {
-			nbt = translateNBT(nbt, player);
+	private static WrappedWatchableObject translateWatchableObject(WrappedWatchableObject watchableObject, Player player) {
+		watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
 
-			return nbt;
+		return watchableObject;
+	}
+
+	private static WrappedDataWatcher translateDataWatcher(WrappedDataWatcher dataWatcher, Player player) {
+		for(WrappedWatchableObject watchableObject : dataWatcher) {
+			watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
 		}
+
+		return dataWatcher;
 	}
 
 	@SuppressWarnings("unchecked")

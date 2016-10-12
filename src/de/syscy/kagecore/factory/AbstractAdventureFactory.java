@@ -8,9 +8,15 @@ import java.util.Map;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public abstract class AbstractAdventureFactory<T> implements AdventureFactory<T> {
+	private File folder;
+	private String templateFileExtension;
+	
 	protected Map<String, FactoryTemplate<T>> templates = new HashMap<>();
 
 	protected void loadTemplates(File folder, final String templateFileExtension) {
+		this.folder = folder;
+		this.templateFileExtension = templateFileExtension;
+		
 		if(!folder.exists()) {
 			folder.mkdirs();
 		}
@@ -34,6 +40,13 @@ public abstract class AbstractAdventureFactory<T> implements AdventureFactory<T>
 				ex.printStackTrace();
 			}
 		}
+	}
+	
+	@Override
+	public void reload() {
+		templates.clear();
+		
+		loadTemplates(folder, templateFileExtension);
 	}
 
 	protected abstract FactoryTemplate<T> createTemplate();
