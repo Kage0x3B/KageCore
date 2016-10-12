@@ -34,7 +34,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	public void load(AdventureFactory<ItemStack> factory, YamlConfiguration templateYaml) throws Exception {
 		material = Material.matchMaterial(templateYaml.getString("material", "barrier"));
 		data = templateYaml.getInt("data", 0);
-		itemType = ItemType.byName(templateYaml.getString("itemType", "adventure_item"));
+		itemType = ItemType.byName(templateYaml.getString("itemType", "adventure_item")); //Something from a specific project using KageCore. Just ignore this and never use it ^^
 		nbt = templateYaml.getString("nbt", "");
 		
 		displayName = ChatColor.translateAlternateColorCodes('&', templateYaml.getString("displayName", ""));

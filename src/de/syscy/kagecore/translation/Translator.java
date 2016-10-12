@@ -42,7 +42,7 @@ public class Translator {
 
 		File defaultLocaleFile = new File(languageDirectory, defaultLocale + ".lang");
 
-		if(!defaultLocaleFile.exists()) {
+		if(!defaultLocaleFile.exists() && plugin != null) {
 			InputStream defaultLocaleResource = plugin.getResource(defaultLocale + ".lang");
 
 			if(defaultLocaleResource != null) {
@@ -61,7 +61,7 @@ public class Translator {
 
 			Map<String, String> currentTranslations = new HashMap<>();
 
-			try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile)/*, "UTF8" TODO: DEBUG*/))) {
+			try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF8"))) { //TODO: Does this work? No bugs?! (The "UTF8")
 				String line;
 
 				while((line = reader.readLine()) != null) {

@@ -49,6 +49,7 @@ public class KageCore extends JavaPlugin {
 		kageCoreConfig.init();
 
 		Translator.addLanguageFiles(this, new File(pluginDirectory, "lang"));
+		Translator.addLanguageFiles(null, new File(pluginDirectory.getParentFile().getParentFile(), "lang"));
 
 		for(World world : Bukkit.getWorlds()) {
 			this.getConfig().addDefault("hotbar." + world.getName(), "");
