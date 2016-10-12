@@ -26,13 +26,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access=AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Translator {
 	private static final Splitter languageFileSplitter = Splitter.on('=').limit(2);
 	private static @Getter String defaultLocale = "en";
 
 	private static Map<String, Map<String, String>> translations = new HashMap<>();
-	
+
 	private static @Getter Map<Player, String> playerLanguages = new HashMap<>();
 
 	public static void addLanguageFiles(JavaPlugin plugin, File languageDirectory) {
@@ -86,6 +86,26 @@ public class Translator {
 				}
 			}
 		}
+	}
+
+	public static String getLanguage(Entity player) {
+		if(player instanceof Player) {
+			return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
+		}
+		
+		return defaultLocale;
+	}
+
+	public static String getLanguage(CommandSender player) {
+		if(player instanceof Player) {
+			return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
+		}
+		
+		return defaultLocale;
+	}
+
+	public static String getLanguage(Player player) {
+		return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
 	}
 
 	public static void sendMessage(Entity entity, String key, Object... args) {
@@ -153,9 +173,5 @@ public class Translator {
 		}
 
 		return text;
-	}
-
-	private static String getLanguage(Player player) {
-		return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
 	}
 }
