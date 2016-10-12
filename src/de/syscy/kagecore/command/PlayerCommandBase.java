@@ -3,7 +3,7 @@ package de.syscy.kagecore.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.syscy.kagecore.translation.Translator;
+import de.syscy.kagecore.command.exception.PlayerRequiredException;
 
 public abstract class PlayerCommandBase extends CommandBase {
 	public PlayerCommandBase(String command) {
@@ -20,9 +20,7 @@ public abstract class PlayerCommandBase extends CommandBase {
 
 	public void onCommand(CommandSender sender, String[] args) {
 		if(!(sender instanceof Player)) {
-			Translator.sendMessage(sender, "command.playerRequired");
-
-			return;
+			throw new PlayerRequiredException();
 		}
 
 		onPlayerCommand((Player) sender, args);

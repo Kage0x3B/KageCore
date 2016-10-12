@@ -1,8 +1,18 @@
-command.denyAccess=&cYou do not have access to this command!
-command.playerRequired=&cYou must be a player to use this command!
-command.playerNotFound=Player &4"%s" &cwas not found!
-command.usage=&cUsage: &7%s %s %s
-command.exempt=&4%s &c is exempt from this command!
+command.exception=&cAn exception occurred while executing the command: &r%s
+command.exception.notFound=&cThere is no command with the name "%s"!
+command.exception.denyAccess=&cYou do not have access to this command!
+command.exception.playerRequired=&cYou must be a player to use this command!
+command.exception.playerNotFound=Player &4"%s" &cwas not found!
+command.exception.invalidUsage=&cUsage: &7%s %s %s
+command.exception.exempt=&4%s &cis exempt from this command!
+
+command.help.header=------Help------
+command.help.entry=&6/%s %s &5| &4%s
+command.help.footer1=&dType "%s help [command]" to get more information on a command.
+command.help.footer2=&6Page number: &4%d/%d
+command.help.specifiedCommand.line1=&6Command: &3%s
+command.help.specifiedCommand.line2=&6Aliases: &3%s
+command.help.specifiedCommand.line3=&6Description: &3%s
 
 command.enableDebug=[Bukkit GUI] Debug mode has been enabled
 command.disableDebug=[Bukkit GUI] Debug mode has been disabled

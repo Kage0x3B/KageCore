@@ -3,13 +3,17 @@ package de.syscy.kagecore.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.syscy.kagecore.command.exception.AccessDeniedException;
+import de.syscy.kagecore.command.exception.CommandException;
+import de.syscy.kagecore.command.exception.CommandNotFoundException;
+import de.syscy.kagecore.command.exception.InvalidUsageException;
+import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,77 +22,75 @@ import lombok.RequiredArgsConstructor;
 public class CommandManager implements CommandExecutor, TabCompleter {
 	private final @Getter JavaPlugin plugin;
 	private final @Getter String commandName;
-	private final @Getter Theme theme;
 
 	private List<CommandBase> commands = new ArrayList<>();
 
 	private int cmdPerPage = 6;
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(args.length == 0) {
-			if(sender.hasPermission(commandName + ".help")) {
-				sendHelpPage(sender, 1);
+		try {
+			if(args.length == 0) {
+				if(sender.hasPermission(commandName + ".help")) {
+					sendHelpPage(sender, 1);
 
-				return true;
+					return true;
+				} else {
+					throw new AccessDeniedException();
+				}
 			}
 
-			sender.sendMessage(ChatColor.RED + "You do not have access to this command!");
+			if(args[0].equalsIgnoreCase("help")) {
+				if(!sender.hasPermission(commandName + ".help")) {
+					throw new AccessDeniedException();
+				}
 
-			return true;
-		}
+				if(args.length > 2) {
+					throw new InvalidUsageException(commandName, "help", "[page|command name]");
+				}
 
-		if(args[0].equalsIgnoreCase("help")) {
-			if(sender.hasPermission(commandName + ".help")) {
 				if(args.length == 1) {
 					sendHelpPage(sender, 1);
 
 					return true;
-				}
-
-				if(args.length == 2) {
+				} else if(args.length == 2) {
 					if(Util.isNumber(args[1])) {
 						int page = Integer.parseInt(args[1]);
 
 						if(page > 0) {
 							sendHelpPage(sender, page);
-
-							return true;
+						} else {
+							sendHelpPage(sender, 1);
 						}
 
-						sendHelpPage(sender, 1);
-
 						return true;
 					}
 
-					CommandBase command;
+					CommandBase command = getCommand(args[1]);
 
-					if((command = getCommand(args[1])) != null && command.isAuthorized(sender)) {
-						sender.sendMessage(ChatColor.GOLD + "Command: " + ChatColor.GRAY + command.getCommand());
-						sender.sendMessage(ChatColor.GOLD + "Aliases: " + ChatColor.GRAY + command.getAliases().toString());
-						sender.sendMessage(ChatColor.GOLD + "Description: " + ChatColor.GRAY + command.getDescription());
-						return true;
+					if(command == null) {
+						throw new CommandNotFoundException(args[1]);
 					}
 
-					sender.sendMessage(ChatColor.RED + " page/command \"" + args[1] + "\".");
-
-					return true;
+					if(command.isAuthorized(sender)) {
+						Translator.sendMessage(sender, "command.help.specifiedCommand.line1", command.getCommand());
+						Translator.sendMessage(sender, "command.help.specifiedCommand.line2", command.getAliases().toString());
+						Translator.sendMessage(sender, "command.help.specifiedCommand.line3", command.getDescription());
+					}
 				}
-
-				sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.GRAY + "/" + commandName + " help [page]");
 
 				return true;
 			}
 
-			sender.sendMessage(ChatColor.RED + "You do not have access to this command!");
+			CommandBase command = getCommand(args[0]);
 
-			return true;
-		}
-
-		CommandBase command = getCommand(args[0]);
-
-		if(command == null) {
-			sender.sendMessage(ChatColor.RED + " Command: " + ChatColor.DARK_RED + args[0].toLowerCase());
-		} else {
+			if(command == null) {
+				throw new CommandNotFoundException(args[0]);
+			}
+			
+			if(!command.isAuthorized(sender)) {
+				throw new AccessDeniedException();
+			}
+			
 			String[] cmdArgs = new String[args.length - 1];
 
 			if(args.length > 1) {
@@ -96,6 +98,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			}
 
 			command.onCommand(sender, cmdArgs);
+		} catch(CommandException ex) {
+			Translator.sendMessage(sender, ex.getMessage(), ex.getArgs());
+		} catch(Exception ex) {
+			Translator.sendMessage(sender, "command.exception", ex.getMessage());
 		}
 
 		return true;
@@ -121,7 +127,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			page = 1;
 		}
 
-		sender.sendMessage("------Help------");
+		Translator.sendMessage(sender, "command.help.header", commandName);
 
 		int startIndex = (page - 1) * this.cmdPerPage;
 		int endIndex = this.cmdPerPage * page;
@@ -131,16 +137,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 				break;
 			}
 
-			sender.sendMessage(theme.getCommandColor() + "/" + commandName + " " + availableCommands.get(i).getCommand() + theme.getSplitterColor() + " | " + theme.getDescriptionColor() + availableCommands.get(i).getDescription());
+			Translator.sendMessage(sender, "command.help.entry", commandName, availableCommands.get(i).getCommand(), availableCommands.get(i).getDescription());
 		}
-
-		sender.sendMessage(ChatColor.DARK_GRAY + "Type \"/" + commandName + " help <command>\" to get information on a command.");
-		sender.sendMessage(ChatColor.GOLD + "Page number: " + ChatColor.DARK_BLUE + page + "/" + totalPages);
+		
+		Translator.sendMessage(sender, "command.help.footer1", commandName);
+		Translator.sendMessage(sender, "command.help.footer2", page, totalPages);
 	}
 
-	public CommandBase getCommand(String commandString) {
+	public CommandBase getCommand(String commandName) {
 		for(CommandBase command : commands) {
-			if(command.getCommand().equalsIgnoreCase(commandString) || command.getAliases().contains(commandString.toLowerCase())) {
+			if(command.getCommand().equalsIgnoreCase(commandName) || command.getAliases().contains(commandName.toLowerCase())) {
 				return command;
 			}
 		}
@@ -173,7 +179,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
 		return null;
 	}
-	
+
 	private List<CommandBase> getAvailableCommands(CommandSender sender) {
 		List<CommandBase> availableCommands = new ArrayList<CommandBase>();
 
@@ -182,7 +188,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 				availableCommands.add(command);
 			}
 		}
-		
+
 		return availableCommands;
 	}
 }

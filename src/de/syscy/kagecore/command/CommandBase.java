@@ -1,6 +1,7 @@
 package de.syscy.kagecore.command;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -10,7 +11,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.syscy.kagecore.translation.Translator;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public abstract class CommandBase implements TabCompleter {
 	private @Getter String usage;
 	private @Getter List<String> aliases;
 
-	protected @Setter(value = AccessLevel.PROTECTED) CommandManager commandManager;
+	protected @Getter @Setter(value = AccessLevel.PROTECTED) CommandManager commandManager;
 	protected @Setter(value = AccessLevel.PROTECTED) JavaPlugin plugin;
 
 	public CommandBase(String command) {
@@ -44,44 +44,46 @@ public abstract class CommandBase implements TabCompleter {
 	}
 
 	public abstract void onCommand(CommandSender sender, String[] args);
-	
+
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		return null;
 	}
 
-	protected String arrayToString(String[] array, int startingIndex, boolean useCommas) {
-		String string = "";
+	protected List<String> getPossibleSuggestions(String[] args, Iterable<String> allPossibleSuggestions) {
+		List<String> suggestions = new ArrayList<>();
+		int currentArgIndex = args.length - 1;
+		Iterator<String> iterator = allPossibleSuggestions.iterator();
 
-		for(int i = startingIndex; i < array.length; i++) {
-			if(i == array.length - 1) {
-				string = string + array[i];
-			} else {
-				string = string + array[i] + (useCommas ? ", " : " ");
+		while(iterator.hasNext()) {
+			String possibleSuggestion = iterator.next();
+			if(possibleSuggestion.toLowerCase().startsWith(args[currentArgIndex].toLowerCase())) {
+				suggestions.add(possibleSuggestion);
 			}
 		}
 
-		return string;
+		return suggestions;
 	}
 
-	protected boolean isAuthorized(CommandSender sender) {
+	protected List<String> getPossibleSuggestions(String[] args, String... allPossibleSuggestions) {
+		List<String> suggestions = new ArrayList<>();
+		int currentArgIndex = args.length - 1;
+
+		for(String possibleSuggestion : allPossibleSuggestions) {
+			if(possibleSuggestion.toLowerCase().startsWith(args[currentArgIndex].toLowerCase())) {
+				suggestions.add(possibleSuggestion);
+			}
+		}
+
+		return suggestions;
+	}
+
+	public boolean isAuthorized(CommandSender sender) {
 		return sender.hasPermission(commandManager.getCommandName() + "." + getCommand().trim()) || sender.isOp();
 	}
 
-	protected boolean isExempt(CommandSender sender) {
+	public boolean isExempt(CommandSender sender) {
 		return sender.hasPermission(commandManager.getCommandName() + "." + getCommand().trim() + ".exempt");
-	}
-
-	protected void sendExemptMessage(CommandSender sender, String player) {
-		sender.sendMessage(Translator.translate(sender, "command.exempt", new Object[] { player }));
-	}
-
-	protected void sendUsageMessage(CommandSender sender) {
-		sender.sendMessage(Translator.translate(sender, "command.usage", new Object[] { commandManager.getCommandName(), this.command, this.usage }));
-	}
-
-	protected void sendPlayerNotFoundMessage(CommandSender sender, String player) {
-		sender.sendMessage(Translator.translate(sender, "command.playerNotFound", new Object[] { player }));
 	}
 
 	protected Player getPlayer(String name) {
@@ -94,10 +96,6 @@ public abstract class CommandBase implements TabCompleter {
 	}
 
 	protected boolean isValidPlayer(Player player) {
-		return (player != null) && (player.isOnline());
-	}
-
-	protected void denyAccess(CommandSender sender) {
-		Translator.sendMessage(sender, "command.denyAccess");
+		return player != null && player.isOnline();
 	}
 }
