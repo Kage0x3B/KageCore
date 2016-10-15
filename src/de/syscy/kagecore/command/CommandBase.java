@@ -17,7 +17,6 @@ import lombok.Setter;
 
 public abstract class CommandBase implements TabCompleter {
 	private @Getter String command;
-	private @Getter String description;
 	private @Getter String usage;
 	private @Getter List<String> aliases;
 
@@ -25,16 +24,11 @@ public abstract class CommandBase implements TabCompleter {
 	protected @Setter(value = AccessLevel.PROTECTED) JavaPlugin plugin;
 
 	public CommandBase(String command) {
-		this(command, "", command);
+		this(command, command);
 	}
 
-	public CommandBase(String command, String description) {
-		this(command, description, command);
-	}
-
-	public CommandBase(String command, String description, String usage, String... aliases) {
+	public CommandBase(String command, String usage, String... aliases) {
 		this.command = command;
-		this.description = description;
 		this.usage = usage;
 		this.aliases = new ArrayList<>();
 

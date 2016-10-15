@@ -27,7 +27,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
 	private int cmdPerPage = 6;
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	@Override
+	public boolean onCommand(CommandSender sender, Command bukkitCommand, String label, String[] args) {
 		try {
 			if(args.length == 0) {
 				if(sender.hasPermission(commandName + ".help")) {
@@ -74,7 +75,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 					if(command.isAuthorized(sender)) {
 						Translator.sendMessage(sender, "command.help.specifiedCommand.line1", command.getCommand());
 						Translator.sendMessage(sender, "command.help.specifiedCommand.line2", command.getAliases().toString());
-						Translator.sendMessage(sender, "command.help.specifiedCommand.line3", command.getDescription());
+						Translator.sendMessage(sender, "command.help.specifiedCommand.line3", Translator.translate(sender, "command." + command.getCommand() + ".description"));
 					}
 				}
 
@@ -117,27 +118,27 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 		List<CommandBase> availableCommands = getAvailableCommands(sender);
 
 		int size = availableCommands.size();
-		int totalPages = (size / this.cmdPerPage);
+		int totalPages = size / cmdPerPage;
 
-		if(size - this.cmdPerPage * totalPages > 0) {
+		if(size - cmdPerPage * totalPages > 0) {
 			totalPages += 1;
 		}
 
-		if((page < 1) || (page > totalPages)) {
+		if(page < 1 || page > totalPages) {
 			page = 1;
 		}
 
 		Translator.sendMessage(sender, "command.help.header", commandName);
 
-		int startIndex = (page - 1) * this.cmdPerPage;
-		int endIndex = this.cmdPerPage * page;
+		int startIndex = (page - 1) * cmdPerPage;
+		int endIndex = cmdPerPage * page;
 
 		for(int i = startIndex; i < endIndex; i++) {
 			if(availableCommands.size() <= i) {
 				break;
 			}
 
-			Translator.sendMessage(sender, "command.help.entry", commandName, availableCommands.get(i).getCommand(), availableCommands.get(i).getDescription());
+			Translator.sendMessage(sender, "command.help.entry", commandName, availableCommands.get(i).getCommand(), Translator.translate(sender, "command." + availableCommands.get(i).getCommand() + ".description"));
 		}
 
 		Translator.sendMessage(sender, "command.help.footer1", commandName);

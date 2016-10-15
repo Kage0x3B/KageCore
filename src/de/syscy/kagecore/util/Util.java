@@ -6,7 +6,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 
 import com.comphenix.packetwrapper.AbstractPacket;
 
@@ -51,6 +60,44 @@ public class Util {
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	public static Entity getLookingAtEntity(Player player, int maxRange) {
+		List<Entity> nearbyEntities = player.getNearbyEntities(maxRange, maxRange, maxRange);
+		ArrayList<LivingEntity> nearbyLivingEntities = new ArrayList<LivingEntity>();
+
+		for(Entity entity : nearbyEntities) {
+			if(entity instanceof LivingEntity) {
+				nearbyLivingEntities.add((LivingEntity) entity);
+			}
+		}
+
+		BlockIterator blockIterator = new BlockIterator(player, maxRange);
+
+		Block block;
+		Location location;
+		int blockX, blockY, blockZ;
+		double entityX, entityY, entityZ;
+
+		while(blockIterator.hasNext()) {
+			block = blockIterator.next();
+			blockX = block.getX();
+			blockY = block.getY();
+			blockZ = block.getZ();
+
+			for(LivingEntity entity : nearbyLivingEntities) {
+				location = entity.getLocation();
+				entityX = location.getX();
+				entityY = location.getY();
+				entityZ = location.getZ();
+
+				if(blockX - 0.75 <= entityX && entityX <= blockX + 1.75 && blockZ - 0.75 <= entityZ && entityZ <= blockZ + 1.75 && blockY - 1 <= entityY && entityY <= blockY + 2.5) {
+					return entity;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public static void printValues(AbstractPacket packet) {

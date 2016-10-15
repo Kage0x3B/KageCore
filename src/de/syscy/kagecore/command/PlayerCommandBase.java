@@ -7,17 +7,14 @@ import de.syscy.kagecore.command.exception.PlayerRequiredException;
 
 public abstract class PlayerCommandBase extends CommandBase {
 	public PlayerCommandBase(String command) {
-		super(command, "", command);
+		super(command, command);
 	}
 
-	public PlayerCommandBase(String command, String description) {
-		super(command, description, command);
+	public PlayerCommandBase(String command, String usage, String... aliases) {
+		super(command, usage, aliases);
 	}
 
-	public PlayerCommandBase(String command, String description, String usage, String... aliases) {
-		super(command, description, usage, aliases);
-	}
-
+	@Override
 	public void onCommand(CommandSender sender, String[] args) {
 		if(!(sender instanceof Player)) {
 			throw new PlayerRequiredException();

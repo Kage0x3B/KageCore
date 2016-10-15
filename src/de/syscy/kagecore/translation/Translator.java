@@ -51,6 +51,7 @@ public class Translator {
 		}
 
 		File[] languageFiles = languageDirectory.listFiles(new FilenameFilter() {
+			@Override
 			public boolean accept(File dir, String name) {
 				return name.matches("..\\.lang"); //Matches language file filenames like "en.lang", "xx.lang"
 			}
@@ -92,7 +93,7 @@ public class Translator {
 		if(player instanceof Player) {
 			return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
 		}
-		
+
 		return defaultLocale;
 	}
 
@@ -100,7 +101,7 @@ public class Translator {
 		if(player instanceof Player) {
 			return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
 		}
-		
+
 		return defaultLocale;
 	}
 
@@ -145,6 +146,10 @@ public class Translator {
 	}
 
 	public static String translate(String language, String key, Object... args) {
+		if(key.contains(" ")) {
+			return key;
+		}
+
 		language = language.toLowerCase();
 		key = key.toLowerCase();
 

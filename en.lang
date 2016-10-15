@@ -5,6 +5,7 @@ command.exception.playerRequired=&cYou must be a player to use this command!
 command.exception.playerNotFound=Player &4"%s" &cwas not found!
 command.exception.invalidUsage=&cUsage: &7%s %s %s
 command.exception.exempt=&4%s &cis exempt from this command!
+command.exception.entityNotFound=Could not find a matching entity!
 
 command.help.header=------Help------
 command.help.entry=&6/%s %s &5| &4%s
