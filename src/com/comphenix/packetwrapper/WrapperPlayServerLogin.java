@@ -1,3 +1,21 @@
+/**
+ * PacketWrapper - ProtocolLib wrappers for Minecraft packets
+ * Copyright (C) dmulloy2 <http://dmulloy2.net>
+ * Copyright (C) Kristian S. Strangeland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.comphenix.packetwrapper;
 
 import org.bukkit.World;
@@ -11,152 +29,173 @@ import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 
 public class WrapperPlayServerLogin extends AbstractPacket {
-    public static final PacketType TYPE = PacketType.Play.Server.LOGIN;
-    
-    public WrapperPlayServerLogin() {
-        super(new PacketContainer(TYPE), TYPE);
-        handle.getModifier().writeDefaults();
-    }
-    
-    public WrapperPlayServerLogin(PacketContainer packet) {
-        super(packet, TYPE);
-    }
-    
-    /**
-     * Retrieve the player's Entity ID.
-     * @return The current Entity ID
-    */
-    public int getEntityId() {
-        return handle.getIntegers().read(0);
-    }
-    
-    /**
-     * Set the player's Entity ID.
-     * @param value - new value.
-    */
-    public void setEntityId(int value) {
-        handle.getIntegers().write(0, value);
-    }
-    
-    /**
-     * Retrieve the player's entity object.
-     * @param world - the word the player has joined.
-     * @return The player's entity.
-     */
-    public Entity getEntity(World world) {
-    	return handle.getEntityModifier(world).read(0);
-    }
+	public static final PacketType TYPE = PacketType.Play.Server.LOGIN;
 
-    /**
-     * Retrieve the player's entity object.
-     * @param event - the packet event.
-     * @return The player's entity.
-     */
-    public Entity getEntity(PacketEvent event) {
-    	return getEntity(event.getPlayer().getWorld());
-    }
-    
-    /**
-     * Retrieve the game mode of the initial world.
-     * @return The current gamemode.
-    */
-    public NativeGameMode getGamemode() {
-        return handle.getGameModes().read(0);
-    }
-    
-    /**
-     * Set the game mode of the initial world.
-     * @param value - new value.
-    */
-    public void setGamemode(NativeGameMode value) {
-        handle.getGameModes().write(0, value);
-    }
-    
-    /**
-     * Retrieve whether or not this is a hardcore world.
-     * @return TRUE if it is, FALSE otherwise.
-    */
-    public boolean isHardcore() {
-        return handle.getBooleans().read(0);
-    }
-    
-    /**
-     * Set whether or not this is a hardcore world.
-     * @param value - TRUE if it is, FALSE otherwise.
-    */
-    public void setHardcore(boolean value) {
-        handle.getBooleans().write(0, value);
-    }
-    
-    /**
-     * Retrieve -1: nether, 0: overworld, 1: end.
-     * @return The current Dimension
-    */
-    public int getDimension() {
-        return handle.getIntegers().read(1);
-    }
-    
-    /**
-     * Set -1: nether, 0: overworld, 1: end.
-     * @param value - new value.
-    */
-    public void setDimension(int value) {
-    	handle.getIntegers().write(1, value);
-    }
-    
-    /**
-     * Retrieve the difficulty of the initial world.
-     * @return The current difficulty
-    */
-    public Difficulty getDifficulty() {
-        return handle.getDifficulties().read(0);
-    }
-    
-    /**
-     * Set the difficulty of the initial world.
-     * @param value - new difficulty.
-    */
-    public void setDifficulty(Difficulty difficulty) {
-        handle.getDifficulties().write(0, difficulty);
-    }
-    
-    /**
-     * Retrieve the maximum number of players.
-     * <p>
-     * This is used by the client to draw the player list.
-     * @return The current max players.
-    */
-    public byte getMaxPlayers() {
-        return handle.getIntegers().read(2).byteValue();
-    }
-    
-    /**
-     * Set used by the client to draw the player list.
-     * @param value - new value.
-    */
-    public void setMaxPlayers(byte value) {
-        handle.getIntegers().write(2, (int) value);
-    }
-    
-    /**
-     * Retrieve the world type.
-     * <p>
-     * This is the level-type settign (default, flat, or largeBiomes) in server.properties.
-     * @return The current world type.
-    */
-    public WorldType getLevelType() {
-        return handle.getWorldTypeModifier().read(0);
-    }
-    
-    /**
-     * Set the world type.
-     * <p>
-     * This is the level-type settign (default, flat, or largeBiomes) in server.properties.
-     * @param value - new value.
-    */
-    public void setLevelType(WorldType type) {
-        handle.getWorldTypeModifier().write(0, type);
-    }    
+	public WrapperPlayServerLogin() {
+		super(new PacketContainer(TYPE), TYPE);
+		handle.getModifier().writeDefaults();
+	}
+
+	public WrapperPlayServerLogin(PacketContainer packet) {
+		super(packet, TYPE);
+	}
+
+	/**
+	 * Retrieve Entity ID.
+	 * <p>
+	 * Notes: entity's ID
+	 * 
+	 * @return The current Entity ID
+	 */
+	public int getEntityID() {
+		return handle.getIntegers().read(0);
+	}
+
+	/**
+	 * Set Entity ID.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setEntityID(int value) {
+		handle.getIntegers().write(0, value);
+	}
+
+	/**
+	 * Retrieve the entity of the painting that will be spawned.
+	 * 
+	 * @param world - the current world of the entity.
+	 * @return The spawned entity.
+	 */
+	public Entity getEntity(World world) {
+		return handle.getEntityModifier(world).read(0);
+	}
+
+	/**
+	 * Retrieve the entity of the painting that will be spawned.
+	 * 
+	 * @param event - the packet event.
+	 * @return The spawned entity.
+	 */
+	public Entity getEntity(PacketEvent event) {
+		return getEntity(event.getPlayer().getWorld());
+	}
+
+	/**
+	 * Retrieve Gamemode.
+	 * <p>
+	 * Notes: 0: survival, 1: creative, 2: adventure. Bit 3 (0x8) is the
+	 * hardcore flag
+	 * 
+	 * @return The current Gamemode
+	 */
+	public NativeGameMode getGamemode() {
+		return handle.getGameModes().read(0);
+	}
+
+	/**
+	 * Set Gamemode.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setGamemode(NativeGameMode value) {
+		handle.getGameModes().write(0, value);
+	}
+
+	/**
+	 * Retrieve Dimension.
+	 * <p>
+	 * Notes: -1: nether, 0: overworld, 1: end
+	 * 
+	 * @return The current Dimension
+	 */
+	public int getDimension() {
+		return handle.getIntegers().read(0);
+	}
+
+	/**
+	 * Set Dimension.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setDimension(int value) {
+		handle.getIntegers().write(0, value);
+	}
+
+	/**
+	 * Retrieve Difficulty.
+	 * <p>
+	 * Notes: 0 thru 3 for Peaceful, Easy, Normal, Hard
+	 * 
+	 * @return The current Difficulty
+	 */
+	public Difficulty getDifficulty() {
+		return handle.getDifficulties().read(0);
+	}
+
+	/**
+	 * Set Difficulty.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setDifficulty(Difficulty value) {
+		handle.getDifficulties().write(0, value);
+	}
+
+	/**
+	 * Retrieve Max Players.
+	 * <p>
+	 * Notes: used by the client to draw the player list
+	 * 
+	 * @return The current Max Players
+	 */
+	public int getMaxPlayers() {
+		return handle.getIntegers().read(1);
+	}
+
+	/**
+	 * Set Max Players.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setMaxPlayers(int value) {
+		handle.getIntegers().write(0, value);
+	}
+
+	/**
+	 * Retrieve Level Type.
+	 * <p>
+	 * Notes: default, flat, largeBiomes, amplified, default_1_1
+	 * 
+	 * @return The current Level Type
+	 */
+	public WorldType getLevelType() {
+		return handle.getWorldTypeModifier().read(0);
+	}
+
+	/**
+	 * Set Level Type.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setLevelType(WorldType value) {
+		handle.getWorldTypeModifier().write(0, value);
+	}
+
+	/**
+	 * Retrieve Reduced Debug Info.
+	 * 
+	 * @return The current Reduced Debug Info
+	 */
+	public boolean getReducedDebugInfo() {
+		return handle.getBooleans().read(0);
+	}
+
+	/**
+	 * Set Reduced Debug Info.
+	 * 
+	 * @param value - new value.
+	 */
+	public void setReducedDebugInfo(boolean value) {
+		handle.getBooleans().write(0, value);
+	}
 }
-
-
