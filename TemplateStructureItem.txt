@@ -1,0 +1,19 @@
+#Everything can be empty, in which case, a default value will be used. Fields like "material" should of course always be set
+material: grass #Bukkit Material
+data: 0 #Data value
+itemType: treasure #"treasure" or "adventure" item
+nbt: #JSON NBT Tag, exactly the same as in for example the summon command
+
+displayName: The displayName, use '&' fo colors
+lore:
+    line1: Contents of line 1
+    line2: Contents of line 2
+    line3: ...
+enchantments:
+    protection_environmental: 3 #(The number is the level of the enchantment)
+    #The names are from org.bukkit.enchantments.Enchantment.java
+itemFlags: #Item flags from org.bukkit.inventory.ItemFlag.java
+    - hide_enchants
+    -hide_potion_effects
+#the itemFlags can also be set to "itemFlags: all" to apply every item flag and hide everything
+unbreakable: true #If the item is unbreakable (no durability decrease when using)

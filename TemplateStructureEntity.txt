@@ -1,0 +1,124 @@
+#This one can get big...
+#First, there are some values which can be set for every entity:
+entityTypeID: villager #The type ID, the same as in the summon command
+nbt: #JSON NBT Tags, can be left empty as everything else
+customName: &5Test Entity #A custom name. Use '&' for colors
+fireTicks: 0 #The time in ticks (1/20th of a second), the entity is on fire. Can be used to make entities burn when spawned
+glowing: false #If the entity glows (the glow stays until it is changed by other things like potions)
+gravity: true #If the entity is affected by gravity
+invulnerable: false #If it is invulnerable
+silent: false #If the entity gives off noises
+
+#Values for living entities:
+ai: true #If the mob has AI which allows it do move, look around, ..
+canPickupItems: true
+collidable: true #If it collides with other entities and players
+health: 23492 #Sets the health and max health to this value
+removeWhenFarAway: true #If the entity despawns
+attributes: #This can be used to change atrributes like the speed or damage of an entity
+    generic_movement_speed: #The name of an attribute. Look at org.bukkit.attribute.Attribute
+        baseValue: 2.0 #The base value
+        modifiers: #Modifiers which change the base value
+            testModifier:
+                operation: add_number #Operation names from org.bukkit.attribute.AttributeModifier$Operation
+                amount: 4.0
+potionEffects:
+    speed: #Names from org.bukkit.potion.PotionEffectType. The values are the same as in the effect command
+        duration: 1
+        amplifier: 1
+        ambient: false
+        particles: true
+        color: red #There is the possibility of setting a color for an effect in the code.. Don't know how that works but I included it :D
+equipment:
+    mainHand: apple #The name of the item used here is requested from the ItemStackFactory so you can use names of templates or
+    #standard minecraft item names like "apple" (a template name is the name of the template file without the extension)
+    mainHandDropChance: 0.0 #There is always a field for setting the drop chance of a part but I don't include it after this.
+    #The drop chance fields are all name "PARTNAME + DropChance" (for example bootsDropChance, leggingsDropChance)
+    offHand: epicSwordTemplate
+    helmet: diamond_helmet
+    chestplate: diamond_chestplate
+    leggings: diamond_leggings
+    boots: diamond_boots
+
+#Values for ageable entities (All entities which have a baby variant besides Zombies, they've got their own fields for this):
+age: 0 #Can be a number or "baby" or "adult"
+ageLock: false #If the entity doesn't age
+breed: true #If the entity can breed
+
+#And then there are some values, you can set, which are specific to an entity
+
+#Creeper
+powered: false #If the creeper is powered (stronger after being hit by lighting)
+
+#Enderman
+carriedMaterial: grass #The block which the enderman is currently carrying
+#You can use data values with a ':' between the material name/id and the data values "wool:4"
+
+#Guardian
+elderGuardian: false #If the guardian is an elder guardian
+
+#Horse
+horseVariant: horse #The variant (Look at org.bukkit.entity.Horse$Variant)
+horseColor: white #The variant (Look at org.bukkit.entity.Horse$Color)
+horseStyle: none #The variant (Look at org.bukkit.entity.Horse$Style)
+carryingChest: false #Use only if the variant is set to donkey
+horseJumpStrenght: 1.0 #The jump strenght
+tamed: false #If the horse is tamed
+
+#Iron Golem
+playerCreated: false #If the iron golem is player created
+
+#Magma Cube
+size: 1 #The size
+
+#Ocelot
+catType: wild_ocelot #From org.bukkit.entity.Ocelot.Type
+sitting: false
+tamed: false
+
+#Pig
+saddled: false
+
+#Pig Zombie
+anger: 0 #How much/long it is angry?
+angry: false #If angry
+
+#Rabbit
+rabbitType: brown #The type from org.bukkit.entity.Rabbit.Type
+
+#Sheep
+sheared: false
+
+#Skeleton
+skeletonType: normal #org.bukkit.entity.Skeleton.SkeletonType
+
+#Slime
+size: 1
+
+#Snowman
+derp: false #If the snowman doesn't have the pumpkin on his head
+
+#Villager
+profession: normal #From org.bukkit.entity.Villager.Profession
+riches: 1 #Some number..
+merchantRecipes:
+    someRandomNameForRecipe1:
+        result: apple #As always the name of an ItemStack which is requested at the ItemStackFactory
+        uses: 0
+        maxUses: 1 #Don't set for a default value of Integer.MAX_VALUE
+        ingredient1: bread
+        ingredient1Amount: 23 #Use this if the amount should be higher than 1.
+        #The ItemStacks from the ItemStackFactory always have an amount of 1
+        ingredient2: coolGemItemFromTemplate
+        ingredient2Amount: 2
+
+#Wolf
+angry: false
+sitting: false
+tamed: false
+collarColor: red #The color of the collar which can be changed by right clicking with a dye
+
+#Zombie
+baby: false
+villager: false #If this is a zombie villager
+profession: normal #The profession of a zombie villager. Can be set to "husk" to spawn a husk
