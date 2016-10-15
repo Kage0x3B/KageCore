@@ -8,7 +8,7 @@ public class InvalidUsageException extends CommandException {
 	public InvalidUsageException(CommandBase command) {
 		this(command.getCommandManager().getCommandName(), command.getCommand(), command.getUsage());
 	}
-	
+
 	public InvalidUsageException(String mainCommandName, String commandName, String usage) {
 		super("command.exception.invalidUsage", mainCommandName, commandName, usage);
 	}

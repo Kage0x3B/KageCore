@@ -97,7 +97,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private boolean silent;
 
 	@Override
-	public void load(AdventureFactory<Entity> entityFactory, YamlConfiguration templateYaml) throws Exception {
+	public void load(final AdventureFactory<Entity> entityFactory, final YamlConfiguration templateYaml) throws Exception {
 		this.entityFactory = (EntityFactory) entityFactory;
 		this.templateYaml = templateYaml;
 
@@ -110,13 +110,13 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		glowing = templateYaml.getBoolean("glowing", false);
 		gravity = templateYaml.getBoolean("gravity", true);
 		invulnerable = templateYaml.getBoolean("invulnerable", false);
-		silent = templateYaml.getBoolean("invulnerable", silent);
+		silent = templateYaml.getBoolean("silent", false);
 	}
 
 	@Override
-	public Entity create(Object... args) throws Exception {
-		Location location = (Location) args[0];
-		WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
+	public Entity create(final Object... args) throws Exception {
+		final Location location = (Location) args[0];
+		final WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
 
 		net.minecraft.server.v1_10_R1.Entity nmsEntity;
 
@@ -127,7 +127,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			try {
 				nbtTagCompound = MojangsonParser.parse(nbt);
 				nbtInitialized = true;
-			} catch(MojangsonParseException ex) {
+			} catch(final MojangsonParseException ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -145,7 +145,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			((EntityInsentient) nmsEntity).prepare(nmsWorld.D(new BlockPosition(nmsEntity)), null);
 		}
 
-		Entity entity = nmsEntity.getBukkitEntity();
+		final Entity entity = nmsEntity.getBukkitEntity();
 
 		if(!customName.isEmpty()) {
 			entity.setCustomName(customName);
@@ -158,7 +158,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		entity.setInvulnerable(invulnerable);
 		entity.setSilent(silent);
 
-		SpecificEntityHandler<?> specificEntityHandler = specificEntityHandlers.get(entity.getType());
+		final SpecificEntityHandler<?> specificEntityHandler = specificEntityHandlers.get(entity.getType());
 
 		if(specificEntityHandler != null) {
 			specificEntityHandler.handleEntity(entityFactory.getPlugin(), entity, templateYaml);
@@ -168,23 +168,23 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	}
 
 	private static abstract class SpecificEntityHandler<T> {
-		public abstract void handleEntity(IFactoryProviderPlugin plugin, T entity, YamlConfiguration templateYaml);
+		public abstract void handleEntity(final IFactoryProviderPlugin plugin, final T entity, final YamlConfiguration templateYaml);
 
 		@SuppressWarnings("unchecked")
-		public void handleEntity(IFactoryProviderPlugin plugin, Entity entity, YamlConfiguration templateYaml) {
+		public void handleEntity(final IFactoryProviderPlugin plugin, final Entity entity, final YamlConfiguration templateYaml) {
 			handleEntity(plugin, (T) entity, templateYaml);
 		}
 	}
 
 	private static class LivingEntityHandler<T extends LivingEntity> extends SpecificEntityHandler<T> {
 		@Override
-		public final void handleEntity(IFactoryProviderPlugin plugin, T livingEntity, YamlConfiguration templateYaml) {
+		public final void handleEntity(final IFactoryProviderPlugin plugin, final T livingEntity, final YamlConfiguration templateYaml) {
 			livingEntity.setAI(templateYaml.getBoolean("ai", true));
 			livingEntity.setCanPickupItems(templateYaml.getBoolean("canPickupItems", true));
 			livingEntity.setCollidable(templateYaml.getBoolean("collidable", true));
 
 			if(templateYaml.contains("health")) {
-				int health = templateYaml.getInt("health");
+				final int health = templateYaml.getInt("health");
 				livingEntity.setMaxHealth(health);
 				livingEntity.setHealth(health);
 			}
@@ -192,30 +192,30 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			livingEntity.setRemoveWhenFarAway(templateYaml.getBoolean("removeWhenFarAway", true));
 
 			if(templateYaml.contains("attributes")) {
-				ConfigurationSection attributesSection = templateYaml.getConfigurationSection("attributes");
+				final ConfigurationSection attributesSection = templateYaml.getConfigurationSection("attributes");
 
-				for(Attribute attribute : Attribute.values()) {
+				for(final Attribute attribute : Attribute.values()) {
 					if(attributesSection.contains(attribute.name().toLowerCase())) {
-						AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
-						ConfigurationSection currentAttributeSection = attributesSection.getConfigurationSection(attribute.name().toLowerCase());
+						final AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
+						final ConfigurationSection currentAttributeSection = attributesSection.getConfigurationSection(attribute.name().toLowerCase());
 
 						if(currentAttributeSection.contains("baseValue")) {
-							double baseValue = currentAttributeSection.getDouble("baseValue");
+							final double baseValue = currentAttributeSection.getDouble("baseValue");
 
 							attributeInstance.setBaseValue(baseValue);
 						}
 
 						if(currentAttributeSection.contains("modifiers")) {
-							ConfigurationSection modifiersSection = attributesSection.getConfigurationSection(attribute.name().toLowerCase());
+							final ConfigurationSection modifiersSection = attributesSection.getConfigurationSection(attribute.name().toLowerCase());
 
-							for(String modifierName : modifiersSection.getKeys(false)) {
+							for(final String modifierName : modifiersSection.getKeys(false)) {
 								try {
-									String operationName = modifiersSection.getString(modifierName + ".operation");
-									double amount = modifiersSection.getDouble(modifierName + ".amount");
-									Operation operation = Operation.valueOf(operationName.toUpperCase());
+									final String operationName = modifiersSection.getString(modifierName + ".operation");
+									final double amount = modifiersSection.getDouble(modifierName + ".amount");
+									final Operation operation = Operation.valueOf(operationName.toUpperCase());
 
 									attributeInstance.addModifier(new AttributeModifier(modifierName, amount, operation));
-								} catch(Exception ex) {
+								} catch(final Exception ex) {
 
 								}
 							}
@@ -225,18 +225,18 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			}
 
 			if(templateYaml.contains("potionEffects")) {
-				ConfigurationSection potionEffectsSection = templateYaml.getConfigurationSection("potionEffects");
+				final ConfigurationSection potionEffectsSection = templateYaml.getConfigurationSection("potionEffects");
 
-				for(String potionEffectName : potionEffectsSection.getKeys(false)) {
-					ConfigurationSection currentPotionEffectsSection = potionEffectsSection.getConfigurationSection("potionEffectName");
+				for(final String potionEffectName : potionEffectsSection.getKeys(false)) {
+					final ConfigurationSection currentPotionEffectsSection = potionEffectsSection.getConfigurationSection("potionEffectName");
 
-					PotionEffectType type = PotionEffectType.getByName(potionEffectName.toUpperCase());
+					final PotionEffectType type = PotionEffectType.getByName(potionEffectName.toUpperCase());
 
-					int duration = currentPotionEffectsSection.getInt("duration", Integer.MAX_VALUE);
-					int amplifier = currentPotionEffectsSection.getInt("amplifier", 1);
-					boolean ambient = currentPotionEffectsSection.getBoolean("ambient", false);
-					boolean particles = currentPotionEffectsSection.getBoolean("particles", true);
-					Color color = currentPotionEffectsSection.getColor("color", null);
+					final int duration = currentPotionEffectsSection.getInt("duration", Integer.MAX_VALUE);
+					final int amplifier = currentPotionEffectsSection.getInt("amplifier", 1);
+					final boolean ambient = currentPotionEffectsSection.getBoolean("ambient", false);
+					final boolean particles = currentPotionEffectsSection.getBoolean("particles", true);
+					final Color color = currentPotionEffectsSection.getColor("color", null);
 
 					PotionEffect potionEffect;
 
@@ -251,9 +251,9 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			}
 
 			if(templateYaml.contains("equipment")) {
-				ConfigurationSection equipmentSection = templateYaml.getConfigurationSection("equipmentSection");
+				final ConfigurationSection equipmentSection = templateYaml.getConfigurationSection("equipment");
 
-				EntityEquipment entityEquipment = livingEntity.getEquipment();
+				final EntityEquipment entityEquipment = livingEntity.getEquipment();
 
 				entityEquipment.setItemInMainHand(plugin.getItemStackFactory().create(equipmentSection.getString("mainHand")));
 				entityEquipment.setItemInMainHandDropChance((float) equipmentSection.getDouble("mainHandDropChance", 0.0));
@@ -273,21 +273,21 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			handleLivingEntitySuperclass(plugin, livingEntity, templateYaml);
 		}
 
-		public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, T livingEntity, YamlConfiguration templateYaml) {
+		public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final T livingEntity, final YamlConfiguration templateYaml) {
 
 		}
 	}
 
 	private static class AgeableEntityHandler<T extends Ageable> extends LivingEntityHandler<T> {
 		@Override
-		public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, T ageableEntity, YamlConfiguration templateYaml) {
-			String ageString = templateYaml.getString("age", "");
+		public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final T ageableEntity, final YamlConfiguration templateYaml) {
+			final String ageString = templateYaml.getString("age", "");
 
 			if(!ageString.isEmpty()) {
 				if(Util.isNumber(ageString)) {
 					try {
 						ageableEntity.setAge(Integer.parseInt(ageString));
-					} catch(NumberFormatException ex) {
+					} catch(final NumberFormatException ex) {
 						ex.printStackTrace();
 					}
 				} else if(ageString.equalsIgnoreCase("baby")) {
@@ -303,7 +303,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			handleAgeableSuperclass(plugin, ageableEntity, templateYaml);
 		}
 
-		public void handleAgeableSuperclass(IFactoryProviderPlugin plugin, T ageableEntity, YamlConfiguration templateYaml) {
+		public void handleAgeableSuperclass(final IFactoryProviderPlugin plugin, final T ageableEntity, final YamlConfiguration templateYaml) {
 
 		}
 	}
@@ -315,29 +315,31 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		specificEntityHandlers.put(EntityType.CHICKEN, new AgeableEntityHandler<Chicken>());
 		specificEntityHandlers.put(EntityType.COW, new AgeableEntityHandler<Cow>());
 		specificEntityHandlers.put(EntityType.CREEPER, new LivingEntityHandler<Creeper>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Creeper creeper, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Creeper creeper, final YamlConfiguration templateYaml) {
 				creeper.setPowered(templateYaml.getBoolean("powered", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.ENDER_DRAGON, new LivingEntityHandler<EnderDragon>());
 		specificEntityHandlers.put(EntityType.ENDERMAN, new LivingEntityHandler<Enderman>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Enderman enderman, YamlConfiguration templateYaml) {
-				String materialDataString = templateYaml.getString("carriedMaterial", "");
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Enderman enderman, final YamlConfiguration templateYaml) {
+				final String materialDataString = templateYaml.getString("carriedMaterial", "");
 
 				if(!materialDataString.isEmpty()) {
 					MaterialData carriedMaterial = null;
 
 					if(materialDataString.contains(":")) {
-						String[] materialDataStringParts = materialDataString.split(":");
+						final String[] materialDataStringParts = materialDataString.split(":");
 
 						if(materialDataStringParts.length >= 2 && Util.isNumber(materialDataStringParts[1])) {
-							Material material = Material.matchMaterial(materialDataStringParts[0]);
-							byte data = Byte.parseByte(materialDataStringParts[1]);
+							final Material material = Material.matchMaterial(materialDataStringParts[0]);
+							final byte data = Byte.parseByte(materialDataStringParts[1]);
 
 							carriedMaterial = new MaterialData(material, data);
 						}
 					} else {
-						Material material = Material.matchMaterial(materialDataString);
+						final Material material = Material.matchMaterial(materialDataString);
 						carriedMaterial = new MaterialData(material);
 					}
 
@@ -351,20 +353,22 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		specificEntityHandlers.put(EntityType.GHAST, new LivingEntityHandler<Ghast>());
 		specificEntityHandlers.put(EntityType.GIANT, new LivingEntityHandler<Giant>());
 		specificEntityHandlers.put(EntityType.GUARDIAN, new LivingEntityHandler<Guardian>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Guardian guardian, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Guardian guardian, final YamlConfiguration templateYaml) {
 				guardian.setElder(templateYaml.getBoolean("elderGuardian", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.HORSE, new LivingEntityHandler<Horse>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Horse horse, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Horse horse, final YamlConfiguration templateYaml) {
 				try {
-					Variant horseVariant = Variant.valueOf(templateYaml.getString("horseVariant", "horse").toUpperCase());
+					final Variant horseVariant = Variant.valueOf(templateYaml.getString("horseVariant", "horse").toUpperCase());
 					horse.setVariant(horseVariant);
 
-					org.bukkit.entity.Horse.Color horseColor = org.bukkit.entity.Horse.Color.valueOf(templateYaml.getString("horseColor", "white").toUpperCase());
+					final org.bukkit.entity.Horse.Color horseColor = org.bukkit.entity.Horse.Color.valueOf(templateYaml.getString("horseColor", "white").toUpperCase());
 					horse.setColor(horseColor);
 
-					Style horseStyle = Style.valueOf(templateYaml.getString("horseStyle", "none").toUpperCase());
+					final Style horseStyle = Style.valueOf(templateYaml.getString("horseStyle", "none").toUpperCase());
 					horse.setStyle(horseStyle);
 
 					horse.setCarryingChest(templateYaml.getBoolean("carryingChest", false));
@@ -374,18 +378,20 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 					}
 
 					horse.setTamed(templateYaml.getBoolean("tamed", false));
-				} catch(Exception ex) {
+				} catch(final Exception ex) {
 
 				}
 			}
 		});
 		specificEntityHandlers.put(EntityType.IRON_GOLEM, new LivingEntityHandler<IronGolem>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, IronGolem ironGolem, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final IronGolem ironGolem, final YamlConfiguration templateYaml) {
 				ironGolem.setPlayerCreated(templateYaml.getBoolean("playerCreated", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.MAGMA_CUBE, new LivingEntityHandler<MagmaCube>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, MagmaCube magmaCube, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final MagmaCube magmaCube, final YamlConfiguration templateYaml) {
 				if(templateYaml.contains("size")) {
 					magmaCube.setSize(templateYaml.getInt("size"));
 				}
@@ -393,8 +399,9 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		});
 		specificEntityHandlers.put(EntityType.MUSHROOM_COW, new LivingEntityHandler<MushroomCow>());
 		specificEntityHandlers.put(EntityType.OCELOT, new LivingEntityHandler<Ocelot>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Ocelot ocelot, YamlConfiguration templateYaml) {
-				org.bukkit.entity.Ocelot.Type catType = org.bukkit.entity.Ocelot.Type.valueOf(templateYaml.getString("catType", "wild_ocelot").toUpperCase());
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Ocelot ocelot, final YamlConfiguration templateYaml) {
+				final org.bukkit.entity.Ocelot.Type catType = org.bukkit.entity.Ocelot.Type.valueOf(templateYaml.getString("catType", "wild_ocelot").toUpperCase());
 				ocelot.setCatType(catType);
 
 				ocelot.setSitting(templateYaml.getBoolean("sitting", false));
@@ -403,80 +410,90 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			}
 		});
 		specificEntityHandlers.put(EntityType.PIG, new LivingEntityHandler<Pig>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Pig pig, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Pig pig, final YamlConfiguration templateYaml) {
 				pig.setSaddle(templateYaml.getBoolean("saddled", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.PIG_ZOMBIE, new LivingEntityHandler<PigZombie>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, PigZombie pigZombie, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final PigZombie pigZombie, final YamlConfiguration templateYaml) {
 				pigZombie.setAnger(templateYaml.getInt("anger", 0));
 				pigZombie.setAngry(templateYaml.getBoolean("angry", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.POLAR_BEAR, new LivingEntityHandler<PolarBear>());
 		specificEntityHandlers.put(EntityType.RABBIT, new LivingEntityHandler<Rabbit>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Rabbit rabbit, YamlConfiguration templateYaml) {
-				org.bukkit.entity.Rabbit.Type rabbitType = org.bukkit.entity.Rabbit.Type.valueOf(templateYaml.getString("rabbitType", "brown").toUpperCase());
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Rabbit rabbit, final YamlConfiguration templateYaml) {
+				final org.bukkit.entity.Rabbit.Type rabbitType = org.bukkit.entity.Rabbit.Type.valueOf(templateYaml.getString("rabbitType", "brown").toUpperCase());
 				rabbit.setRabbitType(rabbitType);
 			}
 		});
 		specificEntityHandlers.put(EntityType.SHEEP, new LivingEntityHandler<Sheep>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Sheep sheep, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Sheep sheep, final YamlConfiguration templateYaml) {
 				sheep.setSheared(templateYaml.getBoolean("sheared", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.SHULKER, new LivingEntityHandler<Shulker>());
 		specificEntityHandlers.put(EntityType.SILVERFISH, new LivingEntityHandler<Silverfish>());
 		specificEntityHandlers.put(EntityType.SKELETON, new LivingEntityHandler<Skeleton>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Skeleton skeleton, YamlConfiguration templateYaml) {
-				SkeletonType skeletonType = SkeletonType.valueOf(templateYaml.getString("skeletonType", "normal").toUpperCase());
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Skeleton skeleton, final YamlConfiguration templateYaml) {
+				final SkeletonType skeletonType = SkeletonType.valueOf(templateYaml.getString("skeletonType", "normal").toUpperCase());
 				skeleton.setSkeletonType(skeletonType);
 			}
 		});
 		specificEntityHandlers.put(EntityType.SLIME, new LivingEntityHandler<Slime>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Slime slime, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Slime slime, final YamlConfiguration templateYaml) {
 				if(templateYaml.contains("size")) {
 					slime.setSize(templateYaml.getInt("size"));
 				}
 			}
 		});
 		specificEntityHandlers.put(EntityType.SNOWMAN, new LivingEntityHandler<Snowman>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Snowman snowman, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Snowman snowman, final YamlConfiguration templateYaml) {
 				snowman.setDerp(templateYaml.getBoolean("derp", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.SPIDER, new LivingEntityHandler<Spider>());
 		specificEntityHandlers.put(EntityType.SQUID, new LivingEntityHandler<Squid>());
 		specificEntityHandlers.put(EntityType.VILLAGER, new LivingEntityHandler<Villager>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Villager villager, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Villager villager, final YamlConfiguration templateYaml) {
 				handleVillager(plugin, villager, templateYaml);
 			}
 		});
 		specificEntityHandlers.put(EntityType.WITCH, new LivingEntityHandler<Witch>());
 		specificEntityHandlers.put(EntityType.WITHER, new LivingEntityHandler<Wither>());
 		specificEntityHandlers.put(EntityType.WOLF, new LivingEntityHandler<Wolf>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Wolf wolf, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Wolf wolf, final YamlConfiguration templateYaml) {
 				wolf.setAngry(templateYaml.getBoolean("angry", false));
 				wolf.setSitting(templateYaml.getBoolean("sitting", false));
 				wolf.setTamed(templateYaml.getBoolean("tamed", false));
 
-				DyeColor collarColor = DyeColor.getByColor(templateYaml.getColor("collarColor", Color.RED));
+				final DyeColor collarColor = DyeColor.getByColor(templateYaml.getColor("collarColor", Color.RED));
 				wolf.setCollarColor(collarColor);
 			}
 		});
 		specificEntityHandlers.put(EntityType.ZOMBIE, new LivingEntityHandler<Zombie>() {
-			public void handleLivingEntitySuperclass(IFactoryProviderPlugin plugin, Zombie zombie, YamlConfiguration templateYaml) {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Zombie zombie, final YamlConfiguration templateYaml) {
 				zombie.setBaby(templateYaml.getBoolean("baby", false));
 				zombie.setVillager(templateYaml.getBoolean("villager", false));
 
-				Profession profession = Profession.valueOf(templateYaml.getString("profession", "normal").toUpperCase());
+				final Profession profession = Profession.valueOf(templateYaml.getString("profession", "normal").toUpperCase());
 				zombie.setVillagerProfession(profession);
 			}
 		});
 	}
 
-	private static void handleVillager(IFactoryProviderPlugin plugin, Villager villager, YamlConfiguration templateYaml) {
-		Profession profession = Profession.valueOf(templateYaml.getString("profession", "normal").toUpperCase());
+	private static void handleVillager(final IFactoryProviderPlugin plugin, final Villager villager, final YamlConfiguration templateYaml) {
+		final Profession profession = Profession.valueOf(templateYaml.getString("profession", "normal").toUpperCase());
 		villager.setProfession(profession);
 
 		if(templateYaml.contains("riches")) {
@@ -484,24 +501,27 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		}
 
 		if(templateYaml.contains("merchantRecipes")) {
-			List<MerchantRecipe> merchantRecipes = new ArrayList<>();
+			final List<MerchantRecipe> merchantRecipes = new ArrayList<>();
 
-			ConfigurationSection merchantRecipesSection = templateYaml.getConfigurationSection("merchantRecipes");
-			for(String merchantRecipeKey : merchantRecipesSection.getKeys(false)) {
-				ConfigurationSection currentMerchantRecipeSection = merchantRecipesSection.getConfigurationSection(merchantRecipeKey);
+			final ConfigurationSection merchantRecipesSection = templateYaml.getConfigurationSection("merchantRecipes");
+			for(final String merchantRecipeKey : merchantRecipesSection.getKeys(false)) {
+				final ConfigurationSection currentMerchantRecipeSection = merchantRecipesSection.getConfigurationSection(merchantRecipeKey);
 
-				String resultItemStackName = currentMerchantRecipeSection.getString("result");
-				ItemStack resultItemStack = plugin.getItemStackFactory().create(resultItemStackName);
-				int uses = currentMerchantRecipeSection.getInt("uses", 0);
-				int maxUses = currentMerchantRecipeSection.getInt("maxUses", Integer.MAX_VALUE);
-				boolean experienceReward = currentMerchantRecipeSection.getBoolean("experienceReward", false);
+				final String resultItemStackName = currentMerchantRecipeSection.getString("result");
+				final ItemStack resultItemStack = plugin.getItemStackFactory().create(resultItemStackName);
+				resultItemStack.setAmount(currentMerchantRecipeSection.getInt("resultAmount", 1));
+
+				final int uses = currentMerchantRecipeSection.getInt("uses", 0);
+				final int maxUses = currentMerchantRecipeSection.getInt("maxUses", Integer.MAX_VALUE);
+				final boolean experienceReward = currentMerchantRecipeSection.getBoolean("experienceReward", false);
 
 				if(resultItemStack != null) {
-					MerchantRecipe merchantRecipe = new MerchantRecipe(resultItemStack, uses, maxUses, experienceReward);
+					final MerchantRecipe merchantRecipe = new MerchantRecipe(resultItemStack, uses, maxUses, experienceReward);
 
 					if(currentMerchantRecipeSection.contains("ingredient1")) {
-						String ingredientName = currentMerchantRecipeSection.getString("ingredient1");
-						ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
+						final String ingredientName = currentMerchantRecipeSection.getString("ingredient1");
+						final ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
+						ingredientItemStack.setAmount(currentMerchantRecipeSection.getInt("ingredient1Amount", 1));
 
 						if(ingredientItemStack != null) {
 							merchantRecipe.addIngredient(ingredientItemStack);
@@ -509,8 +529,9 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 					}
 
 					if(currentMerchantRecipeSection.contains("ingredient2")) {
-						String ingredientName = currentMerchantRecipeSection.getString("ingredient2");
-						ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
+						final String ingredientName = currentMerchantRecipeSection.getString("ingredient2");
+						final ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
+						ingredientItemStack.setAmount(currentMerchantRecipeSection.getInt("ingredient2Amount", 1));
 
 						if(ingredientItemStack != null) {
 							merchantRecipe.addIngredient(ingredientItemStack);

@@ -86,11 +86,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			if(command == null) {
 				throw new CommandNotFoundException(args[0]);
 			}
-			
+
 			if(!command.isAuthorized(sender)) {
 				throw new AccessDeniedException();
 			}
-			
+
 			String[] cmdArgs = new String[args.length - 1];
 
 			if(args.length > 1) {
@@ -139,7 +139,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
 			Translator.sendMessage(sender, "command.help.entry", commandName, availableCommands.get(i).getCommand(), availableCommands.get(i).getDescription());
 		}
-		
+
 		Translator.sendMessage(sender, "command.help.footer1", commandName);
 		Translator.sendMessage(sender, "command.help.footer2", page, totalPages);
 	}

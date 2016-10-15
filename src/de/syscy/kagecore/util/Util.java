@@ -8,6 +8,9 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Random;
 
+import com.comphenix.packetwrapper.AbstractPacket;
+
+import de.syscy.kagecore.KageCore;
 import lombok.Getter;
 
 public class Util {
@@ -20,17 +23,17 @@ public class Util {
 
 		return string.length() == pos.getIndex();
 	}
-	
+
 	public static int clamp(int value, int min, int max) {
-	    return Math.max(min, Math.min(max, value));
+		return Math.max(min, Math.min(max, value));
 	}
-	
+
 	public static double clamp(double value, double min, double max) {
-	    return Math.max(min, Math.min(max, value));
+		return Math.max(min, Math.min(max, value));
 	}
-	
+
 	public static float clamp(float value, float min, float max) {
-	    return Math.max(min, Math.min(max, value));
+		return Math.max(min, Math.min(max, value));
 	}
 
 	public static void copy(InputStream inputStream, File file) {
@@ -38,15 +41,23 @@ public class Util {
 			OutputStream outputStream = new FileOutputStream(file);
 			byte[] buffer = new byte[1024];
 			int length;
-			
+
 			while((length = inputStream.read(buffer)) > 0) {
 				outputStream.write(buffer, 0, length);
 			}
-			
+
 			outputStream.close();
 			inputStream.close();
 		} catch(Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	public static void printValues(AbstractPacket packet) {
+		KageCore.debugMessage(packet.getClass().getSimpleName() + " values:");
+
+		for(Object value : packet.getHandle().getModifier().getValues()) {
+			KageCore.debugMessage(value.toString() + " (" + value.getClass().getSimpleName() + ")");
 		}
 	}
 }

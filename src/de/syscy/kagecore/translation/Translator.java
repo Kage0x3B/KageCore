@@ -154,6 +154,8 @@ public class Translator {
 			text = ChatColor.translateAlternateColorCodes('&', translations.get(language).get(key));
 		} else if(translations.get(defaultLocale).containsKey(key)) {
 			text = ChatColor.translateAlternateColorCodes('&', translations.get(defaultLocale).get(key));
+		} else {
+			KageCore.debugMessage("Invalid translation key: " + key);
 		}
 
 		if(args != null && !text.equals(key)) {

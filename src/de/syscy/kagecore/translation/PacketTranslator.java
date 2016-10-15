@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.comphenix.packetwrapper.WrapperPlayServerCustomPayload;
 import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.packetwrapper.WrapperPlayServerOpenWindow;
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
@@ -20,14 +21,18 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.comphenix.protocol.wrappers.nbt.NbtBase;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtList;
 import com.comphenix.protocol.wrappers.nbt.NbtType;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import de.syscy.kagecore.KageCore;
+import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
@@ -47,8 +52,10 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.OPEN_WINDOW);
 		packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
 		packetTypes.add(PacketType.Play.Server.SET_SLOT);
+		packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
 
 		protocolManager.addPacketListener(new PacketAdapter(plugin, packetTypes) {
+			@Override
 			public void onPacketSending(PacketEvent event) {
 				handlePacket(event);
 			}
@@ -67,11 +74,11 @@ public class PacketTranslator {
 				WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(packet);
 				List<WrappedWatchableObject> metadata = new ArrayList<>();
 
-				for(WrappedWatchableObject watchableObject : wrapper.getEntityMetadata()) {
+				for(WrappedWatchableObject watchableObject : wrapper.getMetadata()) {
 					metadata.add(translateWatchableObject(watchableObject, player));
 				}
 
-				wrapper.setEntityMetadata(metadata);
+				wrapper.setMetadata(metadata);
 			} else if(event.getPacketType().equals(PacketType.Play.Server.TILE_ENTITY_DATA)) {
 				WrapperPlayServerTileEntityData wrapper = new WrapperPlayServerTileEntityData(packet);
 
@@ -80,23 +87,56 @@ public class PacketTranslator {
 				}
 			} else if(event.getPacketType().equals(PacketType.Play.Server.OPEN_WINDOW)) {
 				WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(packet);
-				wrapper.setWindowTitle(tryTranslateString(wrapper.getWindowTitle(), player));
+				wrapper.setWindowTitle(translateChatComponent(wrapper.getWindowTitle(), player));
 			} else if(event.getPacketType().equals(PacketType.Play.Server.WINDOW_ITEMS)) {
 				WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(packet);
 
-				ItemStack[] newItemStacks = wrapper.getItems();
+				ItemStack[] newItemStacks = wrapper.getSlotData();
 
 				for(int i = 0; i < newItemStacks.length; i++) {
 					newItemStacks[i] = translateItemStack(newItemStacks[i], player);
 				}
 
-				wrapper.setItems(newItemStacks);
+				wrapper.setSlotData(newItemStacks);
 			} else if(event.getPacketType().equals(PacketType.Play.Server.SET_SLOT)) {
 				WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(packet);
 				wrapper.setSlotData(translateItemStack(wrapper.getSlotData(), player));
+			} else if(event.getPacketType().equals(PacketType.Play.Server.CUSTOM_PAYLOAD)) {
+				handlePluginMessage(new WrapperPlayServerCustomPayload(packet), player);
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	private void handlePluginMessage(WrapperPlayServerCustomPayload wrapper, Player player) {
+		if(wrapper.getChannel().equals("MC|TrList")) {
+			ByteBuf in = wrapper.getContentsBuffer();
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+			out.writeInt(in.readInt()); //Window ID
+			int size = in.readByte();
+			out.writeByte(size);
+
+			for(int i = 0; i < size; i++) {
+				ItemStack inputItem1 = NetworkUtil.readItemStack(in);
+				NetworkUtil.writeItemStack(out, translateItemStack(inputItem1, player));
+				ItemStack outputItem = NetworkUtil.readItemStack(in);
+				NetworkUtil.writeItemStack(out, translateItemStack(outputItem, player));
+				boolean hasSecondItem = in.readBoolean();
+				out.writeBoolean(hasSecondItem);
+
+				if(hasSecondItem) {
+					ItemStack inputItem2 = NetworkUtil.readItemStack(in);
+					NetworkUtil.writeItemStack(out, translateItemStack(inputItem2, player));
+				}
+
+				out.writeBoolean(in.readBoolean()); //Trade disabled boolean
+				out.writeInt(in.readInt()); //Uses int
+				out.writeInt(in.readInt()); //Max uses int
+			}
+
+			wrapper.setContents(out.toByteArray());
 		}
 	}
 
@@ -149,8 +189,9 @@ public class PacketTranslator {
 
 	@AllArgsConstructor
 	private static class FixedString implements TranslateString {
-		private String string;
+		private final String string;
 
+		@Override
 		public void append(StringBuilder stringBuilder, String language) {
 			stringBuilder.append(string);
 		}
@@ -160,6 +201,7 @@ public class PacketTranslator {
 	private static class TranslatableString implements TranslateString {
 		private String string;
 
+		@Override
 		public void append(StringBuilder stringBuilder, String language) {
 			string = string.substring(1, string.length() - 1);
 			String[] parts = string.split(";");
@@ -167,13 +209,13 @@ public class PacketTranslator {
 
 			for(int i = 1; i < parts.length; i++) {
 				String part = parts[i];
-				
+
 				if(part.startsWith("!")) {
 					part = part.substring(1);
-					
+
 					char partType = part.charAt(0);
 					part = part.substring(1);
-					
+
 					switch(partType) {
 						case 'i':
 							int intArg = Integer.parseInt(part);
@@ -191,6 +233,10 @@ public class PacketTranslator {
 
 			stringBuilder.append(Translator.translate(language, parts[0], args));
 		}
+	}
+
+	private static WrappedChatComponent translateChatComponent(WrappedChatComponent chatComponent, Player player) {
+		return WrappedChatComponent.fromJson(tryTranslateString(chatComponent.getJson(), player));
 	}
 
 	private static ItemStack translateItemStack(ItemStack itemStack, Player player) {

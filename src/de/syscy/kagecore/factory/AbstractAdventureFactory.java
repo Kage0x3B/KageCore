@@ -7,21 +7,24 @@ import java.util.Map;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import lombok.Getter;
+
 public abstract class AbstractAdventureFactory<T> implements AdventureFactory<T> {
 	private File folder;
 	private String templateFileExtension;
-	
-	protected Map<String, FactoryTemplate<T>> templates = new HashMap<>();
+
+	protected @Getter Map<String, FactoryTemplate<T>> templates = new HashMap<>();
 
 	protected void loadTemplates(File folder, final String templateFileExtension) {
 		this.folder = folder;
 		this.templateFileExtension = templateFileExtension;
-		
+
 		if(!folder.exists()) {
 			folder.mkdirs();
 		}
-		
+
 		File[] templateFiles = folder.listFiles(new FileFilter() {
+			@Override
 			public boolean accept(File file) {
 				return file.getName().endsWith("." + templateFileExtension);
 			}
@@ -41,11 +44,11 @@ public abstract class AbstractAdventureFactory<T> implements AdventureFactory<T>
 			}
 		}
 	}
-	
+
 	@Override
 	public void reload() {
 		templates.clear();
-		
+
 		loadTemplates(folder, templateFileExtension);
 	}
 
