@@ -2,7 +2,7 @@
 #First, there are some values which can be set for every entity:
 entityTypeID: villager #The type ID, the same as in the summon command
 nbt: #JSON NBT Tags, can be left empty as everything else
-customName: &5Test Entity #A custom name. Use '&' for colors
+customName: &5Test Entity #A custom name. Use '$' for colors
 fireTicks: 0 #The time in ticks (1/20th of a second), the entity is on fire. Can be used to make entities burn when spawned
 glowing: false #If the entity glows (the glow stays until it is changed by other things like potions)
 gravity: true #If the entity is affected by gravity

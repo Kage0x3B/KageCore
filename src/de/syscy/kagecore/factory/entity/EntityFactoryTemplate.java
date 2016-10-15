@@ -104,7 +104,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		entityTypeID = templateYaml.getString("entityTypeID", "");
 		nbt = templateYaml.getString("nbt", "");
 
-		customName = ChatColor.translateAlternateColorCodes('&', templateYaml.getString("customName", ""));
+		customName = ChatColor.translateAlternateColorCodes('$', templateYaml.getString("customName", ""));
 
 		fireTicks = templateYaml.getInt("fireTicks", 0);
 		glowing = templateYaml.getBoolean("glowing", false);

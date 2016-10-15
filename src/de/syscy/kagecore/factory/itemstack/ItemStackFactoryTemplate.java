@@ -42,12 +42,12 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		data = templateYaml.getInt("data", 0);
 		nbt = templateYaml.getString("nbt", "");
 
-		displayName = ChatColor.translateAlternateColorCodes('&', templateYaml.getString("displayName", ""));
+		displayName = ChatColor.translateAlternateColorCodes('$', templateYaml.getString("displayName", ""));
 
 		int i = 1;
 
 		while(templateYaml.contains("lore.line" + i)) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', templateYaml.getString("lore.line" + i)));
+			lore.add(ChatColor.translateAlternateColorCodes('$', templateYaml.getString("lore.line" + i)));
 
 			i++;
 		}

@@ -4,7 +4,7 @@ data: 0 #Data value
 itemType: treasure #"treasure" or "adventure" item
 nbt: #JSON NBT Tag, exactly the same as in for example the summon command
 
-displayName: The displayName, use '&' fo colors
+displayName: The displayName, use '$' fo colors
 lore:
     line1: Contents of line 1
     line2: Contents of line 2
