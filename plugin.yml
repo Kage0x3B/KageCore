@@ -5,3 +5,7 @@ description: KageCore is a library with useful stuff
 website: http://syscy.de
 main: de.syscy.kagecore.KageCore
 depend: [ProtocolLib]
+commands:
+    kageCore:
+        description: Main KageCore command
+        aliases: [kc]

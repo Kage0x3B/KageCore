@@ -17,3 +17,7 @@ itemFlags: #Item flags from org.bukkit.inventory.ItemFlag.java
     -hide_potion_effects
 #the itemFlags can also be set to "itemFlags: all" to apply every item flag and hide everything
 unbreakable: true #If the item is unbreakable (no durability decrease when using)
+attributes:
+	generic.maxHealth:
+		testModifier:
+			amount: 10
