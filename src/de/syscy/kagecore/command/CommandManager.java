@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.syscy.kagecore.command.exception.AccessDeniedException;
@@ -15,44 +14,57 @@ import de.syscy.kagecore.command.exception.CommandNotFoundException;
 import de.syscy.kagecore.command.exception.InvalidUsageException;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.Util;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class CommandManager implements CommandExecutor, TabCompleter {
-	private final @Getter JavaPlugin plugin;
-	private final @Getter String commandName;
-
-	private List<CommandBase> commands = new ArrayList<>();
+public class CommandManager<T extends JavaPlugin> extends CommandBase<T> implements CommandExecutor {
+	private List<CommandBase<?>> commands = new ArrayList<>();
 
 	private int cmdPerPage = 6;
 
+	public CommandManager(T plugin, String command) {
+		super(plugin, command);
+
+		commandManager = this;
+	}
+
+	public CommandManager(T plugin, String command, String... aliases) {
+		super(plugin, command, "", aliases);
+
+		commandManager = this;
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command bukkitCommand, String label, String[] args) {
+	public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		onCommand(sender, args);
+
+		return true;
+	}
+
+	@Override
+	public final void onCommand(CommandSender sender, String[] args) {
 		try {
 			if(args.length == 0) {
-				if(sender.hasPermission(commandName + ".help")) {
+				if(sender.hasPermission(getPermissionPrefix() + ".help")) {
 					sendHelpPage(sender, 1);
 
-					return true;
+					return;
 				} else {
 					throw new AccessDeniedException();
 				}
 			}
 
 			if(args[0].equalsIgnoreCase("help")) {
-				if(!sender.hasPermission(commandName + ".help")) {
+				if(!sender.hasPermission(getPermissionPrefix() + ".help")) {
 					throw new AccessDeniedException();
 				}
 
 				if(args.length > 2) {
-					throw new InvalidUsageException(commandName, "help", "[page|command name]");
+					throw new InvalidUsageException(getFullCommand(), "help", "[page|command name]");
 				}
 
 				if(args.length == 1) {
 					sendHelpPage(sender, 1);
 
-					return true;
+					return;
 				} else if(args.length == 2) {
 					if(Util.isNumber(args[1])) {
 						int page = Integer.parseInt(args[1]);
@@ -63,10 +75,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 							sendHelpPage(sender, 1);
 						}
 
-						return true;
+						return;
 					}
 
-					CommandBase command = getCommand(args[1]);
+					CommandBase<?> command = getCommand(args[1]);
 
 					if(command == null) {
 						throw new CommandNotFoundException(args[1]);
@@ -79,10 +91,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 					}
 				}
 
-				return true;
+				return;
 			}
 
-			CommandBase command = getCommand(args[0]);
+			CommandBase<?> command = getCommand(args[0]);
 
 			if(command == null) {
 				throw new CommandNotFoundException(args[0]);
@@ -105,17 +117,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			Translator.sendMessage(sender, "command.exception", ex.getMessage());
 		}
 
-		return true;
+		return;
 	}
 
-	public void addCommand(CommandBase command) {
+	public void addCommand(CommandBase<?> command) {
 		commands.add(command);
 		command.setCommandManager(this);
-		command.setPlugin(plugin);
 	}
 
 	private void sendHelpPage(CommandSender sender, int page) {
-		List<CommandBase> availableCommands = getAvailableCommands(sender);
+		List<CommandBase<?>> availableCommands = getAvailableCommands(sender);
 
 		int size = availableCommands.size();
 		int totalPages = size / cmdPerPage;
@@ -128,7 +139,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			page = 1;
 		}
 
-		Translator.sendMessage(sender, "command.help.header", commandName);
+		Translator.sendMessage(sender, "command.help.header", getFullCommand());
 
 		int startIndex = (page - 1) * cmdPerPage;
 		int endIndex = cmdPerPage * page;
@@ -138,15 +149,15 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 				break;
 			}
 
-			Translator.sendMessage(sender, "command.help.entry", commandName, availableCommands.get(i).getCommand(), Translator.translate(sender, "command." + availableCommands.get(i).getCommand() + ".description"));
+			Translator.sendMessage(sender, "command.help.entry", getFullCommand(), availableCommands.get(i).getCommand(), Translator.translate(sender, "command." + availableCommands.get(i).getCommand() + ".description"));
 		}
 
-		Translator.sendMessage(sender, "command.help.footer1", commandName);
+		Translator.sendMessage(sender, "command.help.footer1", getFullCommand());
 		Translator.sendMessage(sender, "command.help.footer2", page, totalPages);
 	}
 
-	public CommandBase getCommand(String commandName) {
-		for(CommandBase command : commands) {
+	public CommandBase<?> getCommand(String commandName) {
+		for(CommandBase<?> command : commands) {
 			if(command.getCommand().equalsIgnoreCase(commandName) || command.getAliases().contains(commandName.toLowerCase())) {
 				return command;
 			}
@@ -156,11 +167,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public final List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		if(args.length == 1) {
 			List<String> allCommands = new ArrayList<String>();
 
-			for(CommandBase commandBase : commands) {
+			for(CommandBase<?> commandBase : commands) {
 				if(commandBase.getCommand().toLowerCase().startsWith(args[0].toLowerCase()) && commandBase.isAuthorized(sender)) {
 					allCommands.add(commandBase.getCommand());
 				}
@@ -168,7 +179,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
 			return allCommands;
 		} else if(args.length > 1) {
-			CommandBase commandBase = getCommand(args[0]);
+			CommandBase<?> commandBase = getCommand(args[0]);
 
 			if(commandBase != null && commandBase.isAuthorized(sender)) {
 				String[] subArgs = new String[args.length - 1];
@@ -181,15 +192,28 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 		return null;
 	}
 
-	private List<CommandBase> getAvailableCommands(CommandSender sender) {
-		List<CommandBase> availableCommands = new ArrayList<CommandBase>();
+	private List<CommandBase<?>> getAvailableCommands(CommandSender sender) {
+		List<CommandBase<?>> availableCommands = new ArrayList<CommandBase<?>>();
 
-		for(CommandBase command : commands) {
+		for(CommandBase<?> command : commands) {
 			if(command.isAuthorized(sender)) {
 				availableCommands.add(command);
 			}
 		}
 
 		return availableCommands;
+	}
+
+	@Override
+	protected void setCommandManager(CommandManager<?> commandManager) {
+		super.setCommandManager(commandManager);
+	}
+
+	public String getPermissionPrefix() {
+		return getFullCommand().replaceAll(" ", ".");
+	}
+
+	public String getFullCommand() {
+		return commandManager != this && commandManager != null ? commandManager.getPermissionPrefix() + " " + command : command;
 	}
 }

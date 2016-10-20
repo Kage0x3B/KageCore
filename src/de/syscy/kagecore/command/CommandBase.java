@@ -15,19 +15,20 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class CommandBase implements TabCompleter {
-	private @Getter String command;
+public abstract class CommandBase<T extends JavaPlugin> implements TabCompleter {
+	protected final T plugin;
+	protected @Getter String command;
 	private @Getter String usage;
 	private @Getter List<String> aliases;
 
-	protected @Getter @Setter(value = AccessLevel.PROTECTED) CommandManager commandManager;
-	protected @Setter(value = AccessLevel.PROTECTED) JavaPlugin plugin;
+	protected @Getter @Setter(value = AccessLevel.PROTECTED) CommandManager<?> commandManager;
 
-	public CommandBase(String command) {
-		this(command, command);
+	public CommandBase(T plugin, String command) {
+		this(plugin, command, command);
 	}
 
-	public CommandBase(String command, String usage, String... aliases) {
+	public CommandBase(T plugin, String command, String usage, String... aliases) {
+		this.plugin = plugin;
 		this.command = command;
 		this.usage = usage;
 		this.aliases = new ArrayList<>();
@@ -73,11 +74,11 @@ public abstract class CommandBase implements TabCompleter {
 	}
 
 	public boolean isAuthorized(CommandSender sender) {
-		return sender.hasPermission(commandManager.getCommandName() + "." + getCommand().trim()) || sender.isOp();
+		return sender.hasPermission(commandManager.getPermissionPrefix() + "." + getCommand().trim()) || sender.isOp();
 	}
 
 	public boolean isExempt(CommandSender sender) {
-		return sender.hasPermission(commandManager.getCommandName() + "." + getCommand().trim() + ".exempt");
+		return sender.hasPermission(commandManager.getPermissionPrefix() + "." + getCommand().trim() + ".exempt");
 	}
 
 	protected Player getPlayer(String name) {

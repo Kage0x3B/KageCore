@@ -2,16 +2,17 @@ package de.syscy.kagecore.command;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import de.syscy.kagecore.command.exception.PlayerRequiredException;
 
-public abstract class PlayerCommandBase extends CommandBase {
-	public PlayerCommandBase(String command) {
-		super(command, command);
+public abstract class PlayerCommandBase<P extends JavaPlugin> extends CommandBase<P> {
+	public PlayerCommandBase(P plugin, String command) {
+		super(plugin, command, command);
 	}
 
-	public PlayerCommandBase(String command, String usage, String... aliases) {
-		super(command, usage, aliases);
+	public PlayerCommandBase(P plugin, String command, String usage, String... aliases) {
+		super(plugin, command, usage, aliases);
 	}
 
 	@Override
