@@ -184,7 +184,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			livingEntity.setCollidable(templateYaml.getBoolean("collidable", true));
 
 			if(templateYaml.contains("health")) {
-				final int health = templateYaml.getInt("health");
+				int health = templateYaml.getInt("health");
 				livingEntity.setMaxHealth(health);
 				livingEntity.setHealth(health);
 			}
@@ -192,31 +192,40 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			livingEntity.setRemoveWhenFarAway(templateYaml.getBoolean("removeWhenFarAway", true));
 
 			if(templateYaml.contains("attributes")) {
-				final ConfigurationSection attributesSection = templateYaml.getConfigurationSection("attributes");
+				ConfigurationSection attributesSection = templateYaml.getConfigurationSection("attributes");
 
-				for(final Attribute attribute : Attribute.values()) {
-					if(attributesSection.contains(attribute.name().toLowerCase())) {
-						final AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
-						final ConfigurationSection currentAttributeSection = attributesSection.getConfigurationSection(attribute.name().toLowerCase());
+				for(Attribute attribute : Attribute.values()) {
+					String attributeName = attribute.name();
+
+					if(!attributesSection.contains(attributeName)) {
+						attributeName = attribute.name().toLowerCase();
+					}
+
+					if(attributesSection.contains(attributeName)) {
+						AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
+
+						if(attributeInstance == null) {
+							continue;
+						}
+
+						ConfigurationSection currentAttributeSection = attributesSection.getConfigurationSection(attributeName);
 
 						if(currentAttributeSection.contains("baseValue")) {
-							final double baseValue = currentAttributeSection.getDouble("baseValue");
-
-							attributeInstance.setBaseValue(baseValue);
+							attributeInstance.setBaseValue(currentAttributeSection.getDouble("baseValue"));
 						}
 
 						if(currentAttributeSection.contains("modifiers")) {
-							final ConfigurationSection modifiersSection = attributesSection.getConfigurationSection(attribute.name().toLowerCase());
+							ConfigurationSection modifiersSection = currentAttributeSection.getConfigurationSection("modifiers");
 
-							for(final String modifierName : modifiersSection.getKeys(false)) {
+							for(String modifierName : modifiersSection.getKeys(false)) {
 								try {
-									final String operationName = modifiersSection.getString(modifierName + ".operation");
-									final double amount = modifiersSection.getDouble(modifierName + ".amount");
-									final Operation operation = Operation.valueOf(operationName.toUpperCase());
+									String operationName = modifiersSection.getString(modifierName + ".operation");
+									double amount = modifiersSection.getDouble(modifierName + ".amount");
+									Operation operation = Operation.valueOf(operationName.toUpperCase());
 
 									attributeInstance.addModifier(new AttributeModifier(modifierName, amount, operation));
-								} catch(final Exception ex) {
-
+								} catch(Exception ex) {
+									ex.printStackTrace();
 								}
 							}
 						}

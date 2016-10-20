@@ -32,14 +32,14 @@ public class BGCreator {
 		File guiDirectory = new File(KageCore.getPluginDirectory(), "gui");
 
 		File[] guiFiles = guiDirectory.listFiles(new FileFilter() {
+			@Override
 			public boolean accept(File pathname) {
 				return pathname.getName().endsWith(".gd");
 			}
 		});
 
 		if(guiFiles != null) {
-			for(int i = 0; i < guiFiles.length; i++) {
-				File guiFile = guiFiles[i];
+			for(File guiFile : guiFiles) {
 				String name = guiFile.getName();
 				name = name.replaceAll(".gd", "");
 
@@ -48,14 +48,14 @@ public class BGCreator {
 		}
 
 		File[] hotbarGuiFiles = guiDirectory.listFiles(new FileFilter() {
+			@Override
 			public boolean accept(File pathname) {
 				return pathname.getName().endsWith(".hgd");
 			}
 		});
 
 		if(hotbarGuiFiles != null) {
-			for(int i = 0; i < hotbarGuiFiles.length; i++) {
-				File hotbarGuiFile = hotbarGuiFiles[i];
+			for(File hotbarGuiFile : hotbarGuiFiles) {
 				String name = hotbarGuiFile.getName();
 				name = name.replaceAll(".hgd", "");
 
@@ -65,7 +65,7 @@ public class BGCreator {
 	}
 
 	public static boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if((label.equalsIgnoreCase("createGUI")) && (sender.hasPermission("bg.createGUI"))) {
+		if(label.equalsIgnoreCase("createGUI") && sender.hasPermission("bg.createGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -78,7 +78,7 @@ public class BGCreator {
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("editGUI")) && ((sender instanceof Player)) && (sender.hasPermission("bg.editGUI"))) {
+		if(label.equalsIgnoreCase("editGUI") && sender instanceof Player && sender.hasPermission("bg.editGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -97,7 +97,7 @@ public class BGCreator {
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("removeGUI")) && (sender.hasPermission("bg.removeGUI"))) {
+		if(label.equalsIgnoreCase("removeGUI") && sender.hasPermission("bg.removeGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -107,10 +107,11 @@ public class BGCreator {
 			if(guis.containsKey(name)) {
 				final GUIData gui = (GUIData) guis.get(name);
 
-				if((sender instanceof Player)) {
+				if(sender instanceof Player) {
 					final Player player = (Player) sender;
 
 					YesNoGUI prompt = new YesNoGUI(new YesNoCallback() {
+						@Override
 						public void onResult(boolean result) {
 							if(result) {
 								gui.delete();
@@ -134,7 +135,7 @@ public class BGCreator {
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("showGUI")) && (sender.hasPermission("bg.showGUI"))) {
+		if(label.equalsIgnoreCase("showGUI") && sender.hasPermission("bg.showGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -144,7 +145,7 @@ public class BGCreator {
 			if(guis.containsKey(name)) {
 				BGGUI gui = ((GUIData) guis.get(name)).toGUI();
 
-				if((args.length == 1) && ((sender instanceof Player))) {
+				if(args.length == 1 && sender instanceof Player) {
 					BGUILib.showGUI(gui, (Player) sender);
 				} else if(args.length > 1) {
 					String playerName = args[1];
@@ -162,7 +163,7 @@ public class BGCreator {
 			}
 			return true;
 		}
-		if((label.equalsIgnoreCase("createHGUI")) && (sender.hasPermission("bg.createGUI"))) {
+		if(label.equalsIgnoreCase("createHGUI") && sender.hasPermission("bg.createGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -175,7 +176,7 @@ public class BGCreator {
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("editHGUI")) && ((sender instanceof Player)) && (sender.hasPermission("bg.editGUI"))) {
+		if(label.equalsIgnoreCase("editHGUI") && sender instanceof Player && sender.hasPermission("bg.editGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -192,7 +193,7 @@ public class BGCreator {
 			}
 			return true;
 		}
-		if((label.equalsIgnoreCase("removeHGUI")) && (sender.hasPermission("bg.removeGUI"))) {
+		if(label.equalsIgnoreCase("removeHGUI") && sender.hasPermission("bg.removeGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -202,10 +203,11 @@ public class BGCreator {
 			if(hotbarGuis.containsKey(name)) {
 				final HotbarGUIData gui = (HotbarGUIData) hotbarGuis.get(name);
 
-				if((sender instanceof Player)) {
+				if(sender instanceof Player) {
 					final Player player = (Player) sender;
 
 					YesNoGUI prompt = new YesNoGUI(new YesNoCallback() {
+						@Override
 						public void onResult(boolean result) {
 							if(result) {
 								gui.delete();
@@ -229,7 +231,7 @@ public class BGCreator {
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("showHGUI")) && (sender.hasPermission("bg.showGUI"))) {
+		if(label.equalsIgnoreCase("showHGUI") && sender.hasPermission("bg.showGUI")) {
 			if(args.length < 1) {
 				return false;
 			}
@@ -239,7 +241,7 @@ public class BGCreator {
 			if(hotbarGuis.containsKey(name)) {
 				BGHotbarGUI gui = ((HotbarGUIData) hotbarGuis.get(name)).toHGUI();
 
-				if((args.length == 1) && ((sender instanceof Player))) {
+				if(args.length == 1 && sender instanceof Player) {
 					BGUILib.setHotbarGUI(gui, (Player) sender);
 				} else if(args.length > 1) {
 					String playerName = args[1];
@@ -260,21 +262,21 @@ public class BGCreator {
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("hideHGUI")) && (sender.hasPermission("bg.showGUI"))) {
+		if(label.equalsIgnoreCase("hideHGUI") && sender.hasPermission("bg.showGUI")) {
 			if(args.length == 1) {
 				Player player = Bukkit.getPlayer(args[0]);
 
 				if(player != null) {
 					BGUILib.removeHotbarGUI(player);
 				}
-			} else if((sender instanceof Player)) {
+			} else if(sender instanceof Player) {
 				BGUILib.removeHotbarGUI((Player) sender);
 			}
 
 			return true;
 		}
 
-		if((label.equalsIgnoreCase("bindHotbarToWorld")) && (sender.hasPermission("bg.bindHotbar"))) {
+		if(label.equalsIgnoreCase("bindHotbarToWorld") && sender.hasPermission("bg.bindHotbar")) {
 			if(args.length < 2) {
 				return false;
 			}
@@ -292,13 +294,13 @@ public class BGCreator {
 				return false;
 			}
 
-//			KageCore.getPluginConfig().set("hotbar." + worldName, hotbarName);
+			//			KageCore.getPluginConfig().set("hotbar." + worldName, hotbarName);
 
 			Translator.sendMessage(sender, "bggui.boundHGUI", hotbarName, worldName);
 
 			return true;
 		}
-		if((label.equalsIgnoreCase("listGUIS")) && (sender.hasPermission("bg.listguis"))) {
+		if(label.equalsIgnoreCase("listGUIS") && sender.hasPermission("bg.listguis")) {
 			Translator.sendMessage(sender, "bggui.allGuis");
 
 			for(String gui : getGuis().keySet()) {

@@ -20,6 +20,7 @@ package com.comphenix.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.utility.MinecraftReflection;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -40,7 +41,7 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 	 * Retrieve Channel.
 	 * <p>
 	 * Notes: name of the "channel" used to send the data.
-	 * 
+	 *
 	 * @return The current Channel
 	 */
 	public String getChannel() {
@@ -49,7 +50,7 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 
 	/**
 	 * Set Channel.
-	 * 
+	 *
 	 * @param value - new value.
 	 */
 	public void setChannel(String value) {
@@ -58,7 +59,7 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 
 	/**
 	 * Retrieve payload contents as a raw Netty buffer
-	 * 
+	 *
 	 * @return Payload contents as a Netty buffer
 	 */
 	public ByteBuf getContentsBuffer() {
@@ -67,7 +68,7 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 
 	/**
 	 * Retrieve payload contents
-	 * 
+	 *
 	 * @return Payload contents as a byte array
 	 */
 	public byte[] getContents() {
@@ -79,16 +80,16 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 
 	/**
 	 * Update payload contents with a Netty buffer
-	 * 
+	 *
 	 * @param content - new payload content
 	 */
 	public void setContentsBuffer(ByteBuf contents) {
-		handle.getModifier().withType(ByteBuf.class).write(0, contents);
+		handle.getModifier().withType(ByteBuf.class).write(0, MinecraftReflection.getPacketDataSerializer(contents));
 	}
 
 	/**
 	 * Update payload contents with a byte array
-	 * 
+	 *
 	 * @param content - new payload content
 	 */
 	public void setContents(byte[] content) {

@@ -107,4 +107,19 @@ public class Util {
 			KageCore.debugMessage(value.toString() + " (" + value.getClass().getSimpleName() + ")");
 		}
 	}
+
+	public static String improveStringLook(String string) {
+		string = string.replaceAll("_", " ");
+
+		String[] stringSplit = string.split(" ");
+		StringBuilder stringBuilder = new StringBuilder(string.length());
+
+		for(int i = 0; i < stringSplit.length; i++) {
+			String part = stringSplit[i];
+
+			stringBuilder.append(part.substring(0, 1).toUpperCase() + part.substring(1, part.length()).toLowerCase() + (i == stringSplit.length - 1 ? "" : " "));
+		}
+
+		return stringBuilder.toString();
+	}
 }

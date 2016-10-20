@@ -34,26 +34,26 @@ public class GUIData {
 	}
 
 	public GUIData(String guiName) {
-		this.guiFile = new File(KageCore.getPluginDirectory() + "/gui/" + guiName + ".gd");
-		this.load();
+		guiFile = new File(KageCore.getPluginDirectory() + "/gui/" + guiName + ".gd");
+		load();
 	}
 
 	public void load() {
-		if(!this.deleted) {
+		if(!deleted) {
 			try {
-				if(!this.guiFile.exists()) {
-					this.guiFile.getParentFile().mkdirs();
-					this.guiFile.createNewFile();
-					this.save();
+				if(!guiFile.exists()) {
+					guiFile.getParentFile().mkdirs();
+					guiFile.createNewFile();
+					save();
 				}
 
 				DocumentBuilderFactory ex = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = ex.newDocumentBuilder();
-				Document document = documentBuilder.parse(this.guiFile);
+				Document document = documentBuilder.parse(guiFile);
 				Element root = document.getDocumentElement();
 				root.normalize();
-				this.title = root.getAttribute("title");
-				this.height = Integer.parseInt(root.getAttribute("size"));
+				title = root.getAttribute("title");
+				height = Integer.parseInt(root.getAttribute("size"));
 
 				for(String component : allComponents.keySet()) {
 					NodeList componentNodeList = document.getElementsByTagName(component);
@@ -63,7 +63,7 @@ public class GUIData {
 
 						if(node.getNodeType() == 1) {
 							Element element = (Element) node;
-							this.components.add(((BGComponentData) allComponents.get(component)).parseXML(element));
+							components.add(((BGComponentData) allComponents.get(component)).parseXML(element));
 						}
 					}
 				}
@@ -75,10 +75,10 @@ public class GUIData {
 	}
 
 	public void save() {
-		if(!this.deleted) {
+		if(!deleted) {
 			try {
-				if(!this.guiFile.exists()) {
-					this.guiFile.createNewFile();
+				if(!guiFile.exists()) {
+					guiFile.createNewFile();
 				}
 
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -86,8 +86,8 @@ public class GUIData {
 				Document document = documentBuilder.newDocument();
 				Element root = document.createElement("gui");
 				document.appendChild(root);
-				root.setAttribute("title", this.title);
-				root.setAttribute("size", "" + this.height);
+				root.setAttribute("title", title);
+				root.setAttribute("size", "" + height);
 
 				for(BGComponentData component : components) {
 					Element domSource = document.createElement(component.getComponentName());
@@ -98,7 +98,7 @@ public class GUIData {
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource domSource = new DOMSource(document);
-				StreamResult streamResult = new StreamResult(this.guiFile);
+				StreamResult streamResult = new StreamResult(guiFile);
 				transformer.setOutputProperty("indent", "yes");
 				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 				transformer.transform(domSource, streamResult);
@@ -110,14 +110,14 @@ public class GUIData {
 	}
 
 	public void delete() {
-		this.setDeleted(true);
-		this.guiFile.delete();
+		setDeleted(true);
+		guiFile.delete();
 	}
 
 	public BGGUI toGUI() {
 		BGGUI gui = new BGGUI();
-		gui.setTitle(this.title);
-		gui.setHeight(this.height);
+		gui.setTitle(title);
+		gui.setHeight(height);
 
 		for(BGComponentData component : components) {
 			gui.add(component.toBGComponent());

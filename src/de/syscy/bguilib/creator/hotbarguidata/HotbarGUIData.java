@@ -34,35 +34,35 @@ public class HotbarGUIData {
 	}
 
 	public HotbarGUIData(String guiName) {
-		this.guiFile = new File(KageCore.getPluginDirectory() + "/gui/" + guiName + ".hgd");
-		this.load();
+		guiFile = new File(KageCore.getPluginDirectory() + "/gui/" + guiName + ".hgd");
+		load();
 	}
 
 	public void load() {
-		if(!this.deleted) {
+		if(!deleted) {
 			try {
-				if(!this.guiFile.exists()) {
-					this.guiFile.mkdirs();
-					this.guiFile.createNewFile();
-					this.save();
+				if(!guiFile.exists()) {
+					guiFile.mkdirs();
+					guiFile.createNewFile();
+					save();
 				}
 
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-				Document document = documentBuilder.parse(this.guiFile);
+				Document document = documentBuilder.parse(guiFile);
 				Element root = document.getDocumentElement();
 				root.normalize();
-				
+
 				for(String component : allComponents.keySet()) {
 					NodeList componentNodeList = document.getElementsByTagName(component);
 
 					for(int i = 0; i < componentNodeList.getLength(); ++i) {
 						Node node = componentNodeList.item(i);
-						
+
 						if(node.getNodeType() == 1) {
 							Element element = (Element) node;
 							BGHotbarComponentData newComponent = ((BGHotbarComponentData) allComponents.get(component)).parseXML(element);
-							this.components[newComponent.getX()] = newComponent;
+							components[newComponent.getX()] = newComponent;
 						}
 					}
 				}
@@ -73,13 +73,13 @@ public class HotbarGUIData {
 	}
 
 	public void save() {
-		if(!this.deleted) {
+		if(!deleted) {
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(this.guiFile);
+				FileOutputStream fileOutputStream = new FileOutputStream(guiFile);
 
 				try {
-					if(!this.guiFile.exists()) {
-						this.guiFile.createNewFile();
+					if(!guiFile.exists()) {
+						guiFile.createNewFile();
 					}
 
 					DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -87,8 +87,8 @@ public class HotbarGUIData {
 					Document document = documentBuilder.newDocument();
 					Element root = document.createElement("hgui");
 					document.appendChild(root);
-					BGHotbarComponentData[] streamResult = this.components;
-					int domSource = this.components.length;
+					BGHotbarComponentData[] streamResult = components;
+					int domSource = components.length;
 
 					for(int transformer = 0; transformer < domSource; ++transformer) {
 						BGHotbarComponentData transformerFactory = streamResult[transformer];
@@ -102,7 +102,7 @@ public class HotbarGUIData {
 					TransformerFactory var22 = TransformerFactory.newInstance();
 					Transformer var23 = var22.newTransformer();
 					DOMSource var24 = new DOMSource(document);
-					StreamResult var25 = new StreamResult(this.guiFile);
+					StreamResult var25 = new StreamResult(guiFile);
 					var23.setOutputProperty("indent", "yes");
 					var23.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 					var23.transform(var24, var25);
@@ -120,16 +120,14 @@ public class HotbarGUIData {
 	}
 
 	public void delete() {
-		this.setDeleted(true);
-		this.guiFile.delete();
+		setDeleted(true);
+		guiFile.delete();
 	}
 
 	public BGHotbarGUI toHGUI() {
 		BGHotbarGUI gui = new BGHotbarGUI();
 
-		for(int i = 0; i < this.components.length; i++) {
-			BGHotbarComponentData component = this.components[i];
-			
+		for(BGHotbarComponentData component : components) {
 			if(component != null) {
 				gui.add(component.toBGHotbarComponent());
 			}

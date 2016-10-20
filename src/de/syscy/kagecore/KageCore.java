@@ -16,11 +16,13 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
 import de.syscy.bguilib.BGUILib;
+import de.syscy.kagecore.command.CommandManager;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.translation.PacketTranslator;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
+import de.syscy.kagecore.util.specialblock.SpecialBlockManager;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +33,11 @@ public class KageCore extends JavaPlugin {
 	private static @Getter @Setter boolean debug = true;
 
 	private @Getter KageCoreConfig kageCoreConfig;
+
+	private static @Getter ProtocolManager protocolManager;
+
+	private static @Getter SpecialBlockManager specialBlockManager;
+	private @Getter CommandManager<KageCore> kcCommandManager;
 
 	@Override
 	public void onEnable() {
@@ -49,6 +56,21 @@ public class KageCore extends JavaPlugin {
 		kageCoreConfig = new KageCoreConfig(getConfig());
 		kageCoreConfig.init();
 
+		specialBlockManager = new SpecialBlockManager(this);
+
+		kcCommandManager = new CommandManager<KageCore>(this, "kageCore");
+		kcCommandManager.addCommand(specialBlockManager);
+		getCommand("kageCore").setExecutor(kcCommandManager);
+		getCommand("kageCore").setTabCompleter(kcCommandManager);
+
+		getServer().getPluginManager().registerEvents(specialBlockManager, this);
+		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+			@Override
+			public void run() {
+				specialBlockManager.load();
+			}
+		}, 1);
+
 		Translator.addLanguageFiles(this, new File(pluginDirectory, "lang"));
 		Translator.addLanguageFiles(null, new File(pluginDirectory.getParentFile().getParentFile(), "lang"));
 
@@ -65,11 +87,13 @@ public class KageCore extends JavaPlugin {
 	public void onDisable() {
 		super.onDisable();
 
+		specialBlockManager.save();
+
 		BGUILib.dispose();
 	}
 
 	private void initPacketListening() {
-		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+		protocolManager = ProtocolLibrary.getProtocolManager();
 
 		protocolManager.addPacketListener(new PacketAdapter(this, PacketType.Play.Client.SETTINGS) {
 			@Override
@@ -100,7 +124,7 @@ public class KageCore extends JavaPlugin {
 
 	public static void debugMessage(String message) {
 		if(debug) {
-			String debugMessage = "[" + ChatColor.RED + "DEBUG" + ChatColor.RESET + "(" + ChatColor.GOLD + Thread.currentThread().getStackTrace()[2].getFileName() + "." + Thread.currentThread().getStackTrace()[2].getMethodName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + ChatColor.RESET + ")] " + " " + message;
+			String debugMessage = "[" + ChatColor.RED + "DEBUG" + ChatColor.RESET + " (" + ChatColor.GOLD + Thread.currentThread().getStackTrace()[2].getFileName() + "." + Thread.currentThread().getStackTrace()[2].getMethodName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + ChatColor.RESET + ")] " + " " + message;
 
 			for(OfflinePlayer operator : Bukkit.getServer().getOperators()) {
 				if(operator.isOnline()) {

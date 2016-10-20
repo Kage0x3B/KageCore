@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -15,6 +17,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import de.syscy.kagecore.factory.AdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
+import de.syscy.kagecore.util.ItemAttributes;
+import de.syscy.kagecore.util.ItemAttributes.Attribute;
+import de.syscy.kagecore.util.ItemAttributes.Attribute.Builder;
+import de.syscy.kagecore.util.ItemAttributes.AttributeType;
+import de.syscy.kagecore.util.ItemAttributes.Slot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_10_R1.MojangsonParser;
@@ -32,6 +39,8 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	private final List<EnchantmentTemplatePart> enchantments = new ArrayList<>();
 	private ItemFlag[] itemFlags = new ItemFlag[0];
 	private boolean unbreakable;
+
+	private List<Attribute> itemAttributeList = new ArrayList<>();
 
 	@Override
 	public void load(AdventureFactory<ItemStack> factory, YamlConfiguration templateYaml) throws Exception {
@@ -84,6 +93,53 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		}
 
 		unbreakable = templateYaml.getBoolean("unbreakable", false);
+
+		if(templateYaml.contains("attributes")) {
+			ConfigurationSection attributesSection = templateYaml.getConfigurationSection("attributes");
+
+			for(AttributeType attributeType : AttributeType.values()) {
+				String attributeName = attributeType.getMinecraftID();
+
+				if(!attributesSection.contains(attributeName)) {
+					attributeName = attributeType.getMinecraftID().toLowerCase();
+				}
+
+				if(!attributesSection.contains(attributeName)) {
+					attributeName = attributeType.getMinecraftID().toUpperCase();
+				}
+
+				if(attributesSection.contains(attributeName)) {
+					ConfigurationSection currentAttributeSection = attributesSection.getConfigurationSection(attributeName);
+
+					for(String modifierName : currentAttributeSection.getKeys(false)) {
+						try {
+							String operationName = currentAttributeSection.getString(modifierName + ".operation", "ADD_NUMBER");
+							String slotName = currentAttributeSection.getString(modifierName + ".slot", "");
+							double amount = currentAttributeSection.getDouble(modifierName + ".amount");
+							Operation operation = Operation.valueOf(operationName.toUpperCase());
+
+							Builder modifierBuilder = Attribute.newBuilder();
+							modifierBuilder.name(modifierName);
+							modifierBuilder.type(attributeType);
+							modifierBuilder.operation(operation);
+
+							if(!slotName.isEmpty()) {
+								try {
+									modifierBuilder.slot(Slot.valueOf(slotName.toUpperCase()));
+								} catch(Exception ex) {
+									ex.printStackTrace();
+								}
+							}
+
+							modifierBuilder.amount(amount);
+							itemAttributeList.add(modifierBuilder.build());
+						} catch(Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -117,7 +173,13 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 			itemStackTemplateModifier.modify(itemStack, templateYaml);
 		}
 
-		return itemStack;
+		ItemAttributes itemAttributes = new ItemAttributes(itemStack);
+
+		for(Attribute attribute : itemAttributeList) {
+			itemAttributes.add(attribute);
+		}
+
+		return itemAttributes.getStack();
 	}
 
 	@RequiredArgsConstructor
