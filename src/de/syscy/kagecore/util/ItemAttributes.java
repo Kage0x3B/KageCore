@@ -27,6 +27,25 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public class ItemAttributes {
+	public static NbtBase<?> backup(ItemStack itemStack) {
+		itemStack = MinecraftReflection.getBukkitItemStack(itemStack);
+
+		NbtCompound nbt = (NbtCompound) NbtFactory.fromItemTag(itemStack);
+		NbtList<Map<String, NbtBase<?>>> attributes = nbt.getListOrDefault("AttributeModifiers");
+		attributes.setElementType(NbtType.TAG_COMPOUND);
+
+		return attributes;
+	}
+
+	public static ItemStack restore(ItemStack itemStack, NbtBase<?> attributesNbt) {
+		itemStack = MinecraftReflection.getBukkitItemStack(itemStack);
+
+		NbtCompound nbt = (NbtCompound) NbtFactory.fromItemTag(itemStack);
+		nbt.put(attributesNbt);
+
+		return itemStack;
+	}
+
 	@RequiredArgsConstructor
 	public static class AttributeType {
 		private static ConcurrentMap<String, AttributeType> LOOKUP = Maps.newConcurrentMap();
