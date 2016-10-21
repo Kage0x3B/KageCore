@@ -2,29 +2,41 @@ package de.syscy.kagecore.factory.itemstack;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import de.syscy.kagecore.factory.AbstractAdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
 	private final IFactoryProviderPlugin plugin;
 
 	private @Getter List<ItemStackModifier> fallbackItemStacksModifier = new ArrayList<>();
 	private @Getter List<ItemStackTemplateModifier> itemStackTemplateModifier = new ArrayList<>();
 
-	protected Map<String, ItemStack> cache = new HashMap<>();
+	private LoadingCache<String, ItemStack> cache;
+
+	public ItemStackFactory(IFactoryProviderPlugin plugin) {
+		this.plugin = plugin;
+
+		cache = CacheBuilder.newBuilder().build(new CacheLoader<String, ItemStack>() {
+			@Override
+			public ItemStack load(String templateName) throws Exception {
+				return loadTemplate(templateName);
+			}
+		});
+	}
 
 	@Override
 	public void loadTemplates() {
@@ -36,10 +48,16 @@ public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
 			return null;
 		}
 
-		if(cache.containsKey(templateName)) {
+		try {
 			return cache.get(templateName).clone();
+		} catch(ExecutionException ex) {
+			ex.printStackTrace();
 		}
 
+		return null;
+	}
+
+	private ItemStack loadTemplate(String templateName) throws Exception {
 		FactoryTemplate<ItemStack> template = templates.get(templateName.toLowerCase());
 
 		if(template == null) {
@@ -58,24 +76,18 @@ public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
 			}
 		}
 
-		try {
-			ItemStack itemStack = template.create();
+		ItemStack itemStack = template.create();
 
-			if(itemStack != null) {
-				cache.put(templateName, itemStack);
-
-				return itemStack;
-			}
-		} catch(Exception ex) {
-			ex.printStackTrace();
+		if(itemStack != null) {
+			return itemStack;
 		}
 
-		return null;
+		throw new InvalidTemplateException("There is no template with the name \"" + templateName.toLowerCase() + "\"!");
 	}
 
 	@Override
 	public void reload() {
-		cache.clear();
+		cache.cleanUp();
 
 		super.reload();
 	}
