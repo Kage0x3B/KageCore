@@ -27,6 +27,7 @@ import de.syscy.kagecore.util.book.BookUtil;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
 import de.syscy.kagecore.util.specialblock.SpecialBlockManager;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import de.syscy.kagegui.KageGUI;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,6 +60,8 @@ public class KageCore extends JavaPlugin {
 		ConfigurationSerialization.registerClass(BoundingBox.class);
 
 		saveDefaultConfig();
+
+		VersionCompatClassLoader.init();
 
 		kageCoreConfig = new KageCoreConfig(getConfig());
 		kageCoreConfig.init();

@@ -1,15 +1,14 @@
-package de.syscy.kagecore.util.reflect;
+package de.syscy.kagecore.versioncompat;
 
-import org.bukkit.Bukkit;
-
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum PackageType {
 	//@formatter:off
-	MINECRAFT_SERVER("net.minecraft.server." + getServerVersion()),
-	CRAFTBUKKIT("org.bukkit.craftbukkit." + getServerVersion()),
+	MINECRAFT_SERVER("net.minecraft.server." + VersionCompatClassLoader.getServerVersion()),
+	CRAFTBUKKIT("org.bukkit.craftbukkit." + VersionCompatClassLoader.getServerVersion()),
 	CRAFTBUKKIT_ATTRIBUTE(CRAFTBUKKIT, "attribute"),
 	CRAFTBUKKIT_BLOCK(CRAFTBUKKIT, "block"),
 	CRAFTBUKKIT_BOSS(CRAFTBUKKIT, "boss"),
@@ -56,14 +55,5 @@ public enum PackageType {
 	@Override
 	public String toString() {
 		return path;
-	}
-
-	/**
-	 * Returns the version of your server
-	 *
-	 * @return The server version
-	 */
-	public static String getServerVersion() {
-		return Bukkit.getServer().getClass().getPackage().getName().substring(23);
 	}
 }

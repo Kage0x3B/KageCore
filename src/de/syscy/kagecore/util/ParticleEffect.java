@@ -14,8 +14,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import de.syscy.kagecore.util.ParticleEffect.ParticleData;
-import de.syscy.kagecore.util.reflect.PackageType;
-import de.syscy.kagecore.util.reflect.Reflect;
+import de.syscy.kagecore.versioncompat.PackageType;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 
 /**
  * <b>ParticleEffect Library</b>
@@ -1411,7 +1412,7 @@ public enum ParticleEffect {
 			}
 
 			try {
-				String versionString = PackageType.getServerVersion(); //for example v1_10_R1
+				String versionString = VersionCompatClassLoader.getServerVersion(); //for example v1_10_R1
 				String[] versionSplit = versionString.substring(1, versionString.length() - 3).split("_");
 				majorVersion = Integer.parseInt(versionSplit[0]);
 				minorVersion = Integer.parseInt(versionSplit[1]);

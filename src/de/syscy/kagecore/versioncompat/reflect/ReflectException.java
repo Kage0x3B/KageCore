@@ -33,7 +33,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package de.syscy.kagecore.util.reflect;
+package de.syscy.kagecore.versioncompat.reflect;
 
 import java.lang.reflect.InvocationTargetException;
 

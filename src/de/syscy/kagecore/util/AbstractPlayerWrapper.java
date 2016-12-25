@@ -52,7 +52,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
-import de.syscy.kagecore.util.reflect.Reflect;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
 
 public abstract class AbstractPlayerWrapper implements Player {

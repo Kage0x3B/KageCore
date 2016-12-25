@@ -13,7 +13,7 @@ import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 import com.comphenix.packetwrapper.WrapperPlayServerWindowItems;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.util.reflect.Reflect;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Getter;
 
