@@ -17,18 +17,22 @@ import de.syscy.kagecore.factory.AbstractAdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import lombok.Getter;
 
 public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
 	private final IFactoryProviderPlugin plugin;
+	private final ItemFactoryNMS itemFactoryNMS;
+
+	private final LoadingCache<String, ItemStack> cache;
 
 	private @Getter List<ItemStackModifier> fallbackItemStacksModifier = new ArrayList<>();
 	private @Getter List<ItemStackTemplateModifier> itemStackTemplateModifier = new ArrayList<>();
 
-	private LoadingCache<String, ItemStack> cache;
-
 	public ItemStackFactory(IFactoryProviderPlugin plugin) {
 		this.plugin = plugin;
+
+		itemFactoryNMS = VersionCompatClassLoader.loadClass(ItemFactoryNMS.class);
 
 		cache = CacheBuilder.newBuilder().build(new CacheLoader<String, ItemStack>() {
 			@Override
@@ -94,7 +98,7 @@ public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
 
 	@Override
 	protected FactoryTemplate<ItemStack> createTemplate() {
-		return new ItemStackFactoryTemplate();
+		return new ItemStackFactoryTemplate(itemFactoryNMS);
 	}
 
 	public static interface ItemStackModifier {

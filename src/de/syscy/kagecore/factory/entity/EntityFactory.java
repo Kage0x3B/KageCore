@@ -12,12 +12,18 @@ import de.syscy.kagecore.factory.AbstractAdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class EntityFactory extends AbstractAdventureFactory<Entity> {
 	private final @Getter IFactoryProviderPlugin plugin;
+	private final EntityFactoryNMS entityFactoryNMS;
+
+	public EntityFactory(IFactoryProviderPlugin plugin) {
+		this.plugin = plugin;
+
+		entityFactoryNMS = VersionCompatClassLoader.loadClass(EntityFactoryNMS.class);
+	}
 
 	@Override
 	public void loadTemplates() {
@@ -55,6 +61,6 @@ public class EntityFactory extends AbstractAdventureFactory<Entity> {
 
 	@Override
 	protected FactoryTemplate<Entity> createTemplate() {
-		return new EntityFactoryTemplate();
+		return new EntityFactoryTemplate(entityFactoryNMS);
 	}
 }

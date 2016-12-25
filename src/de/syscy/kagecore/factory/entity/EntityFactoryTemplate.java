@@ -16,7 +16,6 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Blaze;
@@ -72,17 +71,14 @@ import de.syscy.kagecore.factory.AdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.util.Util;
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.ChunkRegionLoader;
-import net.minecraft.server.v1_11_R1.EntityInsentient;
-import net.minecraft.server.v1_11_R1.MojangsonParseException;
-import net.minecraft.server.v1_11_R1.MojangsonParser;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.WorldServer;
+import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("deprecation")
+@RequiredArgsConstructor
 public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private static Map<EntityType, SpecificEntityHandler<?>> specificEntityHandlers = new HashMap<>();
+
+	private final EntityFactoryNMS entityFactoryNMS;
 
 	private EntityFactory entityFactory;
 	private String templateName;
@@ -119,37 +115,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 
 	@Override
 	public Entity create(final Object... args) throws Exception {
-		final Location location = (Location) args[0];
-		final WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
-
-		net.minecraft.server.v1_11_R1.Entity nmsEntity;
-
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		boolean nbtInitialized = false;
-
-		if(!nbt.isEmpty()) {
-			try {
-				nbtTagCompound = MojangsonParser.parse(nbt);
-				nbtInitialized = true;
-			} catch(final MojangsonParseException ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		nbtTagCompound.setString("id", entityTypeID);
-		nmsEntity = ChunkRegionLoader.a(nbtTagCompound, nmsWorld, location.getX(), location.getY(), location.getZ(), true);
-
-		if(nmsEntity == null) {
-			return null;
-		}
-
-		nmsEntity.setPositionRotation(location.getX(), location.getY(), location.getZ(), nmsEntity.yaw, nmsEntity.pitch);
-
-		if(!nbtInitialized && nmsEntity instanceof EntityInsentient) {
-			((EntityInsentient) nmsEntity).prepare(nmsWorld.D(new BlockPosition(nmsEntity)), null);
-		}
-
-		final Entity entity = nmsEntity.getBukkitEntity();
+		final Entity entity = entityFactoryNMS.createEntity(entityTypeID, (Location) args[0], nbt);
 
 		if(!customName.isEmpty()) {
 			entity.setCustomName(customName);
