@@ -16,7 +16,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Blaze;
@@ -63,26 +63,29 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.AdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.util.Util;
-import net.minecraft.server.v1_10_R1.BlockPosition;
-import net.minecraft.server.v1_10_R1.ChunkRegionLoader;
-import net.minecraft.server.v1_10_R1.EntityInsentient;
-import net.minecraft.server.v1_10_R1.MojangsonParseException;
-import net.minecraft.server.v1_10_R1.MojangsonParser;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.WorldServer;
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.ChunkRegionLoader;
+import net.minecraft.server.v1_11_R1.EntityInsentient;
+import net.minecraft.server.v1_11_R1.MojangsonParseException;
+import net.minecraft.server.v1_11_R1.MojangsonParser;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.WorldServer;
 
 @SuppressWarnings("deprecation")
 public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private static Map<EntityType, SpecificEntityHandler<?>> specificEntityHandlers = new HashMap<>();
 
 	private EntityFactory entityFactory;
+	private String templateName;
 	private YamlConfiguration templateYaml;
 
 	private String entityTypeID;
@@ -97,8 +100,9 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private boolean silent;
 
 	@Override
-	public void load(final AdventureFactory<Entity> entityFactory, final YamlConfiguration templateYaml) throws Exception {
+	public void load(final AdventureFactory<Entity> entityFactory, String templateName, final YamlConfiguration templateYaml) throws Exception {
 		this.entityFactory = (EntityFactory) entityFactory;
+		this.templateName = templateName;
 		this.templateYaml = templateYaml;
 
 		entityTypeID = templateYaml.getString("entityTypeID", "");
@@ -118,7 +122,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		final Location location = (Location) args[0];
 		final WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
 
-		net.minecraft.server.v1_10_R1.Entity nmsEntity;
+		net.minecraft.server.v1_11_R1.Entity nmsEntity;
 
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		boolean nbtInitialized = false;
@@ -163,6 +167,8 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		if(specificEntityHandler != null) {
 			specificEntityHandler.handleEntity(entityFactory.getPlugin(), entity, templateYaml);
 		}
+
+		entity.setMetadata("templateName", new FixedMetadataValue(KageCore.getInstance(), templateName));
 
 		return entity;
 	}

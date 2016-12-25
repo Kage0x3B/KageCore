@@ -8,7 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +24,7 @@ import de.syscy.kagecore.util.ItemAttributes.AttributeType;
 import de.syscy.kagecore.util.ItemAttributes.Slot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_10_R1.MojangsonParser;
+import net.minecraft.server.v1_11_R1.MojangsonParser;
 
 public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	private AdventureFactory<ItemStack> factory;
@@ -43,7 +43,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	private List<Attribute> itemAttributeList = new ArrayList<>();
 
 	@Override
-	public void load(AdventureFactory<ItemStack> factory, YamlConfiguration templateYaml) throws Exception {
+	public void load(AdventureFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
 		this.factory = factory;
 		this.templateYaml = templateYaml;
 
@@ -144,7 +144,8 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 	@Override
 	public ItemStack create(Object... args) throws Exception {
-		net.minecraft.server.v1_10_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(new ItemStack(material));
+		net.minecraft.server.v1_11_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(new ItemStack(material));
+
 		nmsItemStack.setData(data);
 
 		if(nbt != null && !nbt.isEmpty()) {

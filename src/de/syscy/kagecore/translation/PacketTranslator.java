@@ -1,12 +1,17 @@
 package de.syscy.kagecore.translation;
 
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.comphenix.packetwrapper.WrapperPlayServerCustomPayload;
@@ -91,10 +96,10 @@ public class PacketTranslator {
 			} else if(event.getPacketType().equals(PacketType.Play.Server.WINDOW_ITEMS)) {
 				WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(packet);
 
-				ItemStack[] newItemStacks = wrapper.getSlotData();
+				List<ItemStack> newItemStacks = new ArrayList<>();
 
-				for(int i = 0; i < newItemStacks.length; i++) {
-					newItemStacks[i] = translateItemStack(newItemStacks[i], player);
+				for(ItemStack itemStack : wrapper.getSlotData()) {
+					newItemStacks.add(translateItemStack(itemStack, player));
 				}
 
 				wrapper.setSlotData(newItemStacks);
@@ -145,7 +150,7 @@ public class PacketTranslator {
 	}
 
 	private static String tryTranslateString(String string, Player player) {
-		if(string.indexOf(packetTranslatorSign) < 0) {
+		if(string == null || string.indexOf(packetTranslatorSign) < 0) {
 			return string;
 		}
 
@@ -208,23 +213,41 @@ public class PacketTranslator {
 			Object[] args = new Object[parts.length - 1];
 
 			for(int i = 1; i < parts.length; i++) {
-				String part = parts[i];
+				if(parts[i] == null || parts[i].isEmpty()) {
+					continue;
+				}
 
-				if(part.startsWith("!")) {
-					part = part.substring(1);
+				String part = parts[i].toLowerCase();
+				char partType = part.charAt(part.length() - 1);
 
-					char partType = part.charAt(0);
-					part = part.substring(1);
+				if(Arrays.asList('i', 'd', 'l', 'f').contains(partType)) {
+					try {
+						part = part.substring(0, part.length() - 1);
 
-					switch(partType) {
-						case 'i':
-							int intArg = Integer.parseInt(part);
-							args[i - 1] = intArg;
-							break;
-						case 'd':
-							double doubleArg = Double.parseDouble(part);
-							args[i - 1] = doubleArg;
-							break;
+						NumberFormat formatter = NumberFormat.getInstance();
+						ParsePosition pos = new ParsePosition(0);
+						Number number = formatter.parse(part, pos);
+
+						if(part.length() == pos.getIndex()) {
+							switch(partType) {
+								case 'i':
+									args[i - 1] = number.intValue();
+									break;
+								case 'd':
+									args[i - 1] = number.doubleValue();
+									break;
+								case 'l':
+									args[i - 1] = number.longValue();
+									break;
+								case 'f':
+									args[i - 1] = number.floatValue();
+									break;
+							}
+						}
+					} catch(Exception ex) {
+						ex.printStackTrace();
+
+						args[i - 1] = parts[i];
 					}
 				} else {
 					args[i - 1] = parts[i];
@@ -258,6 +281,14 @@ public class PacketTranslator {
 			}
 
 			itemMeta.setLore(newLore);
+		}
+
+		if(itemStack.getType().equals(Material.WRITTEN_BOOK)) {
+			BookMeta bookMeta = (BookMeta) itemMeta;
+
+			bookMeta.setTitle(tryTranslateString(bookMeta.getTitle(), player));
+			bookMeta.setAuthor(tryTranslateString(bookMeta.getAuthor(), player));
+			bookMeta.setPages(translateList(bookMeta.getPages(), player));
 		}
 
 		itemStack.setItemMeta(itemMeta);
@@ -320,5 +351,19 @@ public class PacketTranslator {
 		nbtList.setValue(newList);
 
 		return nbtList;
+	}
+
+	private static List<String> translateList(List<String> list, Player player) {
+		if(list.size() <= 0) {
+			return list;
+		}
+
+		List<String> newList = new ArrayList<>(list.size());
+
+		for(String string : list) {
+			newList.add(tryTranslateString(string, player));
+		}
+
+		return newList;
 	}
 }

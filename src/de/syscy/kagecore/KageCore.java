@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.packetwrapper.WrapperPlayClientSettings;
@@ -14,15 +15,19 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.google.common.base.Joiner;
 
-import de.syscy.bguilib.BGUILib;
 import de.syscy.kagecore.command.CommandManager;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.translation.PacketTranslator;
 import de.syscy.kagecore.translation.Translator;
+import de.syscy.kagecore.util.BoundingBox;
+import de.syscy.kagecore.util.ExecuteJSCommand;
+import de.syscy.kagecore.util.book.BookUtil;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
 import de.syscy.kagecore.util.specialblock.SpecialBlockManager;
+import de.syscy.kagegui.KageGUI;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,15 +56,20 @@ public class KageCore extends JavaPlugin {
 
 		pluginDirectory = getDataFolder();
 
+		ConfigurationSerialization.registerClass(BoundingBox.class);
+
 		saveDefaultConfig();
 
 		kageCoreConfig = new KageCoreConfig(getConfig());
 		kageCoreConfig.init();
 
+		debug = kageCoreConfig.isDebug();
+
 		specialBlockManager = new SpecialBlockManager(this);
 
 		kcCommandManager = new CommandManager<KageCore>(this, "kageCore");
 		kcCommandManager.addCommand(specialBlockManager);
+		kcCommandManager.addCommand(new ExecuteJSCommand(this));
 		getCommand("kageCore").setExecutor(kcCommandManager);
 		getCommand("kageCore").setTabCompleter(kcCommandManager);
 
@@ -78,9 +88,16 @@ public class KageCore extends JavaPlugin {
 			getConfig().addDefault("hotbar." + world.getName(), "");
 		}
 
-		BGUILib.init(this);
-
 		initPacketListening();
+
+		BookUtil.init();
+
+		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+			@Override
+			public void run() {
+				KageGUI.init(KageCore.this);
+			}
+		}, 1);
 	}
 
 	@Override
@@ -89,7 +106,7 @@ public class KageCore extends JavaPlugin {
 
 		specialBlockManager.save();
 
-		BGUILib.dispose();
+		KageGUI.dispose();
 	}
 
 	private void initPacketListening() {
@@ -122,9 +139,18 @@ public class KageCore extends JavaPlugin {
 		packetTranslator.initPacketRewriting();
 	}
 
+	public static void debugObjects(Object... objects) {
+		debugMessage(Joiner.on(", ").join(objects), 3);
+	}
+
 	public static void debugMessage(String message) {
+		debugMessage(message, 3);
+	}
+
+	public static void debugMessage(String message, int stackTraceIndex) {
 		if(debug) {
-			String debugMessage = "[" + ChatColor.RED + "DEBUG" + ChatColor.RESET + " (" + ChatColor.GOLD + Thread.currentThread().getStackTrace()[2].getFileName() + "." + Thread.currentThread().getStackTrace()[2].getMethodName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + ChatColor.RESET + ")] " + " " + message;
+			StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stackTraceIndex];
+			String debugMessage = "[" + ChatColor.RED + "DEBUG" + ChatColor.RESET + " (" + ChatColor.GOLD + stackTraceElement.getFileName() + "." + stackTraceElement.getMethodName() + ":" + stackTraceElement.getLineNumber() + ChatColor.RESET + ")] " + " " + message;
 
 			for(OfflinePlayer operator : Bukkit.getServer().getOperators()) {
 				if(operator.isOnline()) {
@@ -132,7 +158,7 @@ public class KageCore extends JavaPlugin {
 				}
 			}
 
-			Bukkit.getLogger().info("[DEBUG (" + Thread.currentThread().getStackTrace()[2].getFileName() + "." + Thread.currentThread().getStackTrace()[2].getMethodName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + ")] " + " " + message);
+			Bukkit.getLogger().info("[DEBUG (" + stackTraceElement.getFileName() + "." + stackTraceElement.getMethodName() + ":" + stackTraceElement.getLineNumber() + ")] " + " " + message);
 		}
 	}
 }

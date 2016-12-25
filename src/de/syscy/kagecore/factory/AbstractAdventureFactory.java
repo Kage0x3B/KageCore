@@ -23,24 +23,28 @@ public abstract class AbstractAdventureFactory<T> implements AdventureFactory<T>
 			folder.mkdirs();
 		}
 
-		File[] templateFiles = folder.listFiles(new FileFilter() {
+		File[] files = folder.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
-				return file.getName().endsWith("." + templateFileExtension);
+				return file.isDirectory() || file.getName().endsWith("." + templateFileExtension);
 			}
 		});
 
-		for(File templateFile : templateFiles) {
-			YamlConfiguration templateYamlFile = YamlConfiguration.loadConfiguration(templateFile);
-			String templateName = templateFile.getName().substring(0, templateFile.getName().indexOf('.')).toLowerCase();
+		for(File file : files) {
+			if(file.isDirectory()) {
+				loadTemplates(file, templateFileExtension);
+			} else {
+				YamlConfiguration templateYamlFile = YamlConfiguration.loadConfiguration(file);
+				String templateName = file.getName().substring(0, file.getName().indexOf('.')).toLowerCase();
 
-			try {
-				FactoryTemplate<T> template = createTemplate();
-				template.load(this, templateYamlFile);
+				try {
+					FactoryTemplate<T> template = createTemplate();
+					template.load(this, templateName, templateYamlFile);
 
-				templates.put(templateName, template);
-			} catch(Exception ex) {
-				ex.printStackTrace();
+					templates.put(templateName, template);
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}

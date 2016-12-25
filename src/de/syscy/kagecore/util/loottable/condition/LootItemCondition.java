@@ -15,6 +15,10 @@ import lombok.AllArgsConstructor;
 public abstract class LootItemCondition implements ConfigurationSerializable {
 	private static Map<String, LootItemConditionFactory<?>> registeredConditions = new HashMap<>();
 
+	static {
+		registerCondition(new RandomChanceCondition.RandomChanceConditionFactory());
+	}
+
 	private final String conditionType;
 
 	public abstract boolean checkCondition(Random random, LootTableInfo lootTableInfo);

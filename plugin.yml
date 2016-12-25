@@ -4,6 +4,7 @@ version: 1.0.1
 description: KageCore is a library with useful stuff
 website: http://syscy.de
 main: de.syscy.kagecore.KageCore
+softdepend: [WorldEdit]
 depend: [ProtocolLib]
 commands:
     kageCore:

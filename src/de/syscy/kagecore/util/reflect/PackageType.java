@@ -49,7 +49,7 @@ public enum PackageType {
 	 * @param className Name of the desired class
 	 * @return a Reflect object
 	 */
-	public Reflect getClass(String className) throws ClassNotFoundException {
+	public Reflect getClass(String className) {
 		return Reflect.on(this + "." + className);
 	}
 

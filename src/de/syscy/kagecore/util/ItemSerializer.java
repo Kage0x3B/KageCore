@@ -8,12 +8,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_10_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.NBTTagList;
+import net.minecraft.server.v1_11_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.NBTTagList;
 
 public final class ItemSerializer {
 	public final static String serializeItemStacks(final ItemStack[] itemStacks) {
@@ -21,9 +21,9 @@ public final class ItemSerializer {
 		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
 		NBTTagList nbtTagList = new NBTTagList();
 
-		for(int i = 0; i < itemStacks.length; i++) {
+		for(ItemStack itemStack : itemStacks) {
 			NBTTagCompound outputObject = new NBTTagCompound();
-			net.minecraft.server.v1_10_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStacks[i]);
+			net.minecraft.server.v1_11_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 
 			if(nmsItemStack != null) {
 				nmsItemStack.save(outputObject);
@@ -31,10 +31,10 @@ public final class ItemSerializer {
 
 			nbtTagList.add(outputObject);
 		}
-		
+
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.set("items", nbtTagList);
-		
+
 		try {
 			NBTCompressedStreamTools.a(nbtTagCompound, (DataOutput) dataOutputStream);
 		} catch(IOException ex) {
@@ -45,24 +45,27 @@ public final class ItemSerializer {
 	}
 
 	public static ItemStack[] deserializeItemStacks(String data) {
+		if(data == null || data.isEmpty()) {
+			return new ItemStack[0];
+		}
+
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(new BigInteger(data, 32).toByteArray());
-		
+
 		NBTTagList itemList = null;
-		
+
 		try {
 			itemList = NBTCompressedStreamTools.a(new DataInputStream(inputStream)).getList("items", 10); //The 10 stands for the type id of the NBT object the list contains, in this case 10 for NBTTagCompound
 		} catch(IOException ex) {
 			ex.printStackTrace();
 		}
-		
+
 		ItemStack[] items = new ItemStack[itemList.size()];
 
 		for(int i = 0; i < itemList.size(); i++) {
 			NBTTagCompound inputObject = (NBTTagCompound) itemList.get(i);
 
-			// IsEmpty
 			if(!inputObject.isEmpty()) {
-				items[i] = CraftItemStack.asCraftMirror(net.minecraft.server.v1_10_R1.ItemStack.createStack(inputObject));
+				items[i] = CraftItemStack.asCraftMirror(new net.minecraft.server.v1_11_R1.ItemStack(inputObject));
 			}
 		}
 

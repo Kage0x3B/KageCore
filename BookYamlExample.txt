@@ -1,0 +1,15 @@
+title: $2Book #Use '$' for colors
+author: Kage0x3B
+generation: ORIGINAL/COPY_OF_ORIGINAL/COPY_OF_COPY/TATTERED
+pages:
+  page1:
+    - test
+    - twvdsdf
+    - tesdfdfs
+    - tesgf
+  page2: wsdfsd
+  page3:
+    - rfwsrogsdf
+    - asdfsdf
+    - sd
+    - sdf

@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.command.exception.AccessDeniedException;
 import de.syscy.kagecore.command.exception.CommandException;
 import de.syscy.kagecore.command.exception.CommandNotFoundException;
@@ -26,21 +27,18 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 		commandManager = this;
 	}
 
-	public CommandManager(T plugin, String command, String... aliases) {
-		super(plugin, command, "", aliases);
-
-		commandManager = this;
-	}
-
 	@Override
 	public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		onCommand(sender, args);
+		arguments.update(sender, args);
+		onCommand(sender);
 
 		return true;
 	}
 
 	@Override
-	public final void onCommand(CommandSender sender, String[] args) {
+	public final void onCommand(CommandSender sender) {
+		String[] args = arguments.getCurrentArgs();
+
 		try {
 			if(args.length == 0) {
 				if(sender.hasPermission(getPermissionPrefix() + ".help")) {
@@ -86,8 +84,7 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 
 					if(command.isAuthorized(sender)) {
 						Translator.sendMessage(sender, "command.help.specifiedCommand.line1", command.getCommand());
-						Translator.sendMessage(sender, "command.help.specifiedCommand.line2", command.getAliases().toString());
-						Translator.sendMessage(sender, "command.help.specifiedCommand.line3", Translator.translate(sender, "command." + command.getCommand() + ".description"));
+						Translator.sendMessage(sender, "command.help.specifiedCommand.line2", Translator.translate(sender, "command." + getHelpDescriptionPrefix() + "." + command.getCommand() + ".description"));
 					}
 				}
 
@@ -110,11 +107,20 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 				System.arraycopy(args, 1, cmdArgs, 0, cmdArgs.length);
 			}
 
-			command.onCommand(sender, cmdArgs);
+			command.getArguments().update(sender, cmdArgs);
+			command.onCommand(sender);
 		} catch(CommandException ex) {
 			Translator.sendMessage(sender, ex.getMessage(), ex.getArgs());
+
+			if(KageCore.isDebug()) {
+				ex.printStackTrace();
+			}
 		} catch(Exception ex) {
-			Translator.sendMessage(sender, "command.exception", ex.getMessage());
+			Translator.sendMessage(sender, "command.exception", ex.getClass().getPackage() + "." + ex.getClass().getName() + ": " + ex.getMessage());
+
+			if(KageCore.isDebug()) {
+				ex.printStackTrace();
+			}
 		}
 
 		return;
@@ -149,7 +155,7 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 				break;
 			}
 
-			Translator.sendMessage(sender, "command.help.entry", getFullCommand(), availableCommands.get(i).getCommand(), Translator.translate(sender, "command." + availableCommands.get(i).getCommand() + ".description"));
+			Translator.sendMessage(sender, "command.help.entry", getFullCommand(), availableCommands.get(i).getCommand(), Translator.translate(sender, "command." + getPermissionPrefix() + "." + availableCommands.get(i).getCommand() + ".description"));
 		}
 
 		Translator.sendMessage(sender, "command.help.footer1", getFullCommand());
@@ -158,7 +164,7 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 
 	public CommandBase<?> getCommand(String commandName) {
 		for(CommandBase<?> command : commands) {
-			if(command.getCommand().equalsIgnoreCase(commandName) || command.getAliases().contains(commandName.toLowerCase())) {
+			if(command.getCommand().equalsIgnoreCase(commandName)) {
 				return command;
 			}
 		}
@@ -204,9 +210,8 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 		return availableCommands;
 	}
 
-	@Override
-	protected void setCommandManager(CommandManager<?> commandManager) {
-		super.setCommandManager(commandManager);
+	public String getHelpDescriptionPrefix() {
+		return (commandManager != null && !commandManager.equals(this) ? commandManager.getHelpDescriptionPrefix() + "." : "") + command;
 	}
 
 	public String getPermissionPrefix() {
@@ -214,6 +219,6 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 	}
 
 	public String getFullCommand() {
-		return commandManager != this && commandManager != null ? commandManager.getPermissionPrefix() + " " + command : command;
+		return commandManager != null && !commandManager.equals(this) ? commandManager.getPermissionPrefix() + " " + command : command;
 	}
 }

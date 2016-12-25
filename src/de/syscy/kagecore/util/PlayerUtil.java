@@ -2,6 +2,9 @@ package de.syscy.kagecore.util;
 
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class PlayerUtil {
 	public static void instantRespawn(PlayerDeathEvent event) {
 		event.getEntity().setHealth(20);

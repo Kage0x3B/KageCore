@@ -7,13 +7,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -23,70 +25,121 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 
 import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.command.CommandBase;
 import de.syscy.kagecore.command.CommandManager;
 import de.syscy.kagecore.command.PlayerCommandBase;
+import de.syscy.kagecore.command.argument.CommandArgument;
+import de.syscy.kagecore.command.argument.StringArgument;
 import de.syscy.kagecore.command.exception.InvalidSpecialBlockTypeException;
-import de.syscy.kagecore.command.exception.InvalidUsageException;
 import de.syscy.kagecore.command.exception.MarkSpecialBlockFailedException;
 import de.syscy.kagecore.translation.Translator;
+import de.syscy.kagecore.util.ParticleDebug;
+import de.syscy.kagecore.util.ParticleEffect.OrdinaryColor;
 
 public class SpecialBlockManager extends CommandManager<KageCore> implements Listener {
+	//@formatter:off
+	private static Color[] colors = {
+		Color.fromRGB(0, 0, 0),
+	    Color.fromRGB(0, 0, 170),
+	    Color.fromRGB(0, 170, 0),
+	    Color.fromRGB(0, 170, 170),
+	    Color.fromRGB(170, 0, 0),
+	    Color.fromRGB(170, 0, 170),
+	    Color.fromRGB(255, 170, 0),
+	    Color.fromRGB(170, 170, 170),
+	    Color.fromRGB(85, 85, 85),
+	    Color.fromRGB(85, 85, 255),
+	    Color.fromRGB(85, 255, 85),
+	    Color.fromRGB(85, 255, 255),
+	    Color.fromRGB(255, 85, 85),
+	    Color.fromRGB(255, 85, 255),
+	    Color.fromRGB(255, 255, 85),
+	    Color.fromRGB(255, 255, 255)
+	};
+	//@formatter:on
+
 	private Map<String, Integer> registeredTypes = new HashMap<>(15);
 	private Map<String, ISpecialBlockMarkListener> registeredListeners = new HashMap<>(15);
 	private ArrayListMultimap<String, Location> specialBlocksByType = ArrayListMultimap.create(15, 2);
 	private Map<Location, String> specialBlocksByLocation = new HashMap<>(30);
 
 	private Map<Player, String> currentPlayerChanges = new HashMap<>(2);
-	//	private List<Player> currentHighlightingPlayers = new ArrayList<>(5);
+	private List<Player> currentHighlightingPlayers = new ArrayList<>(5);
 
 	public SpecialBlockManager(KageCore plugin) {
-		super(plugin, "specialBlock", "sB");
+		super(plugin, "specialBlock");
 
-		addCommand(new PlayerCommandBase<KageCore>(plugin, "mark", "[type]", "m") {
+		CommandArgument<?> typeArg = StringArgument.create("type").values(new Function<CommandSender, List<String>>() {
 			@Override
-			public void onPlayerCommand(Player sender, String[] args) {
-				if(args.length < 1) {
-					throw new InvalidUsageException(this);
-				}
-
-				String specialBlockType = args[0].toLowerCase();
-
-				if(!registeredTypes.containsKey(specialBlockType)) {
-					throw new InvalidSpecialBlockTypeException(args[0]);
-				}
-
-				currentPlayerChanges.put(sender, specialBlockType);
-				Translator.sendMessage(sender, "command.specialBlock.leftClick", specialBlockType);
+			public List<String> apply(CommandSender sender) {
+				return Lists.newArrayList(registeredTypes.keySet());
 			}
-
+		}).build();
+		addCommand(new PlayerCommandBase<KageCore>(plugin, "mark", typeArg) {
 			@Override
-			public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-				return getPossibleSuggestions(args, registeredTypes.keySet());
+			public void onPlayerCommand(Player sender) {
+				String specialBlockType = arguments.getString("type");
+
+				if(!registeredTypes.containsKey(specialBlockType.toLowerCase())) {
+					throw new InvalidSpecialBlockTypeException(specialBlockType);
+				}
+
+				currentPlayerChanges.put(sender, specialBlockType.toLowerCase());
+				Translator.sendMessage(sender, "command.specialBlock.leftClick", specialBlockType);
 			}
 		});
 
-		addCommand(new PlayerCommandBase<KageCore>(plugin, "unmark", "", "um") {
+		addCommand(new PlayerCommandBase<KageCore>(plugin, "unmark") {
 			@Override
-			public void onPlayerCommand(Player sender, String[] args) {
+			public void onPlayerCommand(Player sender) {
 				currentPlayerChanges.put(sender, "");
 				Translator.sendMessage(sender, "command.specialBlock.unmarkLeftClick");
 			}
 		});
 
-		//		addCommand(new PlayerCommandBase<KageCore>(plugin, "hightlight", "", "um") {
-		//			@Override
-		//			public void onPlayerCommand(Player sender, String[] args) {
-		//				if(currentHighlightingPlayers.remove(sender)) {
-		//					Translator.sendMessage(sender, "command.specialBlock.stopHighlighting");
-		//				} else {
-		//					Translator.sendMessage(sender, "command.specialBlock.startHighlighting");
-		//				}
-		//				currentPlayerChanges.put(sender, "");
-		//			}
-		//		});
+		addCommand(new CommandBase<KageCore>(plugin, "list") {
+			@Override
+			public void onCommand(CommandSender sender) {
+				for(String specialBlockType : specialBlocksByType.keySet()) {
+					ChatColor chatColor = ChatColor.values()[colorIndexFromString(specialBlockType)];
+					sender.sendMessage(chatColor + specialBlockType + " (" + specialBlocksByType.get(specialBlockType).size() + ")");
+				}
+			}
+		});
+
+		addCommand(new PlayerCommandBase<KageCore>(plugin, "highlight") {
+			@Override
+			public void onPlayerCommand(Player sender) {
+				if(currentHighlightingPlayers.remove(sender)) {
+					Translator.sendMessage(sender, "command.specialBlock.stopHighlighting");
+				} else {
+					currentHighlightingPlayers.add(sender);
+					Translator.sendMessage(sender, "command.specialBlock.startHighlighting");
+				}
+			}
+		});
+
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			@Override
+			public void run() {
+				if(currentHighlightingPlayers.isEmpty()) {
+					return;
+				}
+
+				for(Entry<Location, String> specialBlockEntry : specialBlocksByLocation.entrySet()) {
+					ParticleDebug.drawCube(specialBlockEntry.getKey(), new OrdinaryColor(colors[colorIndexFromString(specialBlockEntry.getValue())]), currentHighlightingPlayers);
+				}
+			}
+		}, 5, 5);
+	}
+
+	private static int colorIndexFromString(String string) {
+		return Math.abs(string.hashCode()) % colors.length;
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -193,6 +246,8 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 			if(oldSpecialBlockType != null) {
 				specialBlocksByType.remove(oldSpecialBlockType, location);
 			}
+
+			return true;
 		}
 
 		specialBlockType = specialBlockType.toLowerCase();

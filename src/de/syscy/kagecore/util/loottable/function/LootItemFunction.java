@@ -19,6 +19,11 @@ import lombok.Getter;
 public abstract class LootItemFunction implements ConfigurationSerializable {
 	private static Map<String, LootItemFunctionFactory<?>> registeredFunctions = new HashMap<>();
 
+	static {
+		registerFunction(new SetAmountFunction.SetAmountFunctionFactory());
+		registerFunction(new SetDamageFunction.SetDamageFunctionFactory());
+	}
+
 	private String functionType;
 	private @Getter List<LootItemCondition> conditions;
 

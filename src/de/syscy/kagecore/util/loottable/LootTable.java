@@ -117,11 +117,9 @@ public class LootTable implements ConfigurationSerializable {
 		ArrayList<Integer> freeSlots = Lists.newArrayList();
 
 		for(int i = 0; i < inventory.getSize(); i++) {
-			if(inventory.getItem(i) != null || inventory.getItem(i).getType() != Material.AIR) {
-				continue;
+			if(inventory.getItem(i) == null || inventory.getItem(i).getType() == Material.AIR) {
+				freeSlots.add(i);
 			}
-
-			freeSlots.add(i);
 		}
 
 		Collections.shuffle(freeSlots, random);

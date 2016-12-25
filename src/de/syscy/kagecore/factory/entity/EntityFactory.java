@@ -5,7 +5,9 @@ import java.io.File;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.AbstractAdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
@@ -33,7 +35,10 @@ public class EntityFactory extends AbstractAdventureFactory<Entity> {
 			EntityType entityType = EntityType.valueOf(templateName.toUpperCase());
 
 			if(entityType != null) {
-				return location.getWorld().spawnEntity(location, entityType);
+				Entity entity = location.getWorld().spawnEntity(location, entityType);
+				entity.setMetadata("templateName", new FixedMetadataValue(KageCore.getInstance(), templateName.toLowerCase()));
+
+				return entity;
 			} else {
 				throw new InvalidTemplateException("There is no template/EntityType with the name \"" + templateName.toLowerCase() + "\"!");
 			}

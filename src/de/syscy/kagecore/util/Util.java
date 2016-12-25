@@ -21,11 +21,13 @@ import com.comphenix.packetwrapper.AbstractPacket;
 
 import de.syscy.kagecore.KageCore;
 import lombok.Getter;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class Util {
 	private static final @Getter Random random = new Random();
 
-	public static boolean isNumber(String string) {
+	public boolean isNumber(String string) {
 		NumberFormat formatter = NumberFormat.getInstance();
 		ParsePosition pos = new ParsePosition(0);
 		formatter.parse(string, pos);
@@ -33,19 +35,19 @@ public class Util {
 		return string.length() == pos.getIndex();
 	}
 
-	public static int clamp(int value, int min, int max) {
+	public int clamp(int value, int min, int max) {
 		return Math.max(min, Math.min(max, value));
 	}
 
-	public static double clamp(double value, double min, double max) {
+	public double clamp(double value, double min, double max) {
 		return Math.max(min, Math.min(max, value));
 	}
 
-	public static float clamp(float value, float min, float max) {
+	public float clamp(float value, float min, float max) {
 		return Math.max(min, Math.min(max, value));
 	}
 
-	public static void copy(InputStream inputStream, File file) {
+	public void copy(InputStream inputStream, File file) {
 		try {
 			OutputStream outputStream = new FileOutputStream(file);
 			byte[] buffer = new byte[1024];
@@ -62,7 +64,7 @@ public class Util {
 		}
 	}
 
-	public static Entity getLookingAtEntity(Player player, int maxRange) {
+	public Entity getLookingAtEntity(Player player, int maxRange) {
 		List<Entity> nearbyEntities = player.getNearbyEntities(maxRange, maxRange, maxRange);
 		ArrayList<LivingEntity> nearbyLivingEntities = new ArrayList<LivingEntity>();
 
@@ -100,7 +102,7 @@ public class Util {
 		return null;
 	}
 
-	public static void printValues(AbstractPacket packet) {
+	public void printValues(AbstractPacket packet) {
 		KageCore.debugMessage(packet.getClass().getSimpleName() + " values:");
 
 		for(Object value : packet.getHandle().getModifier().getValues()) {
@@ -108,7 +110,7 @@ public class Util {
 		}
 	}
 
-	public static String improveStringLook(String string) {
+	public String improveStringLook(String string) {
 		string = string.replaceAll("_", " ");
 
 		String[] stringSplit = string.split(" ");
@@ -123,7 +125,7 @@ public class Util {
 		return stringBuilder.toString();
 	}
 
-	public static int nextIntRange(Random random, int min, int max) {
+	public int nextIntRange(Random random, int min, int max) {
 		if(min >= max) {
 			return min;
 		}

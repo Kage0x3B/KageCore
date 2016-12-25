@@ -29,12 +29,16 @@ public class LootTableInfo {
 		lootTables.remove(lootTable);
 	}
 
+	public static Builder builder(LootTableRegistry lootTableRegistry, World world) {
+		return new Builder(lootTableRegistry, world);
+	}
+
 	public static class Builder {
 		private final LootTableRegistry lootTableRegistry;
 		private final World world;
 		private float luck = 0.0f;
 
-		public Builder(LootTableRegistry lootTableRegistry, World world) {
+		private Builder(LootTableRegistry lootTableRegistry, World world) {
 			this.lootTableRegistry = lootTableRegistry;
 			this.world = world;
 		}
