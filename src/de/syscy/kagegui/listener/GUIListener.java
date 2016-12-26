@@ -6,11 +6,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagegui.KageGUI;
 
 public class GUIListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
+		KageCore.debugMessage(event.getAction() + "");
 		if(event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
 

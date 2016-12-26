@@ -1,7 +1,6 @@
 package de.syscy.kagegui.inventory.component;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,29 +13,20 @@ import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KItemSpinner extends KComponent {
-	private @Setter SpinnerMode spinnerMode;
+	protected @Getter @Setter SpinnerMode spinnerMode = SpinnerMode.ITEM_IN_CENTER;
 
-	private List<SpinnerItem> spinnerItems;
+	protected @Getter List<SpinnerItem> spinnerItems = new ArrayList<>();
 
-	private int rotationsLeft;
-	private int currentOffset = 0;
-	private int waitingTimer = 1;
+	protected @Getter int rotationsLeft;
+	protected int currentOffset = 0;
+	protected int waitingTimer = 1;
 
-	private @Getter boolean finished = false;
+	protected @Getter boolean finished = false;
 
-	private KItemSpinner(Builder builder) {
-		super(builder);
-
-		spinnerMode = builder.spinnerMode;
-		spinnerItems = builder.spinnerItems;
-		Collections.shuffle(spinnerItems);
-
-		if(spinnerItems.isEmpty()) {
-			throw new IllegalArgumentException("You need to have at least one spinner item!");
-		}
+	public KItemSpinner(int x, int y) {
+		super(x, y);
 
 		rotationsLeft = Util.getRandom().nextInt(10) + 10;
 	}
@@ -144,28 +134,14 @@ public class KItemSpinner extends KComponent {
 		}
 	}
 
-	public static Builder builder() {
-		return new Builder();
-	}
+	public void setSpinnerItems(List<SpinnerItem> spinnerItems) {
+		Collections.shuffle(spinnerItems);
 
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KItemSpinner> {
-		private @Setter SpinnerMode spinnerMode = SpinnerMode.ITEM_IN_CENTER;
-
-		private List<SpinnerItem> spinnerItems = new ArrayList<>();
-
-		public void addSpinnerItem(SpinnerItem spinnerItem) {
-			spinnerItems.add(spinnerItem);
+		if(spinnerItems.isEmpty()) {
+			throw new IllegalArgumentException("You need to have at least one spinner item!");
 		}
 
-		public void addSpinnerItems(Collection<SpinnerItem> spinnerItems) {
-			this.spinnerItems.addAll(spinnerItems);
-		}
-
-		@Override
-		public KItemSpinner build() {
-			return new KItemSpinner(this);
-		}
+		this.spinnerItems = spinnerItems;
 	}
 
 	@Data

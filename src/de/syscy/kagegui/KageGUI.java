@@ -1,5 +1,6 @@
 package de.syscy.kagegui;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -10,6 +11,7 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagegui.crafting.IDefaultCraftingGUIProvider;
 import de.syscy.kagegui.crafting.KCraftingGUI;
 import de.syscy.kagegui.inventory.KGUI;
@@ -23,6 +25,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class KageGUI {
 	private static @Getter JavaPlugin plugin;
+	private static @Getter File guiDirectory;
 
 	private static int timer = 0;
 
@@ -33,6 +36,12 @@ public class KageGUI {
 
 	public static void init(JavaPlugin plugin) {
 		KageGUI.plugin = plugin;
+
+		guiDirectory = new File(KageCore.getPluginDirectory(), "gui");
+
+		if(!guiDirectory.exists()) {
+			guiDirectory.mkdirs();
+		}
 
 		plugin.getServer().getPluginManager().registerEvents(new GUIListener(), plugin);
 		plugin.getServer().getPluginManager().registerEvents(new ChatListener(), plugin);

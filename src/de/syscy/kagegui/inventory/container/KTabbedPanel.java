@@ -10,7 +10,7 @@ import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.IContainer;
 import de.syscy.kagegui.inventory.KGUI;
 import de.syscy.kagegui.inventory.component.KComponent;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import de.syscy.kagegui.util.Util;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,14 +44,14 @@ public class KTabbedPanel implements IContainer {
 
 	@Override
 	public void render() {
-		for(int i = 0; i < tabs.size(); ++i) {
-			renderItem(gui.getInventoryWrapper(), i, 0, 1, 1, i == currentTab ? tabs.get(i).getActiveTabIcon() : tabs.get(i).getTabIcon(), tabs.get(i).getTitle(), tabs.get(i).getLore());
+		for(int i = 0; i < tabs.size(); i++) {
+			renderItem(gui.getInventoryWrapper(), i, 0, 1, 1, i == currentTab ? tabs.get(i).getActiveTabIcon() : tabs.get(i).getTabIcon(), tabs.get(i).getTitle(), tabs.get(i).getLoreBuilder());
 		}
 
 		tabs.get(currentTab).render(getGui());
 	}
 
-	public void renderItem(IInventoryWrapper inventory, int x, int y, int width, int height, ItemIcon item, String title, Lore lore) {
+	public void renderItem(IInventoryWrapper inventory, int x, int y, int width, int height, ItemIcon item, String title, LoreBuilder lore) {
 		inventory.setItem(Util.toSlotCoordinate(x, y), item.getItem(title, lore));
 	}
 

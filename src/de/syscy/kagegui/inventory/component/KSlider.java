@@ -8,56 +8,30 @@ import org.bukkit.inventory.ItemStack;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.SliderValueChangeListener;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KSlider extends KComponent {
-	private @Getter String title;
-	private @Getter Lore lore;
+	protected @Getter @Setter String title;
+	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
 
-	private @Getter ItemIcon arrowIcon;
-	private @Getter ItemIcon lineIcon;
-	private @Getter ItemIcon knobIcon;
+	protected @Getter @Setter ItemIcon arrowIcon = new ItemIcon(new ItemStack(Material.NETHER_STAR));
+	protected @Getter @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 2));
+	protected @Getter @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE));
 
-	private @Getter int value;
-	private @Getter int step;
-	private @Getter int minValue;
-	private @Getter int maxValue;
-	private @Getter int knobX;
+	protected @Getter int value = 0;
+	protected @Getter @Setter int step = 1;
+	protected @Getter int minValue = 0;
+	protected @Getter int maxValue = 100;
+	protected @Getter int knobX;
 
-	private SliderValueChangeListener valueChangeListener;
+	protected @Setter SliderValueChangeListener valueChangeListener;
 
-	private KSlider(Builder builder) {
-		super(builder);
+	public KSlider(int x, int y) {
+		super(x, y);
 
-		title = builder.title;
-		lore = builder.lore;
-		arrowIcon = builder.arrowIcon;
-		lineIcon = builder.lineIcon;
-		knobIcon = builder.knobIcon;
-
-		value = builder.value;
-		step = builder.step;
-		minValue = builder.minValue;
-		maxValue = builder.maxValue;
-
-		valueChangeListener = builder.valueChangeListener;
-
-		if(value < minValue) {
-			value = minValue;
-		} else if(value > maxValue) {
-			value = maxValue;
-		}
-
-		if(x + width > 9) {
-			width = 9 - x;
-		} else if(width < 2) {
-			width = 2;
-		}
-
-		width = builder.width;
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "Current value: " + value);
 
 		onValueChange();
 	}
@@ -71,10 +45,10 @@ public class KSlider extends KComponent {
 
 	@Override
 	public void render(IInventoryWrapper inventory) {
-		this.renderItem(inventory, x, y, width, height, lineIcon, title, lore);
-		this.renderItem(inventory, x + knobX, y, 1, height, knobIcon, title, lore);
-		this.renderItem(inventory, x, y, 1, height, arrowIcon, title, lore);
-		this.renderItem(inventory, x + width - 1, y, 1, height, arrowIcon, title, lore);
+		this.renderItem(inventory, x, y, width, height, lineIcon, title, loreBuilder);
+		this.renderItem(inventory, x + knobX, y, 1, height, knobIcon, title, loreBuilder);
+		this.renderItem(inventory, x, y, 1, height, arrowIcon, title, loreBuilder);
+		this.renderItem(inventory, x + width - 1, y, 1, height, arrowIcon, title, loreBuilder);
 	}
 
 	@Override
@@ -128,8 +102,6 @@ public class KSlider extends KComponent {
 	}
 
 	public void onValueChange() {
-		lore.setTemporaryFirstLine("Current value: " + value);
-
 		if(valueChangeListener != null) {
 			valueChangeListener.onValueChange(this);
 		}
@@ -141,6 +113,7 @@ public class KSlider extends KComponent {
 			knobX = (int) ((float) value / valueRange * sections) + 1;
 		}
 
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "Current value: " + value);
 		gui.markDirty();
 	}
 
@@ -153,36 +126,10 @@ public class KSlider extends KComponent {
 	}
 
 	public void setMaxValue(int maxValue) {
-		minValue = maxValue;
+		this.maxValue = maxValue;
 
 		if(value > maxValue) {
 			value = maxValue;
-		}
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KSlider> {
-		private @Setter String title;
-		private @Setter Lore lore;
-
-		private @Setter ItemIcon arrowIcon = new ItemIcon(new ItemStack(Material.NETHER_STAR));
-		private @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 2));
-		private @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE));
-
-		private @Setter int value = 0;
-		private @Setter int step = 1;
-		private @Setter int minValue = 0;
-		private @Setter int maxValue = 100;
-
-		private @Setter SliderValueChangeListener valueChangeListener;
-
-		@Override
-		public KSlider build() {
-			return new KSlider(this);
 		}
 	}
 }

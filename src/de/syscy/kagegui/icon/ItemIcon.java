@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.syscy.kagegui.IInventoryGUI;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 
 public class ItemIcon {
@@ -23,15 +23,15 @@ public class ItemIcon {
 
 	}
 
-	public ItemStack getItem(String title, Lore lore) {
+	public ItemStack getItem(String title, final LoreBuilder loreBuilder) {
 		ItemMeta newItemMeta = itemStack.getItemMeta();
 
 		if(title != null && !title.isEmpty()) {
 			newItemMeta.setDisplayName(title);
 		}
 
-		if(lore != null && !lore.getAsList().isEmpty()) {
-			newItemMeta.setLore(lore.getAsList());
+		if(!loreBuilder.isEmpty()) {
+			newItemMeta.setLore(loreBuilder.getLore());
 		}
 
 		itemStack.setItemMeta(newItemMeta);

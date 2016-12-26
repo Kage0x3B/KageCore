@@ -11,71 +11,33 @@ import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.KGUI;
 import de.syscy.kagegui.inventory.listener.ButtonClickListener;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KList extends KComponent {
-	private LinkedList<KComponent> components = new LinkedList<>();
-	private LinkedList<KComponent> currentPageComponents = new LinkedList<>();
+	protected LinkedList<KComponent> components = new LinkedList<>();
+	protected LinkedList<KComponent> currentPageComponents = new LinkedList<>();
 
-	private KComponent[] navigationComponents;
+	protected KComponent[] navigationComponents = new KComponent[9];
 
-	private int listBottomMargin;
+	protected @Getter @Setter int listBottomMargin = 0;
 
-	private KButton previousPageButton;
-	private KButton nextPageButton;
+	protected @Getter ItemIcon previousPageIcon = new ItemIcon(new ItemStack(Material.PAPER));
+	protected @Getter ItemIcon nextPageIcon = new ItemIcon(new ItemStack(Material.PAPER));
 
-	private @Getter int currentPage = 0;
-	private int lastPage = -1;
-	private @Getter int totalPages = 0;
-	private @Getter int componentsPerPage = 0;
+	protected KButton previousPageButton;
+	protected KButton nextPageButton;
 
-	private KList(Builder builder) {
-		super(builder);
+	protected @Getter int currentPage = 0;
+	protected int lastPage = -1;
+	protected @Getter int totalPages = 0;
+	protected @Getter int componentsPerPage = 0;
 
-		listBottomMargin = builder.listBottomMargin;
+	public KList(int x, int y) {
+		super(x, y);
 
-		if(builder.height > 1) {
-			navigationComponents = new KComponent[builder.width];
-
-			KButton.Builder previousPageButtonBuilder = KButton.builder();
-			previousPageButtonBuilder.title("§kgui.list.previousPage;");
-			previousPageButtonBuilder.lore(new Lore("§kgui.list.currentPage;" + (currentPage + 1) + "i;"));
-			previousPageButtonBuilder.icon(builder.previousPageIcon);
-			previousPageButtonBuilder.clickListener(new ButtonClickListener() {
-				@Override
-				public void onClick(KButton button, Player player) {
-					if(currentPage > 0) {
-						currentPage--;
-					}
-
-					previousPageButton.setLore(new Lore("§kgui.list.currentPage;" + (currentPage + 1) + "i;"));
-					nextPageButton.setLore(new Lore("§kgui.list.currentPage;" + (currentPage + 1) + "i;"));
-				}
-			});
-
-			addNavigationComponent(0, previousPageButton = previousPageButtonBuilder.build());
-
-			KButton.Builder nextPageButtonBuilder = KButton.builder();
-			nextPageButtonBuilder.title("§kgui.list.nextPage;");
-			nextPageButtonBuilder.lore(new Lore("§kgui.list.currentPage;" + (currentPage + 1) + "i;"));
-			nextPageButtonBuilder.icon(builder.nextPageIcon);
-			nextPageButtonBuilder.clickListener(new ButtonClickListener() {
-				@Override
-				public void onClick(KButton button, Player player) {
-					if(currentPage < totalPages - 1) {
-						currentPage++;
-					}
-
-					previousPageButton.setLore(new Lore("§kgui.list.currentPage;" + (currentPage + 1) + "i;"));
-					nextPageButton.setLore(new Lore("§kgui.list.currentPage;" + (currentPage + 1) + "i;"));
-				}
-			});
-
-			addNavigationComponent(width - 1, nextPageButton = nextPageButtonBuilder.build());
-		}
+		createPageSwitchButtons();
 	}
 
 	@Override
@@ -90,11 +52,9 @@ public class KList extends KComponent {
 			component.update();
 		}
 
-		if(navigationComponents != null) {
-			for(KComponent navigationComponent : navigationComponents) {
-				if(navigationComponent != null) {
-					navigationComponent.update();
-				}
+		for(int i = 0; i < width; i++) {
+			if(navigationComponents[i] != null) {
+				navigationComponents[i].update();
 			}
 		}
 	}
@@ -105,18 +65,16 @@ public class KList extends KComponent {
 			component.render(inventory);
 		}
 
-		if(navigationComponents != null) {
-			for(KComponent navigationComponent : navigationComponents) {
-				if(navigationComponent != null) {
-					navigationComponent.render(inventory);
-				}
+		for(int i = 0; i < width; i++) {
+			if(navigationComponents[i] != null) {
+				navigationComponents[i].render(inventory);
 			}
 		}
 	}
 
 	@Override
 	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
-		if(navigationComponents != null && localY == height - 1) {
+		if(localY == height - 1) {
 			if(navigationComponents[localX] != null) {
 				navigationComponents[localX].onClick(event, player, 0, 0);
 			}
@@ -161,6 +119,18 @@ public class KList extends KComponent {
 		component.setHeight(1);
 
 		navigationComponents[x] = component;
+	}
+
+	public void setPreviousPageIcon(ItemIcon previousPageIcon) {
+		this.previousPageIcon = previousPageIcon;
+
+		createPageSwitchButtons();
+	}
+
+	public void setNextPageIcon(ItemIcon nextPageIcon) {
+		this.nextPageIcon = nextPageIcon;
+
+		createPageSwitchButtons();
 	}
 
 	@Override
@@ -217,20 +187,47 @@ public class KList extends KComponent {
 		totalPages = (int) Math.ceil((float) components.size() / (float) componentsPerPage);
 	}
 
-	public static Builder builder() {
-		return new Builder();
+	private void createPageSwitchButtons() {
+		previousPageButton = new KButton(0, 0);
+		previousPageButton.setIcon(previousPageIcon);
+		previousPageButton.setClickListener(new ButtonClickListener() {
+			@Override
+			public void onClick(KButton button, Player player) {
+				if(currentPage > 0) {
+					currentPage--;
+				}
+
+				updatePageSwitchButtons();
+			}
+		});
+
+		navigationComponents[0] = null;
+		addNavigationComponent(0, previousPageButton);
+
+		nextPageButton = new KButton(0, 0);
+		nextPageButton.setIcon(nextPageIcon);
+		nextPageButton.setClickListener(new ButtonClickListener() {
+			@Override
+			public void onClick(KButton button, Player player) {
+				if(currentPage < totalPages - 1) {
+					currentPage++;
+				}
+
+				updatePageSwitchButtons();
+			}
+		});
+
+		navigationComponents[width - 1] = null;
+		addNavigationComponent(width - 1, nextPageButton);
+
+		updatePageSwitchButtons();
 	}
 
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KList> {
-		private @Setter ItemIcon previousPageIcon = new ItemIcon(new ItemStack(Material.NETHER_STAR));
-		private @Setter ItemIcon nextPageIcon = new ItemIcon(new ItemStack(Material.NETHER_STAR));
+	private void updatePageSwitchButtons() {
+		previousPageButton.setTitle("§kgui.list.previousPage;");
+		nextPageButton.setTitle("§kgui.list.nextPage;");
 
-		private @Setter int listBottomMargin = 0;
-
-		@Override
-		public KList build() {
-			return new KList(this);
-		}
+		previousPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, "§kgui.list.currentPage;" + (currentPage + 1) + "i;");
+		nextPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, "§kgui.list.currentPage;" + (currentPage + 1) + "i;");
 	}
 }

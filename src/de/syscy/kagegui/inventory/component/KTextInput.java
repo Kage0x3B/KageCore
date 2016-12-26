@@ -10,30 +10,23 @@ import de.syscy.kagegui.callbacks.ChatInputCallback;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.TextInputListener;
 import de.syscy.kagegui.listener.ChatListener;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KTextInput extends KComponent implements ChatInputCallback {
-	private @Getter String title;
-	private @Getter Lore lore;
-	private @Getter ItemIcon icon;
+	protected @Getter @Setter String title;
+	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
+	protected @Getter @Setter ItemIcon icon = new ItemIcon(new ItemStack(Material.BOOK_AND_QUILL));
 
-	private @Getter String text;
+	protected @Getter String text = "";
 
-	private TextInputListener textInputListener;
+	protected TextInputListener textInputListener;
 
-	private KTextInput(Builder builder) {
-		super(builder);
+	public KTextInput(int x, int y) {
+		super(x, y);
 
-		title = builder.title;
-		lore = builder.lore;
-		icon = builder.icon;
-		text = builder.text;
-		textInputListener = builder.textInputListener;
-
-		lore.setTemporaryFirstLine("§kgui.textInput.lore1;");
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "§kgui.textInput.lore1;");
 	}
 
 	@Override
@@ -43,7 +36,7 @@ public class KTextInput extends KComponent implements ChatInputCallback {
 
 	@Override
 	public void render(IInventoryWrapper inventory) {
-		this.renderItem(inventory, x, y, width, height, icon, title, lore);
+		this.renderItem(inventory, x, y, width, height, icon, title, loreBuilder);
 	}
 
 	@Override
@@ -63,33 +56,13 @@ public class KTextInput extends KComponent implements ChatInputCallback {
 		}
 
 		this.text = text;
-		lore.setTemporaryFirstLine(text);
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "§kgui.textInput.lore1;" + text + ";");
 
 		gui.markDirty();
 	}
 
 	public void setText(String text) {
 		this.text = text;
-		lore.setTemporaryFirstLine(text);
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KTextInput> {
-		private @Setter String title;
-		private @Setter Lore lore;
-		private @Setter ItemIcon icon = new ItemIcon(new ItemStack(Material.BOOK_AND_QUILL));
-
-		private @Setter String text = "";
-
-		private @Setter TextInputListener textInputListener;
-
-		@Override
-		public KTextInput build() {
-			return new KTextInput(this);
-		}
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "§kgui.textInput.lore1;" + text + ";");
 	}
 }

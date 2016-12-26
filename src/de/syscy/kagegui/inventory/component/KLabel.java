@@ -6,22 +6,17 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KLabel extends KComponent {
-	private @Getter @Setter String title = "Button";
-	private @Getter @Setter Lore lore;
-	private @Getter @Setter ItemIcon icon;
+	protected @Getter @Setter String title = "Label";
+	protected @Getter @Setter LoreBuilder lore;
+	protected @Getter @Setter ItemIcon icon = new ItemIcon(Material.NAME_TAG);
 
-	private KLabel(Builder builder) {
-		super(builder);
-
-		title = builder.title;
-		icon = builder.icon;
-		lore = builder.lore;
+	public KLabel(int x, int y) {
+		super(x, y);
 	}
 
 	@Override
@@ -37,21 +32,5 @@ public class KLabel extends KComponent {
 	@Override
 	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
 
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KLabel> {
-		private @Setter String title;
-		private @Setter Lore lore;
-		private @Setter ItemIcon icon = new ItemIcon(Material.NAME_TAG);
-
-		@Override
-		public KLabel build() {
-			return new KLabel(this);
-		}
 	}
 }

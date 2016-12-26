@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KItemContainer extends KComponent {
 	private static final ItemStack AIR;
@@ -17,15 +16,14 @@ public class KItemContainer extends KComponent {
 		AIR = new ItemStack(Material.AIR);
 	}
 
-	private ItemStack item;
-	private @Getter boolean refill;
-	private @Getter boolean empty = false;
+	private @Getter @Setter ItemStack item;
+	private @Getter @Setter boolean refill = true;
+	private @Getter @Setter boolean empty = false;
 
-	private KItemContainer(Builder builder) {
-		super(builder);
+	private KItemContainer(int x, int y, ItemStack item) {
+		super(x, y);
 
-		item = builder.item;
-		refill = builder.refill;
+		this.item = item;
 	}
 
 	@Override
@@ -64,21 +62,5 @@ public class KItemContainer extends KComponent {
 		}
 
 		gui.markDirty();
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KItemContainer> {
-		private @Setter ItemStack item = AIR;
-
-		private @Setter boolean refill = true;
-
-		@Override
-		public KItemContainer build() {
-			return new KItemContainer(this);
-		}
 	}
 }

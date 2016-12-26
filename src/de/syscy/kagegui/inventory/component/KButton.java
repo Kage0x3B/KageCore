@@ -7,26 +7,19 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.ButtonClickListener;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class KButton extends KComponent {
-	private @Getter @Setter String title = "Button";
-	private @Getter @Setter Lore lore;
-	private @Getter @Setter ItemIcon icon;
+	protected @Getter @Setter String title = "Button";
+	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
+	protected @Getter @Setter ItemIcon icon = new ItemIcon(Material.STONE);
 
-	private @Setter ButtonClickListener clickListener;
+	protected @Setter ButtonClickListener clickListener;
 
-	protected KButton(Builder builder) {
-		super(builder);
-
-		title = builder.title;
-		lore = builder.lore;
-		icon = builder.icon;
-
-		clickListener = builder.clickListener;
+	public KButton(int x, int y) {
+		super(x, y);
 	}
 
 	@Override
@@ -36,7 +29,7 @@ public class KButton extends KComponent {
 
 	@Override
 	public void render(IInventoryWrapper inventory) {
-		this.renderItem(inventory, x, y, width, height, icon, title, lore);
+		this.renderItem(inventory, x, y, width, height, icon, title, loreBuilder);
 	}
 
 	@Override
@@ -45,24 +38,6 @@ public class KButton extends KComponent {
 			clickListener.onClick(this, player);
 
 			gui.markDirty();
-		}
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	@Accessors(fluent = true)
-	public static class Builder extends KComponent.Builder<KButton> {
-		private @Setter String title;
-		private @Setter Lore lore;
-		private @Setter ItemIcon icon = new ItemIcon(Material.STONE);
-
-		private @Setter ButtonClickListener clickListener = null;
-
-		@Override
-		public KButton build() {
-			return new KButton(this);
 		}
 	}
 }

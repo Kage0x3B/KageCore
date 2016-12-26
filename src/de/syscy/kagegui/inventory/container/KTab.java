@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.KGUI;
 import de.syscy.kagegui.inventory.component.KComponent;
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 import de.syscy.kagegui.util.Util;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,12 +16,13 @@ import lombok.Setter;
 public class KTab {
 	private @Getter KGUI gui;
 
-	protected final List<KComponent> components = new ArrayList<>();
+	private @Getter @Setter String title;
+	private final @Getter LoreBuilder loreBuilder = new LoreBuilder();
 
 	private @Getter @Setter ItemIcon tabIcon;
 	private @Getter @Setter ItemIcon activeTabIcon;
-	private @Getter @Setter String title;
-	private @Getter @Setter Lore lore;
+
+	protected final List<KComponent> components = new ArrayList<>();
 
 	public KTab(ItemIcon tabIcon, String title) {
 		this(tabIcon, tabIcon, title);
@@ -29,7 +30,6 @@ public class KTab {
 
 	public KTab(ItemIcon tabIcon, ItemIcon activeTabIcon, String title) {
 		this.title = "Tab";
-		lore = new Lore("");
 		this.tabIcon = tabIcon;
 		this.activeTabIcon = activeTabIcon;
 		this.title = title;

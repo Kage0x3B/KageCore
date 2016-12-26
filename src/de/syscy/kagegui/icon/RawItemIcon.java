@@ -2,7 +2,7 @@ package de.syscy.kagegui.icon;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.syscy.kagegui.util.Lore;
+import de.syscy.kagegui.util.LoreBuilder;
 
 public class RawItemIcon extends ItemIcon {
 	public RawItemIcon(ItemStack item) {
@@ -10,7 +10,7 @@ public class RawItemIcon extends ItemIcon {
 	}
 
 	@Override
-	public ItemStack getItem(String title, Lore lore) {
+	public ItemStack getItem(String title, LoreBuilder lore) {
 		return itemStack;
 	}
 }
