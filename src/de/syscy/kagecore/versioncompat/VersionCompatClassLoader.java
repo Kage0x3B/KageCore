@@ -52,39 +52,41 @@ public class VersionCompatClassLoader {
 			return (T) compatibleClassCache.get(interfaceClass);
 		}
 
-		String interfaceClassPath = interfaceClass.getPackage() + "." + interfaceClass.getName();
-
 		Reflect compatibleClass = null;
 
 		//Try to load a version compatible class
 
-		compatibleClass = loadClass(interfaceClassPath + "_" + serverVersion);
+		String className = interfaceClass.getSimpleName();
+		String classPath = interfaceClass.getName();
+		String packagePath = interfaceClass.getPackage().getName();
+
+		compatibleClass = loadClass(classPath + "_" + serverVersion);
 
 		if(compatibleClass == null) {
-			compatibleClass = loadClass(interfaceClass.getPackage() + "." + serverVersion + "." + interfaceClass.getName());
+			compatibleClass = loadClass(packagePath + "." + serverVersion + "." + className);
 		}
 
 		if(compatibleClass == null) {
-			compatibleClass = loadClass(interfaceClass.getPackage() + ".versioncompat." + interfaceClass.getName() + "_" + serverVersion);
+			compatibleClass = loadClass(packagePath + ".versioncompat." + className + "_" + serverVersion);
 		}
 
 		//Try to find a fallback class
 
 		if(compatibleClass == null) {
-			compatibleClass = loadClass(interfaceClassPath + "_Fallback");
+			compatibleClass = loadClass(classPath + "_Fallback");
 		}
 
 		if(compatibleClass == null) {
-			compatibleClass = loadClass(interfaceClass.getPackage() + ".versioncompat." + interfaceClass.getName() + "_Fallback");
+			compatibleClass = loadClass(packagePath + ".versioncompat." + className + "_Fallback");
 		}
 
 		if(compatibleClass == null) {
-			KageCore.debugMessage("Could not find version compatible/fallback class for " + interfaceClass.getSimpleName());
+			KageCore.debugMessage("Could not find version compatible/fallback class for " + className);
 
 			return null;
 		}
 
-		T instance = (T) compatibleClass.create(args);
+		T instance = (T) compatibleClass.create(args).get();
 
 		compatibleClassCache.put(interfaceClass, instance);
 
