@@ -20,7 +20,7 @@ public class KItemContainer extends KComponent {
 	private @Getter @Setter boolean refill = true;
 	private @Getter @Setter boolean empty = false;
 
-	private KItemContainer(int x, int y, ItemStack item) {
+	public KItemContainer(int x, int y, ItemStack item) {
 		super(x, y);
 
 		this.item = item;

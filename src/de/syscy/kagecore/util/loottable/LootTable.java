@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.Lists;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.util.Util;
+import de.syscy.kagecore.util.MathUtil;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -86,8 +86,8 @@ public class LootTable implements ConfigurationSerializable {
 		}
 
 		while((freeSlotAmount -= itemStackList.size()) > 0 && bigItemStacks.size() > 0) {
-			ItemStack itemStack = bigItemStacks.remove(Util.nextIntRange(random, 0, bigItemStacks.size() - 1)); //Remove a random itemstack from this list
-			int randomAmount = Util.nextIntRange(random, 1, itemStack.getAmount() / 2); //Generate random value between 1 and amount / 2; ex: amount=6 -> random value between 1-3 (both inclusive) -> ex: 2
+			ItemStack itemStack = bigItemStacks.remove(MathUtil.randomRangeInt(0, bigItemStacks.size() - 1)); //Remove a random itemstack from this list
+			int randomAmount = MathUtil.randomRangeInt(1, itemStack.getAmount() / 2); //Generate random value between 1 and amount / 2; ex: amount=6 -> random value between 1-3 (both inclusive) -> ex: 2
 			itemStack.setAmount(itemStack.getAmount() - randomAmount); //set the amount to amount - random value, ex: amount=6-2=4
 
 			ItemStack itemStack2 = itemStack.clone();

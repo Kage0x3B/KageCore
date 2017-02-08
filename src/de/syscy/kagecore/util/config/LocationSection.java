@@ -8,9 +8,9 @@ public class LocationSection extends KConfigurationSection {
 	@ConfigValue(ignore = true)
 	private @Getter Location location;
 
-	private @Getter int blockX;
-	private @Getter int blockY;
-	private @Getter int blockZ;
+	private @Getter float x;
+	private @Getter float y;
+	private @Getter float z;
 
 	public LocationSection(String path) {
 		super(path);
@@ -20,16 +20,16 @@ public class LocationSection extends KConfigurationSection {
 	protected void populateFields(KConfiguration config) {
 		super.populateFields(config);
 
-		location = new Location(null, blockX, blockY, blockZ);
+		location = new Location(null, x, y, z);
 	}
 
 	public void setLocation(Location location) {
 		this.location = location;
 
 		if(configSection != null) {
-			configSection.set("blockX", location.getBlockX());
-			configSection.set("blockY", location.getBlockY());
-			configSection.set("blockZ", location.getBlockZ());
+			configSection.set("x", location.getBlockX());
+			configSection.set("x", location.getBlockY());
+			configSection.set("x", location.getBlockZ());
 		}
 	}
 }

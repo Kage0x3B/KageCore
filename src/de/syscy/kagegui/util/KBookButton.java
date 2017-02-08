@@ -19,9 +19,9 @@ public class KBookButton extends KButton {
 	public KBookButton(int x, int y, KBook book) {
 		super(x, y);
 
-		this.book = book;
+		setBook(book);
 
-		clickListener = new ButtonClickListener() {
+		clickListener[ClickType.GENERAL.ordinal()] = new ButtonClickListener() {
 			@Override
 			public void onClick(KButton button, Player player) {
 				if(gui != null) {

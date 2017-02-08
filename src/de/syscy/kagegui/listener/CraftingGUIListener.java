@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import de.syscy.kagecore.KageCore;
 import de.syscy.kagegui.KageGUI;
 import de.syscy.kagegui.crafting.KCraftingGUI;
 
@@ -59,7 +58,6 @@ public class CraftingGUIListener implements Listener {
 			KCraftingGUI craftingGUI = KageGUI.getCurrentCraftingGuis().get(player);
 
 			if(event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
-				KageCore.debugMessage("" + event.getRawSlot());
 				event.setCancelled(true);
 
 				craftingGUI.onClick(event, event.getRawSlot());

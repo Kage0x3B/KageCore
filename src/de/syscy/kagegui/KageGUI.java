@@ -12,12 +12,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.KageCoreConfig;
 import de.syscy.kagegui.crafting.IDefaultCraftingGUIProvider;
 import de.syscy.kagegui.crafting.KCraftingGUI;
 import de.syscy.kagegui.inventory.KGUI;
 import de.syscy.kagegui.listener.ChatListener;
 import de.syscy.kagegui.listener.CraftingGUIListener;
 import de.syscy.kagegui.listener.GUIListener;
+import de.syscy.kagegui.yaml.crafting.YamlCraftingGUI;
+import de.syscy.kagegui.yaml.inventory.KComponentFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
@@ -43,6 +46,8 @@ public class KageGUI {
 			guiDirectory.mkdirs();
 		}
 
+		KComponentFactory.init();
+
 		plugin.getServer().getPluginManager().registerEvents(new GUIListener(), plugin);
 		plugin.getServer().getPluginManager().registerEvents(new ChatListener(), plugin);
 		plugin.getServer().getPluginManager().registerEvents(new CraftingGUIListener(), plugin);
@@ -53,6 +58,18 @@ public class KageGUI {
 				render();
 			}
 		}, 5L, 5L);
+
+		KageCoreConfig kageCoreConfig = KageCore.getInstance().getKageCoreConfig();
+		final String defaultCraftingGUI = kageCoreConfig.getDefaultCraftingGUI();
+
+		if(defaultCraftingGUI != null && !defaultCraftingGUI.isEmpty() && !defaultCraftingGUI.equalsIgnoreCase("none")) {
+			defaultCraftingGUIProvider = new IDefaultCraftingGUIProvider() {
+				@Override
+				public KCraftingGUI createInstance(Player player) {
+					return new YamlCraftingGUI(defaultCraftingGUI);
+				}
+			};
+		}
 
 		if(defaultCraftingGUIProvider != null) {
 			for(Player player : Bukkit.getOnlinePlayers()) {

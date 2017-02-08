@@ -43,7 +43,7 @@ public class KPanel implements IContainer {
 	@Override
 	public void onClick(InventoryClickEvent event, int x, int y) {
 		for(KComponent component : components) {
-			if(Util.pointInBoundingBox(x, y, component.getX(), component.getY(), component.getWidth(), component.getHeight())) {
+			if(component.isVisible() && Util.pointInBoundingBox(x, y, component.getX(), component.getY(), component.getWidth(), component.getHeight())) {
 				component.onClick(event, gui.getPlayer(), x - component.getX(), y - component.getY());
 			}
 		}

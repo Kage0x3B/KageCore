@@ -23,7 +23,7 @@ public class KCraftingGUI implements IInventoryGUI<KCraftingComponent> {
 
 	private @Getter boolean dirty = true;
 
-	protected @Getter KCraftingComponent[] components = new KCraftingComponent[6];
+	protected KCraftingComponent[] components = new KCraftingComponent[6];
 
 	public void show(Player player) {
 		this.player = player;

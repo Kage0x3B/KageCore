@@ -9,6 +9,8 @@ public class KageCoreConfig extends KConfiguration {
 	private @Getter boolean debug;
 	private @Getter boolean enablePacketTranslating;
 
+	private @Getter String defaultCraftingGUI;
+
 	public KageCoreConfig(FileConfiguration config) {
 		super(config);
 	}

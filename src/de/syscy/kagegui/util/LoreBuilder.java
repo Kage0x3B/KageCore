@@ -25,13 +25,23 @@ public class LoreBuilder {
 		set(priority, Arrays.asList(lorePart));
 	}
 
+	public void set(int priority, LoreBuilder lorePart) {
+		set(priority, lorePart.getLore());
+	}
+
 	public void set(int priority, List<String> lorePart) {
-		loreParts.put(priority, lorePart);
+		if(!lorePart.isEmpty()) {
+			loreParts.put(priority, lorePart);
+		}
+
+		dirty = true;
 	}
 
 	public LinkedList<String> getLore() {
 		if(dirty) {
 			loreList = build();
+
+			dirty = false;
 		}
 
 		return loreList;

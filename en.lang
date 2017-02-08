@@ -25,7 +25,16 @@ command.specialBlock.failed=&cFailed to mark the block you are standing on as a 
 command.specialBlock.startHighlighting=&aAll special blocks are now highlighted!
 command.specialBlock.stopHighlighting=&cAll special blocks are now hidden!
 
+kgui.loreButtonPrefix.click=Click
+kgui.loreButtonPrefix.leftClick=Left Click
+kgui.loreButtonPrefix.rightClick=Right Click
+kgui.loreButtonPrefix.shiftClick=Shift Click
+kgui.loreButtonPrefix.drop=Drop
+kgui.loreButtonPrefix.ctrlDrop=Ctrl-Drop
+
 kgui.list.previousPage=Previous page
 kgui.list.nextPage=Next page
+kgui.list.firstPage=First page
+kgui.list.lastPage=Last page
 kgui.list.currentPage=Current page: %s
 kgui.textInput.lore1=Click to edit...

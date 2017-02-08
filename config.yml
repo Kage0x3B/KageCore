@@ -1,2 +1,3 @@
 debug: true
 enablePacketTranslating: true
+defaultCraftingGUI: none

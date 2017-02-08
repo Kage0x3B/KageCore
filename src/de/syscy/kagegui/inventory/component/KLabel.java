@@ -12,7 +12,7 @@ import lombok.Setter;
 
 public class KLabel extends KComponent {
 	protected @Getter @Setter String title = "Label";
-	protected @Getter @Setter LoreBuilder lore;
+	protected @Getter @Setter LoreBuilder loreBuilder;
 	protected @Getter @Setter ItemIcon icon = new ItemIcon(Material.NAME_TAG);
 
 	public KLabel(int x, int y) {
@@ -26,7 +26,7 @@ public class KLabel extends KComponent {
 
 	@Override
 	public void render(IInventoryWrapper inventory) {
-		this.renderItem(inventory, x, y, width, height, icon, title, lore);
+		this.renderItem(inventory, x, y, width, height, icon, title, loreBuilder);
 	}
 
 	@Override

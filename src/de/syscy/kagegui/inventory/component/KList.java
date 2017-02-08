@@ -75,19 +75,19 @@ public class KList extends KComponent {
 	@Override
 	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
 		if(localY == height - 1) {
-			if(navigationComponents[localX] != null) {
+			if(navigationComponents[localX] != null && navigationComponents[localX].isVisible()) {
 				navigationComponents[localX].onClick(event, player, 0, 0);
 			}
 		} else {
 			for(KComponent component : currentPageComponents) {
-				if(component.getX() == x + localX && component.getY() == y + localY) {
+				if(component.isVisible() && component.getX() == x + localX && component.getY() == y + localY) {
 					component.onClick(event, player, 0, 0);
 				}
 			}
 		}
 	}
 
-	public void addComponent(KComponent component) {
+	public void add(KComponent component) {
 		if(!(component instanceof KButton || component instanceof KLabel || component instanceof KCheckButton || component instanceof KItemContainer)) {
 			throw new IllegalArgumentException("Invalid component type for a list: " + component);
 		}
@@ -199,7 +199,7 @@ public class KList extends KComponent {
 
 				updatePageSwitchButtons();
 			}
-		});
+		}, "");
 
 		navigationComponents[0] = null;
 		addNavigationComponent(0, previousPageButton);
@@ -215,7 +215,7 @@ public class KList extends KComponent {
 
 				updatePageSwitchButtons();
 			}
-		});
+		}, "");
 
 		navigationComponents[width - 1] = null;
 		addNavigationComponent(width - 1, nextPageButton);
@@ -224,8 +224,11 @@ public class KList extends KComponent {
 	}
 
 	private void updatePageSwitchButtons() {
-		previousPageButton.setTitle("§kgui.list.previousPage;");
-		nextPageButton.setTitle("§kgui.list.nextPage;");
+		previousPageButton.setVisible(currentPage > 0);
+		nextPageButton.setVisible(currentPage < totalPages - 1);
+
+		previousPageButton.setTitle("§kgui.list." + (currentPage == 1 ? "firstPage" : "previousPage") + ";");
+		nextPageButton.setTitle("§kgui.list." + (currentPage == totalPages - 2 ? "lastPage" : "nextPage") + ";");
 
 		previousPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, "§kgui.list.currentPage;" + (currentPage + 1) + "i;");
 		nextPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, "§kgui.list.currentPage;" + (currentPage + 1) + "i;");

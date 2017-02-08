@@ -38,8 +38,9 @@ import de.syscy.kagecore.command.argument.StringArgument;
 import de.syscy.kagecore.command.exception.InvalidSpecialBlockTypeException;
 import de.syscy.kagecore.command.exception.MarkSpecialBlockFailedException;
 import de.syscy.kagecore.translation.Translator;
-import de.syscy.kagecore.util.ParticleDebug;
-import de.syscy.kagecore.util.ParticleEffect.OrdinaryColor;
+import de.syscy.kagecore.util.ParticleEffects.OrdinaryColor;
+import de.syscy.kagecore.util.ParticleUtil;
+import lombok.Getter;
 
 public class SpecialBlockManager extends CommandManager<KageCore> implements Listener {
 	//@formatter:off
@@ -62,6 +63,8 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 	    Color.fromRGB(255, 255, 255)
 	};
 	//@formatter:on
+
+	private @Getter File specialBlockStorageFile;
 
 	private Map<String, Integer> registeredTypes = new HashMap<>(15);
 	private Map<String, ISpecialBlockMarkListener> registeredListeners = new HashMap<>(15);
@@ -132,10 +135,12 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 				}
 
 				for(Entry<Location, String> specialBlockEntry : specialBlocksByLocation.entrySet()) {
-					ParticleDebug.drawCube(specialBlockEntry.getKey(), new OrdinaryColor(colors[colorIndexFromString(specialBlockEntry.getValue())]), currentHighlightingPlayers);
+					ParticleUtil.drawCube(specialBlockEntry.getKey(), new OrdinaryColor(colors[colorIndexFromString(specialBlockEntry.getValue())]), currentHighlightingPlayers);
 				}
 			}
 		}, 5, 5);
+
+		specialBlockStorageFile = new File(plugin.getDataFolder(), "specialBlockStorage.yml");
 	}
 
 	private static int colorIndexFromString(String string) {
@@ -176,8 +181,15 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 		}
 	}
 
+	public void setStorage(File file) {
+		specialBlockStorageFile = file;
+
+		load();
+	}
+
 	public void load() {
-		File specialBlockStorageFile = new File(plugin.getDataFolder(), "specialBlockStorage.yml");
+		specialBlocksByType.clear();
+		specialBlocksByLocation.clear();
 
 		if(!specialBlockStorageFile.exists()) {
 			return;
@@ -227,8 +239,6 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 		}
 
 		try {
-			File specialBlockStorageFile = new File(plugin.getDataFolder(), "specialBlockStorage.yml");
-
 			if(specialBlockStorageFile.exists()) {
 				specialBlockStorageFile.delete();
 			}

@@ -124,12 +124,4 @@ public class Util {
 
 		return stringBuilder.toString();
 	}
-
-	public int nextIntRange(Random random, int min, int max) {
-		if(min >= max) {
-			return min;
-		}
-
-		return random.nextInt(max - min + 1) + min;
-	}
 }

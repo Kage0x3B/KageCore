@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import de.syscy.kagecore.util.MathUtil;
 import de.syscy.kagecore.util.Util;
 import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Data;
@@ -80,7 +81,7 @@ public class KItemSpinner extends KComponent {
 
 		if(finished) {
 			int timer = Math.abs(waitingTimer);
-			//TODO: Blinking doesn't work
+
 			if(timer > 100 || timer % 4 == 0) {
 				if(spinnerMode == SpinnerMode.ITEM_IN_CENTER) {
 					renderSpinnerItem(inventory, spinnerItems.get(currentOffset), center);
@@ -124,7 +125,7 @@ public class KItemSpinner extends KComponent {
 			return;
 		}
 
-		currentOffset = Util.nextIntRange(Util.getRandom(), 0, spinnerItems.size() - 1);
+		currentOffset = MathUtil.randomRangeInt(0, spinnerItems.size() - 1);
 
 		for(int i = 0; i < width; i++) {
 			int center = Math.max(1, width / 2);

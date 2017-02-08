@@ -15,12 +15,13 @@ import lombok.Setter;
 public class KCheckButton extends KComponent {
 	protected @Getter @Setter boolean enabled = false;
 
-	protected @Getter @Setter ItemIcon enabledIcon = new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 5));
 	protected @Getter @Setter String enabledTitle;
 	protected final @Getter LoreBuilder enabledLoreBuilder = new LoreBuilder();
-	protected @Getter @Setter ItemIcon disabledIcon = new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 14));
+	protected @Getter @Setter ItemIcon enabledIcon = new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 5));
+
 	protected @Getter @Setter String disabledTitle;
 	protected final @Getter LoreBuilder disabledLoreBuilder = new LoreBuilder();
+	protected @Getter @Setter ItemIcon disabledIcon = new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 14));
 
 	protected @Setter CheckButtonToggleListener toggleListener;
 
@@ -48,5 +49,15 @@ public class KCheckButton extends KComponent {
 	@Override
 	public void render(IInventoryWrapper inventory) {
 		this.renderItem(inventory, x, y, width, height, isEnabled() ? enabledIcon : disabledIcon, isEnabled() ? enabledTitle : disabledTitle, isEnabled() ? enabledLoreBuilder : disabledLoreBuilder);
+	}
+
+	public void setTitle(String title) {
+		enabledTitle = title;
+		disabledTitle = title;
+	}
+
+	public void setIcon(ItemIcon icon) {
+		enabledIcon = icon;
+		disabledIcon = icon;
 	}
 }

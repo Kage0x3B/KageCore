@@ -61,7 +61,7 @@ public class Translator {
 
 			Map<String, String> currentTranslations = new HashMap<>();
 
-			try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF8"))) { //TODO: Does this work? No bugs?! (The "UTF8")
+			try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF8"))) {
 				String line;
 
 				while((line = reader.readLine()) != null) {

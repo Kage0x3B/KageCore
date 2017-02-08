@@ -159,7 +159,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 			itemMeta.addEnchant(enchantment.getEnchantment(), enchantment.getLevel(), true);
 		}
 
-		itemMeta.spigot().setUnbreakable(unbreakable);
+		itemMeta.setUnbreakable(unbreakable);
 
 		itemMeta.addItemFlags(itemFlags);
 		itemStack.setItemMeta(itemMeta);

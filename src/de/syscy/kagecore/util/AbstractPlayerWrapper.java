@@ -19,6 +19,7 @@ import org.bukkit.Note;
 import org.bukkit.Particle;
 import org.bukkit.Server;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
@@ -33,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -40,6 +42,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MainHand;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
@@ -52,8 +55,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
+import com.destroystokyo.paper.Title;
+
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class AbstractPlayerWrapper implements Player {
 	private final @Getter Player bukkitPlayer;
@@ -511,11 +517,13 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public Entity getPassenger() {
 		return bukkitPlayer.getPassenger();
 	}
 
 	@Override
+	@Deprecated
 	public boolean setPassenger(Entity passenger) {
 		return bukkitPlayer.setPassenger(passenger);
 	}
@@ -790,6 +798,7 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public double getMaxHealth() {
 		return bukkitPlayer.getMaxHealth();
 	}
@@ -801,6 +810,7 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void setMaxHealth(double maxHealth) {
 		bukkitPlayer.setMaxHealth(maxHealth);
 	}
@@ -812,6 +822,7 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void resetMaxHealth() {
 		bukkitPlayer.resetMaxHealth();
 	}
@@ -1387,6 +1398,7 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void setResourcePack(String resourcePack) {
 		bukkitPlayer.setResourcePack(resourcePack);
 	}
@@ -1536,5 +1548,182 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public boolean removeScoreboardTag(String scoreboardTag) {
 		return bukkitPlayer.removeScoreboardTag(scoreboardTag);
+	}
+
+	@Override
+	public void playSound(Location location, Sound sound, SoundCategory category, float arg3, float arg4) {
+		bukkitPlayer.playSound(location, sound, category, arg3, arg4);
+	}
+
+	@Override
+	public void playSound(Location location, String soundName, SoundCategory category, float arg3, float arg4) {
+		bukkitPlayer.playSound(location, soundName, category, arg3, arg4);
+	}
+
+	@Override
+	public void sendTitle(String title, String subtitle, int arg2, int arg3, int arg4) {
+		bukkitPlayer.sendTitle(title, subtitle, arg2, arg3, arg4);
+	}
+
+	@Override
+	public void stopSound(Sound sound, SoundCategory category) {
+		bukkitPlayer.stopSound(sound, category);
+	}
+
+	@Override
+	public void stopSound(String soundName, SoundCategory category) {
+		bukkitPlayer.stopSound(soundName, category);
+	}
+
+	@Override
+	public InventoryView openMerchant(Merchant merchant, boolean arg1) {
+		return bukkitPlayer.openMerchant(merchant, arg1);
+	}
+
+	@Override
+	public boolean addPassenger(Entity entity) {
+		return bukkitPlayer.addPassenger(entity);
+	}
+
+	@Override
+	public List<Entity> getPassengers() {
+		return bukkitPlayer.getPassengers();
+	}
+
+	@Override
+	public boolean removePassenger(Entity entity) {
+		return bukkitPlayer.removePassenger(entity);
+	}
+
+	@Override
+	public boolean getAffectsSpawning() {
+		return bukkitPlayer.getAffectsSpawning();
+	}
+
+	@Override
+	public String getResourcePackHash() {
+		return bukkitPlayer.getResourcePackHash();
+	}
+
+	@Override
+	public Status getResourcePackStatus() {
+		return bukkitPlayer.getResourcePackStatus();
+	}
+
+	@Override
+	public int getViewDistance() {
+		return bukkitPlayer.getViewDistance();
+	}
+
+	@Override
+	public boolean hasResourcePack() {
+		return bukkitPlayer.hasResourcePack();
+	}
+
+	@Override
+	public void hideTitle() {
+		bukkitPlayer.hideTitle();
+	}
+
+	@Override
+	public void sendActionBar(String text) {
+		bukkitPlayer.sendActionBar(text);
+	}
+
+	@Override
+	public void sendActionBar(char c, String text) {
+		bukkitPlayer.sendActionBar(c, text);
+	}
+
+	@Override
+	public void sendTitle(Title title) {
+		bukkitPlayer.sendTitle(title);
+	}
+
+	@Override
+	public void setAffectsSpawning(boolean affectsSpawning) {
+		bukkitPlayer.setAffectsSpawning(affectsSpawning);
+	}
+
+	@Override
+	public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
+		bukkitPlayer.setPlayerListHeaderFooter(header, footer);
+	}
+
+	@Override
+	public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
+		bukkitPlayer.setPlayerListHeaderFooter(header, footer);
+	}
+
+	@Override
+	public void setResourcePack(String arg0, String arg1) {
+		bukkitPlayer.setResourcePack(arg0, arg1);
+	}
+
+	@Override
+	@Deprecated
+	public void setSubtitle(BaseComponent[] subtitle) {
+		bukkitPlayer.setSubtitle(subtitle);
+	}
+
+	@Override
+	@Deprecated
+	public void setSubtitle(BaseComponent subtitle) {
+		bukkitPlayer.setSubtitle(subtitle);
+	}
+
+	@Override
+	@Deprecated
+	public void setTitleTimes(int fadeInDuration, int stayDuration, int fadeOutDuration) {
+		bukkitPlayer.setTitleTimes(fadeInDuration, stayDuration, fadeOutDuration);
+	}
+
+	@Override
+	public void setViewDistance(int viewDistance) {
+		bukkitPlayer.setViewDistance(viewDistance);
+	}
+
+	@Override
+	@Deprecated
+	public void showTitle(BaseComponent[] title) {
+		bukkitPlayer.showTitle(title);
+	}
+
+	@Override
+	@Deprecated
+	public void showTitle(BaseComponent title) {
+		bukkitPlayer.showTitle(title);
+	}
+
+	@Override
+	@Deprecated
+	public void showTitle(BaseComponent[] title, BaseComponent[] subtitle, int fadeInDuration, int stayDuration, int fadeOutDuration) {
+		bukkitPlayer.showTitle(title, subtitle, fadeInDuration, stayDuration, fadeOutDuration);
+	}
+
+	@Override
+	@Deprecated
+	public void showTitle(BaseComponent title, BaseComponent subtitle, int fadeInDuration, int stayDuration, int fadeOutDuration) {
+		bukkitPlayer.showTitle(title, subtitle, fadeInDuration, stayDuration, fadeOutDuration);
+	}
+
+	@Override
+	public void updateTitle(Title title) {
+		bukkitPlayer.updateTitle(title);
+	}
+
+	@Override
+	public int getArrowsStuck() {
+		return bukkitPlayer.getArrowsStuck();
+	}
+
+	@Override
+	public void setArrowsStuck(int amount) {
+		bukkitPlayer.setArrowsStuck(amount);
+	}
+
+	@Override
+	public Location getOrigin() {
+		return bukkitPlayer.getOrigin();
 	}
 }

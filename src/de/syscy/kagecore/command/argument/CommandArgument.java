@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 public abstract class CommandArgument<T> {
 	protected @Getter @Setter int index;
@@ -21,9 +22,10 @@ public abstract class CommandArgument<T> {
 	protected Function<CommandSender, List<String>> allowedValuesFunction;
 
 	public CommandArgument(CommandArgumentBuilder<T> builder) {
-		this.name = builder.name;
+		name = builder.name;
 		defaultValue = builder.defaultValue;
-		this.allowedValuesFunction = builder.allowedValuesFunction;
+		required = builder.required;
+		allowedValuesFunction = builder.allowedValuesFunction;
 	}
 
 	public abstract T getValue(CommandSender sender, String[] args);
@@ -35,6 +37,7 @@ public abstract class CommandArgument<T> {
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+	@Accessors(fluent = true)
 	public static abstract class CommandArgumentBuilder<T> {
 		protected final String name;
 		protected @Setter T defaultValue = null;

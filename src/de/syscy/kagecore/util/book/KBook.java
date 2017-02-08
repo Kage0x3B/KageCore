@@ -54,8 +54,6 @@ public class KBook {
 			for(String key : pagesSection.getKeys(false)) {
 				if(key.startsWith("page")) {
 					try {
-						//						int pageNumber = Integer.parseInt(key.substring(4));
-
 						String pageContent = "";
 
 						if(pagesSection.isList(key)) {
@@ -64,7 +62,7 @@ public class KBook {
 							pageContent = pagesSection.getString(key);
 						}
 
-						pages.add(ChatColor.translateAlternateColorCodes('$', pageContent)); //TODO: Change
+						pages.add(ChatColor.translateAlternateColorCodes('$', pageContent));
 					} catch(Exception ex) {
 						ex.printStackTrace();
 					}

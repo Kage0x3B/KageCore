@@ -21,6 +21,8 @@ public abstract class KComponent implements IComponent {
 	protected @Getter @Setter int width = 1;
 	protected @Getter @Setter int height = 1;
 
+	protected @Getter @Setter boolean visible = true;
+
 	protected KComponent(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -31,6 +33,10 @@ public abstract class KComponent implements IComponent {
 	}
 
 	public void renderItem(IInventoryWrapper inventory, int x, int y, int width, int height, ItemStack itemStack) {
+		if(!visible) {
+			return;
+		}
+
 		for(int i = x; i < x + width; i++) {
 			for(int j = y; j < y + height; j++) {
 				inventory.setItem(Util.toSlotCoordinate(i + offsetX, j + offsetY), itemStack);

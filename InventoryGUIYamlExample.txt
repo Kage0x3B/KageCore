@@ -1,0 +1,3 @@
+title: Cool gui
+size: 5 (hopper gui)|multiples of 9
+height: 1-6 (use size OR height, not both)

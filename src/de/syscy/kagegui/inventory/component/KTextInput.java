@@ -21,7 +21,7 @@ public class KTextInput extends KComponent implements ChatInputCallback {
 
 	protected @Getter String text = "";
 
-	protected TextInputListener textInputListener;
+	protected @Setter TextInputListener textInputListener;
 
 	public KTextInput(int x, int y) {
 		super(x, y);
