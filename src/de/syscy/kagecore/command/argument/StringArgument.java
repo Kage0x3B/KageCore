@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.bukkit.command.CommandSender;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 import de.syscy.kagecore.command.exception.InvalidCommandArgumentException;
 import lombok.Getter;
@@ -56,6 +57,10 @@ public class StringArgument extends CommandArgument<String> {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, String[] args) {
+		if(suggestions == null) {
+			return Lists.newArrayList();
+		}
+
 		List<String> suggestions = new ArrayList<>();
 
 		for(String possibleSuggestion : this.suggestions.apply(sender)) {
