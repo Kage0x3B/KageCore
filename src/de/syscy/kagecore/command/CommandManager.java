@@ -131,6 +131,22 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 		command.setCommandManager(this);
 	}
 
+	public void removeCommand(String commandName) {
+		CommandBase<?> commandInstance = null;
+
+		for(CommandBase<?> command : commands) {
+			if(command.getCommand().equalsIgnoreCase(commandName)) {
+				commandInstance = command;
+
+				break;
+			}
+		}
+
+		if(commandInstance != null) {
+			commands.remove(commandInstance);
+		}
+	}
+
 	private void sendHelpPage(CommandSender sender, int page) {
 		List<CommandBase<?>> availableCommands = getAvailableCommands(sender);
 
