@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.comphenix.packetwrapper.WrapperPlayClientSettings;
 import com.comphenix.packetwrapper.WrapperPlayServerCustomPayload;
 import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.packetwrapper.WrapperPlayServerOpenWindow;
@@ -22,6 +24,7 @@ import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving;
 import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
 import com.comphenix.packetwrapper.WrapperPlayServerWindowItems;
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -37,19 +40,18 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.event.LanguageChangeEvent;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 
-@RequiredArgsConstructor
+@UtilityClass
 public class PacketTranslator {
 	private static char packetTranslatorSign = '§';
 	private static Pattern tsPattern = Pattern.compile(packetTranslatorSign + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;"); //Matches parts of strings like "§test;" or "§test;arg1:2;arg3;" to translate
+	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 
-	private final KageCore plugin;
-	private final ProtocolManager protocolManager;
-
-	public void initPacketRewriting() {
+	public static void initPacketRewriting(KageCore plugin) {
 		List<PacketType> packetTypes = new ArrayList<>();
 		packetTypes.add(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packetTypes.add(PacketType.Play.Server.ENTITY_METADATA);
@@ -58,6 +60,31 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
 		packetTypes.add(PacketType.Play.Server.SET_SLOT);
 		packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
+
+		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
+		protocolManager.addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
+			@Override
+			public void onPacketReceiving(final PacketEvent event) {
+				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+					@Override
+					public void run() {
+						WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
+
+						String language = wrapper.getLocale().substring(0, 2);
+						String lastLanguage = Translator.getPlayerLanguages().get(event.getPlayer());
+
+						if(lastLanguage == null || lastLanguage.isEmpty()) {
+							lastLanguage = Translator.getDefaultLocale();
+						}
+
+						Translator.getPlayerLanguages().put(event.getPlayer(), language);
+
+						Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
+					}
+				}, 0);
+			}
+		});
 
 		protocolManager.addPacketListener(new PacketAdapter(plugin, packetTypes) {
 			@Override
@@ -220,7 +247,7 @@ public class PacketTranslator {
 				String part = parts[i].toLowerCase();
 				char partType = part.charAt(part.length() - 1);
 
-				if(Arrays.asList('i', 'd', 'l', 'f').contains(partType)) {
+				if(partTypeIdentifiers.contains(partType)) {
 					try {
 						part = part.substring(0, part.length() - 1);
 

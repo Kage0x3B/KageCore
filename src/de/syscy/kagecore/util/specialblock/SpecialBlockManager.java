@@ -24,12 +24,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 
-import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.command.CommandBase;
 import de.syscy.kagecore.command.CommandManager;
 import de.syscy.kagecore.command.PlayerCommandBase;
@@ -42,7 +42,7 @@ import de.syscy.kagecore.util.ParticleEffects.OrdinaryColor;
 import de.syscy.kagecore.util.ParticleUtil;
 import lombok.Getter;
 
-public class SpecialBlockManager extends CommandManager<KageCore> implements Listener {
+public class SpecialBlockManager extends CommandManager<JavaPlugin> implements Listener {
 	//@formatter:off
 	private static Color[] colors = {
 		Color.fromRGB(0, 0, 0),
@@ -74,7 +74,7 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 	private Map<Player, String> currentPlayerChanges = new HashMap<>(2);
 	private List<Player> currentHighlightingPlayers = new ArrayList<>(5);
 
-	public SpecialBlockManager(KageCore plugin) {
+	public SpecialBlockManager(JavaPlugin plugin) {
 		super(plugin, "specialBlock");
 
 		CommandArgument<?> typeArg = StringArgument.create("type").values(new Function<CommandSender, List<String>>() {
@@ -83,7 +83,8 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 				return Lists.newArrayList(registeredTypes.keySet());
 			}
 		}).build();
-		addCommand(new PlayerCommandBase<KageCore>(plugin, "mark", typeArg) {
+
+		addCommand(new PlayerCommandBase<JavaPlugin>(plugin, "mark", typeArg) {
 			@Override
 			public void onPlayerCommand(Player sender) {
 				String specialBlockType = arguments.getString("type");
@@ -97,7 +98,7 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 			}
 		});
 
-		addCommand(new PlayerCommandBase<KageCore>(plugin, "unmark") {
+		addCommand(new PlayerCommandBase<JavaPlugin>(plugin, "unmark") {
 			@Override
 			public void onPlayerCommand(Player sender) {
 				currentPlayerChanges.put(sender, "");
@@ -105,7 +106,7 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 			}
 		});
 
-		addCommand(new CommandBase<KageCore>(plugin, "list") {
+		addCommand(new CommandBase<JavaPlugin>(plugin, "list") {
 			@Override
 			public void onCommand(CommandSender sender) {
 				for(String specialBlockType : specialBlocksByType.keySet()) {
@@ -115,7 +116,7 @@ public class SpecialBlockManager extends CommandManager<KageCore> implements Lis
 			}
 		});
 
-		addCommand(new PlayerCommandBase<KageCore>(plugin, "highlight") {
+		addCommand(new PlayerCommandBase<JavaPlugin>(plugin, "highlight") {
 			@Override
 			public void onPlayerCommand(Player sender) {
 				if(currentHighlightingPlayers.remove(sender)) {
