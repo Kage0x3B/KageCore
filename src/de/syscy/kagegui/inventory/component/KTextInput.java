@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.callbacks.ChatInputCallback;
 import de.syscy.kagegui.icon.ItemIcon;
@@ -26,7 +27,7 @@ public class KTextInput extends KComponent implements ChatInputCallback {
 	public KTextInput(int x, int y) {
 		super(x, y);
 
-		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "§kgui.textInput.lore1;");
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, Translator.SIGN + "kgui.textInput.lore1;");
 	}
 
 	@Override
@@ -56,13 +57,13 @@ public class KTextInput extends KComponent implements ChatInputCallback {
 		}
 
 		this.text = text;
-		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "§kgui.textInput.lore1;" + text + ";");
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, Translator.SIGN + "kgui.textInput.lore1;" + text + ";");
 
 		gui.markDirty();
 	}
 
 	public void setText(String text) {
 		this.text = text;
-		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "§kgui.textInput.lore1;" + text + ";");
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, Translator.SIGN + "kgui.textInput.lore1;" + text + ";");
 	}
 }

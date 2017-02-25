@@ -47,7 +47,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class PacketTranslator {
-	private static Pattern tsPattern = Pattern.compile(packetTranslatorSign + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;"); //Matches parts of strings like "§test;" or "§test;arg1:2;arg3;" to translate
+	private static Pattern tsPattern = Pattern.compile(Translator.SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;"); //Matches parts of strings like "§test;" or "§test;arg1:2;arg3;" to translate
 	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 
 	public static void initPacketRewriting(KageCore plugin) {
@@ -176,7 +176,7 @@ public class PacketTranslator {
 	}
 
 	private static String tryTranslateString(String string, Player player) {
-		if(string == null || string.indexOf(packetTranslatorSign) < 0) {
+		if(string == null || string.indexOf(Translator.SIGN) < 0) {
 			return string;
 		}
 

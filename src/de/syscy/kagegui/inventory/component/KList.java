@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.KGUI;
@@ -227,10 +228,10 @@ public class KList extends KComponent {
 		previousPageButton.setVisible(currentPage > 0);
 		nextPageButton.setVisible(currentPage < totalPages - 1);
 
-		previousPageButton.setTitle("§kgui.list." + (currentPage == 1 ? "firstPage" : "previousPage") + ";");
-		nextPageButton.setTitle("§kgui.list." + (currentPage == totalPages - 2 ? "lastPage" : "nextPage") + ";");
+		previousPageButton.setTitle(Translator.SIGN + "kgui.list." + (currentPage == 1 ? "firstPage" : "previousPage") + ";");
+		nextPageButton.setTitle(Translator.SIGN + "kgui.list." + (currentPage == totalPages - 2 ? "lastPage" : "nextPage") + ";");
 
-		previousPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, "§kgui.list.currentPage;" + (currentPage + 1) + "i;");
-		nextPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, "§kgui.list.currentPage;" + (currentPage + 1) + "i;");
+		previousPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, Translator.SIGN + "kgui.list.currentPage;" + (currentPage + 1) + "i;");
+		nextPageButton.getLoreBuilder().set(LoreBuilder.KCOMPONENT_LORE, Translator.SIGN + "kgui.list.currentPage;" + (currentPage + 1) + "i;");
 	}
 }
