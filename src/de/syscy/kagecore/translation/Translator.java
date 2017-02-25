@@ -27,6 +27,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Translator {
+	public static char SIGN = '\u00A7';
+
 	private static final Splitter languageFileSplitter = Splitter.on('=').limit(2);
 	private static @Getter String defaultLocale = "en";
 

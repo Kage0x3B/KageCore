@@ -47,7 +47,6 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class PacketTranslator {
-	private static char packetTranslatorSign = '§';
 	private static Pattern tsPattern = Pattern.compile(packetTranslatorSign + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;"); //Matches parts of strings like "§test;" or "§test;arg1:2;arg3;" to translate
 	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 

@@ -13,7 +13,8 @@ import net.minecraft.server.v1_11_R1.EntityTypes;
 import net.minecraft.server.v1_11_R1.MinecraftKey;
 import net.minecraft.server.v1_11_R1.RegistryMaterials;
 
-public class CustomEntityRegistry extends RegistryMaterials<MinecraftKey, Class<? extends Entity>> {
+@SuppressWarnings(value = { "rawtypes", "unchecked" })
+public class CustomEntityRegistry extends RegistryMaterials {
 	private static CustomEntityRegistry instance = null;
 
 	private final BiMap<MinecraftKey, Class<? extends Entity>> keyToClass = HashBiMap.create();
@@ -64,7 +65,9 @@ public class CustomEntityRegistry extends RegistryMaterials<MinecraftKey, Class<
 
 	@Nullable
 	@Override
-	public Class<? extends Entity> get(@Nullable MinecraftKey key) {
+	public Class<? extends Entity> get(@Nullable Object keyObject) {
+		MinecraftKey key = (MinecraftKey) keyObject;
+
 		if(keyToClass.containsKey(key)) {
 			return keyToClass.get(key);
 		}
@@ -74,7 +77,9 @@ public class CustomEntityRegistry extends RegistryMaterials<MinecraftKey, Class<
 
 	@Override
 	@Nullable
-	public MinecraftKey b(Class<? extends Entity> entityClass) {
+	public MinecraftKey b(Object entityClassObject) {
+		Class<? extends Entity> entityClass = (Class<? extends Entity>) entityClassObject;
+
 		if(classToKey.containsKey(entityClass)) {
 			return classToKey.get(entityClass);
 		}
@@ -83,7 +88,9 @@ public class CustomEntityRegistry extends RegistryMaterials<MinecraftKey, Class<
 	}
 
 	@Override
-	public int a(@Nullable Class<? extends Entity> entityClass) {
+	public int a(@Nullable Object entityClassObject) {
+		Class<? extends Entity> entityClass = (Class<? extends Entity>) entityClassObject;
+
 		if(classToId.containsKey(entityClass)) {
 			return classToId.get(entityClass);
 		}

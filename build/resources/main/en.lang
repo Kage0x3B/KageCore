@@ -1,0 +1,45 @@
+command.exception=&cAn exception occurred while executing the command: &r%s
+command.exception.notFound=&cThere is no command with the name "%s"!
+command.exception.denyAccess=&cYou do not have access to this command!
+command.exception.playerRequired=&cYou must be a player to use this command!
+command.exception.playerNotFound=Player &4"%s" &cwas not found!
+command.exception.invalidUsage=&cUsage: &7%s %s %s
+command.exception.invalidCommandArgument=&cInvalid argument: %s
+command.exception.exempt=&4%s &cis exempt from this command!
+command.exception.entityNotFound=Could not find a matching entity!
+
+command.help.header=------Help------
+command.help.entry=&6/%s %s &5| &4%s
+command.help.footer1=&dType "%s help [command]" to get more information on a command.
+command.help.footer2=&6Page number: &4%d/%d
+command.help.specifiedCommand.line1=&6Command: &3%s
+command.help.specifiedCommand.line2=&6Description: &3%s
+
+command.kc.specialBlock.description=Marks blocks for use in code
+command.kc.specialBlock.mark.description=Marks a block as a special type.
+command.kc.specialBlock.unmark.description=Unmark a block
+command.kc.specialBlock.list.description=List all marked blocks
+command.kc.specialBlock.highlight.description=Highlight all marked blocks
+
+command.specialBlock.leftClick=&6Left click a block to mark it as a "%s".
+command.specialBlock.unmarkLeftClick=&6Left click a block to unmark it.
+command.specialBlock.marked=&aMarked this block as a "%s".
+command.specialBlock.unmarked=&aUnmarked this block.
+command.specialBlock.invalidType=&cThere is no special block type "%s".
+command.specialBlock.failed=&cFailed to mark the block you are standing on as a %s. Maybe you are standing on the wrong block type? (%s)
+command.specialBlock.startHighlighting=&aAll special blocks are now highlighted!
+command.specialBlock.stopHighlighting=&cAll special blocks are now hidden!
+
+kgui.loreButtonPrefix.click=Click
+kgui.loreButtonPrefix.leftClick=Left Click
+kgui.loreButtonPrefix.rightClick=Right Click
+kgui.loreButtonPrefix.shiftClick=Shift Click
+kgui.loreButtonPrefix.drop=Drop
+kgui.loreButtonPrefix.ctrlDrop=Ctrl-Drop
+
+kgui.list.previousPage=Previous page
+kgui.list.nextPage=Next page
+kgui.list.firstPage=First page
+kgui.list.lastPage=Last page
+kgui.list.currentPage=Current page: %s
+kgui.textInput.lore1=Click to edit...

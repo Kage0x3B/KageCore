@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: "eclipse"
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.resources.srcDirs = [ "res/" ]
+
+repositories {
+    jcenter()
+	mavenCentral()
+	maven { url "http://repo.dmulloy2.net/content/groups/public/" }
+}
+
+dependencies {
+	compile group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
+	
+	compile files('libs/spigot-1.11.jar')
+	compile files('libs/worldedit-bukkit-6.1.5.jar')
+	
+	compile group: 'com.comphenix.protocol', name: 'ProtocolLib-API', version: '4.2.0'
+}
