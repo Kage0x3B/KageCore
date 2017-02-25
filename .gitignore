@@ -25,6 +25,7 @@ hs_err_pid*
 .classpath
 .project
 .gradle
+gradle.properties
 
 Thumbs.db
 
