@@ -60,10 +60,10 @@ public class CustomEntityRegistry extends RegistryMaterials {
 		return instance;
 	}
 
-	public static Entity spawn(Class<? extends Entity> entityClass, Location location) {
+	public static <T extends Entity> T spawn(Class<T> entityClass, Location location) {
 		World world = ((CraftWorld) location.getWorld()).getHandle();
 
-		Entity entity = null;
+		T entity = null;
 
 		try {
 			entity = entityClass.getConstructor(World.class).newInstance(world);
