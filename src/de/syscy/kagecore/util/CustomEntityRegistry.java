@@ -5,13 +5,21 @@ import java.lang.reflect.Modifier;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftLivingEntity;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import net.minecraft.server.v1_11_R1.BlockPosition;
 import net.minecraft.server.v1_11_R1.Entity;
+import net.minecraft.server.v1_11_R1.EntityInsentient;
 import net.minecraft.server.v1_11_R1.EntityTypes;
 import net.minecraft.server.v1_11_R1.MinecraftKey;
 import net.minecraft.server.v1_11_R1.RegistryMaterials;
+import net.minecraft.server.v1_11_R1.World;
 
 @SuppressWarnings(value = { "rawtypes", "unchecked" })
 public class CustomEntityRegistry extends RegistryMaterials {
@@ -50,6 +58,29 @@ public class CustomEntityRegistry extends RegistryMaterials {
 		}
 
 		return instance;
+	}
+
+	public static Entity spawn(Class<? extends Entity> entityClass, Location location) {
+		World world = ((CraftWorld) location.getWorld()).getHandle();
+
+		Entity entity = null;
+
+		try {
+			entity = entityClass.getConstructor(World.class).newInstance(world);
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+
+		entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+
+		if(entity instanceof EntityInsentient) {
+			((EntityInsentient) entity).prepare(world.D(new BlockPosition(entity)), null);
+		}
+
+		((CraftLivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
+		world.addEntity(entity, SpawnReason.CUSTOM);
+
+		return entity;
 	}
 
 	public static void registerCustomEntity(int entityId, String entityName, Class<? extends Entity> entityClass) {
