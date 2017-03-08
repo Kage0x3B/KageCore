@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.common.base.Joiner;
 
@@ -93,6 +94,8 @@ public class KageCore extends JavaPlugin {
 
 	private void initPacketListening() {
 		if(Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+			protocolManager = ProtocolLibrary.getProtocolManager();
+
 			PacketTranslator.initPacketRewriting(this);
 		} else {
 			KageCore.debugMessage("ProtocolLib not installed. Translations disabled!");

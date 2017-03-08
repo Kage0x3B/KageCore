@@ -24,8 +24,6 @@ import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving;
 import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
 import com.comphenix.packetwrapper.WrapperPlayServerWindowItems;
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -60,9 +58,7 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.SET_SLOT);
 		packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
 
-		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-
-		protocolManager.addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
+		KageCore.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
 			@Override
 			public void onPacketReceiving(final PacketEvent event) {
 				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
@@ -85,7 +81,7 @@ public class PacketTranslator {
 			}
 		});
 
-		protocolManager.addPacketListener(new PacketAdapter(plugin, packetTypes) {
+		KageCore.getProtocolManager().addPacketListener(new PacketAdapter(plugin, packetTypes) {
 			@Override
 			public void onPacketSending(PacketEvent event) {
 				handlePacket(event);
