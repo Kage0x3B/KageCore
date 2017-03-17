@@ -3,6 +3,7 @@ package de.syscy.kagecore.factory.entity.versioncompat;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import de.syscy.kagecore.factory.entity.EntityFactoryNMS;
 import net.minecraft.server.v1_11_R1.BlockPosition;
@@ -33,7 +34,7 @@ public class EntityFactoryNMS_v1_11_R1 implements EntityFactoryNMS {
 		}
 
 		nbtTagCompound.setString("id", entityTypeID);
-		nmsEntity = ChunkRegionLoader.a(nbtTagCompound, nmsWorld, location.getX(), location.getY(), location.getZ(), true);
+		nmsEntity = ChunkRegionLoader.spawnEntity(nbtTagCompound, nmsWorld, location.getX(), location.getY(), location.getZ(), true, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
 		if(nmsEntity == null) {
 			return null;

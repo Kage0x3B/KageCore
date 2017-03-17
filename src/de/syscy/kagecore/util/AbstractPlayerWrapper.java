@@ -1726,4 +1726,9 @@ public abstract class AbstractPlayerWrapper implements Player {
 	public Location getOrigin() {
 		return bukkitPlayer.getOrigin();
 	}
+
+	@Override
+	public void setResourcePack(String arg0, byte[] arg1) {
+		bukkitPlayer.setResourcePack(arg0, arg1);
+	}
 }

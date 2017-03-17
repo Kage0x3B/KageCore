@@ -13,6 +13,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
+import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
+
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.util.ParticleEffects.ParticleData;
 import de.syscy.kagecore.versioncompat.PackageType;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
@@ -1344,7 +1348,7 @@ public enum ParticleEffects {
 		private final int amount;
 		private final boolean longDistance;
 		private final ParticleData data;
-		private Reflect packet;
+		private WrapperPlayServerWorldParticles packet;
 
 		/**
 		 * Construct a new particle packet
@@ -1481,28 +1485,29 @@ public enum ParticleEffects {
 			if(packet != null) {
 				return;
 			}
+
 			try {
-				packet = packetClass.create();
+				packet = new WrapperPlayServerWorldParticles();
 
-				if(majorVersion == 1 && minorVersion > 7) {
-					packet.set("a", enumParticleClass.call("a", effect.getId()));
-					packet.set("j", longDistance);
+				packet.setParticleType(Particle.getById(effect.getId()));
 
-					if(data != null) {
-						int[] packetData = data.getPacketData();
+				packet.setNumberOfParticles(amount);
+				packet.setLongDistance(longDistance);
 
-						packet.set("k", effect == ParticleEffects.ITEM_CRACK ? packetData : new int[] { packetData[0] | packetData[1] << 12 });
-					}
+				packet.setParticleData(speed);
+
+				if(data != null) {
+					int[] packetData = data.getPacketData();
+					packet.setData(effect == ParticleEffects.ITEM_CRACK ? packetData : new int[] { packetData[0] | packetData[1] << 12 });
 				}
 
-				packet.set("b", (float) center.getX());
-				packet.set("c", (float) center.getY());
-				packet.set("d", (float) center.getZ());
-				packet.set("e", offsetX);
-				packet.set("f", offsetY);
-				packet.set("g", offsetZ);
-				packet.set("h", speed);
-				packet.set("i", amount);
+				packet.setX((float) center.getX());
+				packet.setY((float) center.getY());
+				packet.setZ((float) center.getZ());
+
+				packet.setOffsetX(offsetX);
+				packet.setOffsetY(offsetY);
+				packet.setOffsetZ(offsetZ);
 			} catch(Exception exception) {
 				throw new PacketInstantiationException("Packet instantiation failed", exception);
 			}
@@ -1521,7 +1526,7 @@ public enum ParticleEffects {
 			initializePacket(center);
 
 			try {
-				Reflect.on(player).call("getHandle").field("playerConnection").call("sendPacket", packet.get());
+				KageCore.getProtocolManager().sendServerPacket(getPlayer(player), packet.getHandle());
 			} catch(Exception exception) {
 				throw new PacketSendingException("Failed to send the packet to player '" + player.getName() + "'", exception);
 			}
@@ -1567,6 +1572,14 @@ public enum ParticleEffects {
 				}
 
 				sendTo(center, player);
+			}
+		}
+
+		private Player getPlayer(Player player) {
+			if(player instanceof AbstractPlayerWrapper) {
+				return ((AbstractPlayerWrapper) player).getBukkitPlayer();
+			} else {
+				return player;
 			}
 		}
 

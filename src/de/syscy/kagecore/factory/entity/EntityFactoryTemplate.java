@@ -34,6 +34,7 @@ import org.bukkit.entity.Guardian;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.Husk;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.MagmaCube;
@@ -47,17 +48,20 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Shulker;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Squid;
+import org.bukkit.entity.Stray;
+import org.bukkit.entity.Vex;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
+import org.bukkit.entity.Vindicator;
 import org.bukkit.entity.Witch;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
+import org.bukkit.entity.ZombieVillager;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
@@ -419,13 +423,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 		});
 		specificEntityHandlers.put(EntityType.SHULKER, new LivingEntityHandler<Shulker>());
 		specificEntityHandlers.put(EntityType.SILVERFISH, new LivingEntityHandler<Silverfish>());
-		specificEntityHandlers.put(EntityType.SKELETON, new LivingEntityHandler<Skeleton>() {
-			@Override
-			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Skeleton skeleton, final YamlConfiguration templateYaml) {
-				final SkeletonType skeletonType = SkeletonType.valueOf(templateYaml.getString("skeletonType", "normal").toUpperCase());
-				skeleton.setSkeletonType(skeletonType);
-			}
-		});
+		specificEntityHandlers.put(EntityType.SKELETON, new LivingEntityHandler<Skeleton>());
 		specificEntityHandlers.put(EntityType.SLIME, new LivingEntityHandler<Slime>() {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Slime slime, final YamlConfiguration templateYaml) {
@@ -465,12 +463,25 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Zombie zombie, final YamlConfiguration templateYaml) {
 				zombie.setBaby(templateYaml.getBoolean("baby", false));
-				zombie.setVillager(templateYaml.getBoolean("villager", false));
-
-				final Profession profession = Profession.valueOf(templateYaml.getString("profession", "normal").toUpperCase());
-				zombie.setVillagerProfession(profession);
 			}
 		});
+		specificEntityHandlers.put(EntityType.HUSK, new LivingEntityHandler<Husk>() {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Husk husk, final YamlConfiguration templateYaml) {
+				husk.setBaby(templateYaml.getBoolean("baby", false));
+			}
+		});
+		specificEntityHandlers.put(EntityType.ZOMBIE_VILLAGER, new LivingEntityHandler<ZombieVillager>() {
+			@Override
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final ZombieVillager zombieVillager, final YamlConfiguration templateYaml) {
+				zombieVillager.setBaby(templateYaml.getBoolean("baby", false));
+				final Profession profession = Profession.valueOf(templateYaml.getString("profession", "normal").toUpperCase());
+				zombieVillager.setVillagerProfession(profession);
+			}
+		});
+		specificEntityHandlers.put(EntityType.STRAY, new LivingEntityHandler<Stray>());
+		specificEntityHandlers.put(EntityType.VEX, new LivingEntityHandler<Vex>());
+		specificEntityHandlers.put(EntityType.VINDICATOR, new LivingEntityHandler<Vindicator>());
 	}
 
 	private static void handleVillager(final IFactoryProviderPlugin plugin, final Villager villager, final YamlConfiguration templateYaml) {
