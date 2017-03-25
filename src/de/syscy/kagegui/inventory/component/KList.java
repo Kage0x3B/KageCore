@@ -75,10 +75,8 @@ public class KList extends KComponent {
 
 	@Override
 	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
-		if(localY == height - 1) {
-			if(navigationComponents[localX] != null && navigationComponents[localX].isVisible()) {
-				navigationComponents[localX].onClick(event, player, 0, 0);
-			}
+		if(localY == height - 1 && navigationComponents[localX] != null && navigationComponents[localX].isVisible()) {
+			navigationComponents[localX].onClick(event, player, 0, 0);
 		} else {
 			for(KComponent component : currentPageComponents) {
 				if(component.isVisible() && component.getX() == x + localX && component.getY() == y + localY) {

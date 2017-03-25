@@ -8,11 +8,13 @@ import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.AdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
+	@SuppressWarnings("unused")
 	private final ItemFactoryNMS itemFactoryNMS;
 
 	private AdventureFactory<ItemStack> factory;
@@ -33,7 +36,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 	private Material material;
 	private int data;
-	private String nbt;
+	//	private String nbt;
 
 	private String displayName;
 	private final List<String> lore = new ArrayList<>();
@@ -48,9 +51,13 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		this.factory = factory;
 		this.templateYaml = templateYaml;
 
-		material = Material.matchMaterial(templateYaml.getString("material", "barrier"));
+		material = Material.matchMaterial(templateYaml.getString("material"));
+
+		if(material == null) {
+			KageCore.debugMessage("Invalid material: " + templateYaml.getString("material"));
+		}
+
 		data = templateYaml.getInt("data", 0);
-		nbt = templateYaml.getString("nbt", "");
 
 		displayName = ChatColor.translateAlternateColorCodes('$', templateYaml.getString("displayName", ""));
 
@@ -144,8 +151,13 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public ItemStack create(Object... args) throws Exception {
-		ItemStack itemStack = itemFactoryNMS.createItemStack(material, data, nbt);
+		if(material == Material.AIR) {
+			return new ItemStack(material);
+		}
+
+		CraftItemStack itemStack = CraftItemStack.asCraftCopy(new ItemStack(material, 1, material.getMaxDurability(), (byte) data)); //TODO: NBT support
 
 		ItemMeta itemMeta = itemStack.getItemMeta();
 
@@ -166,6 +178,10 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 		for(ItemStackTemplateModifier itemStackTemplateModifier : ((ItemStackFactory) factory).getItemStackTemplateModifier()) {
 			itemStackTemplateModifier.modify(itemStack, templateYaml);
+		}
+
+		if(itemAttributeList.isEmpty()) {
+			return itemStack;
 		}
 
 		ItemAttributes itemAttributes = new ItemAttributes(itemStack);

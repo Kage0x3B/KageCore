@@ -8,7 +8,9 @@ import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
@@ -28,7 +30,11 @@ import lombok.RequiredArgsConstructor;
 
 public class ItemAttributes {
 	public static NbtBase<?> backup(ItemStack itemStack) {
-		itemStack = MinecraftReflection.getBukkitItemStack(itemStack);
+		if(itemStack == null || itemStack.getType() == Material.AIR) {
+			return null;
+		}
+
+		itemStack = CraftItemStack.asCraftCopy(itemStack);
 
 		NbtCompound nbt = (NbtCompound) NbtFactory.fromItemTag(itemStack);
 		NbtList<Map<String, NbtBase<?>>> attributes = nbt.getListOrDefault("AttributeModifiers");
@@ -38,7 +44,11 @@ public class ItemAttributes {
 	}
 
 	public static ItemStack restore(ItemStack itemStack, NbtBase<?> attributesNbt) {
-		itemStack = MinecraftReflection.getBukkitItemStack(itemStack);
+		if(itemStack == null || itemStack.getType() == Material.AIR) {
+			return itemStack;
+		}
+
+		itemStack = CraftItemStack.asCraftCopy(itemStack);
 
 		NbtCompound nbt = (NbtCompound) NbtFactory.fromItemTag(itemStack);
 		nbt.put(attributesNbt);
@@ -53,6 +63,7 @@ public class ItemAttributes {
 		public static final AttributeType GENERIC_MAX_HEALTH = new AttributeType("generic.maxHealth").register();
 		public static final AttributeType GENERIC_FOLLOW_RANGE = new AttributeType("generic.followRange").register();
 		public static final AttributeType GENERIC_ATTACK_DAMAGE = new AttributeType("generic.attackDamage").register();
+		public static final AttributeType GENERIC_ATTACK_SPEED = new AttributeType("generic.attackSpeed").register();
 		public static final AttributeType GENERIC_MOVEMENT_SPEED = new AttributeType("generic.movementSpeed").register();
 		public static final AttributeType GENERIC_KNOCKBACK_RESISTANCE = new AttributeType("generic.knockbackResistance").register();
 

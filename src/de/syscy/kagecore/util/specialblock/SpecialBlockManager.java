@@ -30,6 +30,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.command.CommandBase;
 import de.syscy.kagecore.command.CommandManager;
 import de.syscy.kagecore.command.PlayerCommandBase;
@@ -76,6 +77,8 @@ public class SpecialBlockManager extends CommandManager<JavaPlugin> implements L
 
 	public SpecialBlockManager(JavaPlugin plugin) {
 		super(plugin, "specialBlock");
+
+		specialBlockStorageFile = new File(plugin.getDataFolder(), "specialBlockStorage.yml");
 
 		CommandArgument<?> typeArg = StringArgument.create("type").values(new Function<CommandSender, List<String>>() {
 			@Override
@@ -140,8 +143,6 @@ public class SpecialBlockManager extends CommandManager<JavaPlugin> implements L
 				}
 			}
 		}, 5, 5);
-
-		specialBlockStorageFile = new File(plugin.getDataFolder(), "specialBlockStorage.yml");
 	}
 
 	private static int colorIndexFromString(String string) {
@@ -189,6 +190,8 @@ public class SpecialBlockManager extends CommandManager<JavaPlugin> implements L
 	}
 
 	public void load() {
+		KageCore.debugMessage("Loading special blocks from " + specialBlockStorageFile.getAbsolutePath());
+
 		specialBlocksByType.clear();
 		specialBlocksByLocation.clear();
 
@@ -238,6 +241,8 @@ public class SpecialBlockManager extends CommandManager<JavaPlugin> implements L
 
 			specialBlockStorageYaml.set(specialBlockType, new ArrayList<>(serializedLocations));
 		}
+
+		KageCore.debugMessage("Saving special blocks to " + specialBlockStorageFile.getAbsolutePath());
 
 		try {
 			if(specialBlockStorageFile.exists()) {
