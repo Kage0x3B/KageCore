@@ -1731,4 +1731,14 @@ public abstract class AbstractPlayerWrapper implements Player {
 	public void setResourcePack(String arg0, byte[] arg1) {
 		bukkitPlayer.setResourcePack(arg0, arg1);
 	}
+
+	@Override
+	public double getHeight() {
+		return bukkitPlayer.getHeight();
+	}
+
+	@Override
+	public double getWidth() {
+		return bukkitPlayer.getWidth();
+	}
 }
