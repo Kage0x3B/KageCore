@@ -68,6 +68,13 @@ public class SchematicLoader {
 		return new Schematic(WorldEditUtil.createSession(weWorld), new ClipboardHolder(clipboardHolder.getClipboard(), clipboardHolder.getWorldData()));
 	}
 
+	/**
+	 * Loads an area in the world into a schematic (for saving it)
+	 * @param world The world in which the schematic will be used
+	 * @param boundingBox The bounding box of the area
+	 * @param origin An origin, used for rotating and when pasting the schematic again. Usually set to (0,0) or the (bottom-)center of the area
+	 * @return a {@link Schematic}
+	 */
 	public static Schematic loadArea(World world, BoundingBox boundingBox, Location origin) {
 		if(!WorldEditUtil.initWorldEdit()) {
 			return null;
