@@ -75,7 +75,7 @@ public class SchematicLoader {
 	 * @param origin An origin, used for rotating and when pasting the schematic again. Usually set to (0,0) or the (bottom-)center of the area
 	 * @return a {@link Schematic}
 	 */
-	public static Schematic loadArea(World world, BoundingBox boundingBox, Location origin) {
+	public static Schematic loadArea(World world, BoundingBox boundingBox, org.bukkit.util.Vector origin) {
 		if(!WorldEditUtil.initWorldEdit()) {
 			return null;
 		}
@@ -87,7 +87,7 @@ public class SchematicLoader {
 		EditSession editSession = WorldEditUtil.createSession(weWorld);
 
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-		clipboard.setOrigin(toVector(origin));
+		clipboard.setOrigin(new Vector(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()));
 		ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
 
 		try {
