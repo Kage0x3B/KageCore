@@ -11,14 +11,15 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schematic {
-	private final @Getter EditSession editSession;
+	private @Getter @Setter EditSession editSession;
 
-	private final @Getter ClipboardHolder clipboardHolder;
+	private @Getter @Setter ClipboardHolder clipboardHolder;
 
 	public void rotateX(double theta) {
 		rotate(theta, 0, 0);
