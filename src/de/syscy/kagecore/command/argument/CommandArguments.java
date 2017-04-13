@@ -64,8 +64,40 @@ public class CommandArguments {
 		}
 	}
 
-	public String get(int index) {
-		return currentArgs[index];
+	public <T> CommandArgument<T> getCommandArgument(String argumentName) {
+		if(!nameToIndex.containsKey(argumentName.toLowerCase())) {
+			return null;
+		}
+
+		return getCommandArgument(nameToIndex.get(argumentName.toLowerCase()));
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> CommandArgument<T> getCommandArgument(int index) {
+		return (CommandArgument<T>) commandArguments.get(index);
+	}
+
+	public <T> T getArg(String argumentName) {
+		return getArg(argumentName, null);
+	}
+
+	public <T> T getArg(int index) {
+		return getArg(index, null);
+	}
+
+	public <T> T getArg(String argumentName, String defaultValue) {
+		if(!nameToIndex.containsKey(argumentName.toLowerCase())) {
+			return null;
+		}
+
+		return getArg(nameToIndex.get(argumentName.toLowerCase()), defaultValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getArg(int index, String defaultValue) {
+		commandArguments.get(index).checkArg(currentSender, currentArgs);
+
+		return ((CommandArgument<T>) commandArguments.get(index)).getValue(currentSender, currentArgs);
 	}
 
 	// ===== String =====
@@ -210,5 +242,29 @@ public class CommandArguments {
 		commandArguments.get(index).checkArg(currentSender, currentArgs);
 
 		return ((PlayerArgument) commandArguments.get(index)).getValue(currentSender, currentArgs);
+	}
+
+	// ===== Time =====
+
+	public long getTime(String argumentName) {
+		return getTime(argumentName, 0);
+	}
+
+	public long getTime(int index) {
+		return getTime(index, 0);
+	}
+
+	public long getTime(String argumentName, long defaultValue) {
+		if(!nameToIndex.containsKey(argumentName.toLowerCase())) {
+			return null;
+		}
+
+		return getTime(nameToIndex.get(argumentName.toLowerCase()), defaultValue);
+	}
+
+	public long getTime(int index, long defaultValue) {
+		commandArguments.get(index).checkArg(currentSender, currentArgs);
+
+		return ((TimeArgument) commandArguments.get(index)).getValue(currentSender, currentArgs);
 	}
 }
