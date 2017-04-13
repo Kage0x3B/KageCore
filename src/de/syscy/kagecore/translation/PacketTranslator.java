@@ -39,6 +39,7 @@ import com.google.common.io.ByteStreams;
 
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.event.LanguageChangeEvent;
+import de.syscy.kagecore.protocol.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -58,7 +59,7 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.SET_SLOT);
 		packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
 
-		KageCore.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
+		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
 			@Override
 			public void onPacketReceiving(final PacketEvent event) {
 				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
@@ -81,12 +82,14 @@ public class PacketTranslator {
 			}
 		});
 
-		KageCore.getProtocolManager().addPacketListener(new PacketAdapter(plugin, packetTypes) {
+		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, packetTypes) {
 			@Override
 			public void onPacketSending(PacketEvent event) {
 				handlePacket(event);
 			}
 		});
+
+		Translator.setEnabled(true);
 	}
 
 	private void handlePacket(PacketEvent event) {

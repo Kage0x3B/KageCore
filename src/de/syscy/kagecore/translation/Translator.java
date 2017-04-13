@@ -22,12 +22,15 @@ import com.google.common.base.Splitter;
 
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.util.Util;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Translator {
 	public static char SIGN = '\u00A7';
+	private static @Getter @Setter(value = AccessLevel.PROTECTED) boolean enabled = false;
 
 	private static final Splitter languageFileSplitter = Splitter.on('=').limit(2);
 	private static @Getter String defaultLocale = "en";

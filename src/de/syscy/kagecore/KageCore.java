@@ -9,12 +9,10 @@ import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.google.common.base.Joiner;
 
 import de.syscy.kagecore.command.CommandManager;
-import de.syscy.kagecore.translation.PacketTranslator;
+import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.BoundingBox;
 import de.syscy.kagecore.util.ExecuteJSCommand;
@@ -33,8 +31,6 @@ public class KageCore extends JavaPlugin {
 	private static @Getter @Setter boolean debug = true;
 
 	private @Getter KageCoreConfig kageCoreConfig;
-
-	private static @Getter ProtocolManager protocolManager;
 
 	private @Getter CommandManager<KageCore> kcCommandManager;
 
@@ -73,7 +69,11 @@ public class KageCore extends JavaPlugin {
 			getConfig().addDefault("hotbar." + world.getName(), "");
 		}
 
-		initPacketListening();
+		try {
+			ProtocolUtil.init(this);
+		} catch(Exception ex) {
+			KageCore.debugMessage("ProtocolLib not installed. Translations and more disabled!");
+		}
 
 		BookUtil.init();
 
@@ -90,16 +90,6 @@ public class KageCore extends JavaPlugin {
 		super.onDisable();
 
 		KageGUI.dispose();
-	}
-
-	private void initPacketListening() {
-		if(Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-			protocolManager = ProtocolLibrary.getProtocolManager();
-
-			PacketTranslator.initPacketRewriting(this);
-		} else {
-			KageCore.debugMessage("ProtocolLib not installed. Translations disabled!");
-		}
 	}
 
 	public static void debugObjects(Object... objects) {
