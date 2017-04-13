@@ -1,12 +1,7 @@
 package de.syscy.kagecore.translation;
 
-import java.text.NumberFormat;
-import java.text.ParsePosition;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -41,14 +36,10 @@ import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class PacketTranslator {
-	private static Pattern tsPattern = Pattern.compile(Translator.SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;"); //Matches parts of strings like "§test;" or "§test;arg1:2;arg3;" to translate
-	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
-
 	public static void initPacketRewriting(KageCore plugin) {
 		List<PacketType> packetTypes = new ArrayList<>();
 		packetTypes.add(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
@@ -171,120 +162,11 @@ public class PacketTranslator {
 	}
 
 	private static Object tryTranslateObject(Object object, Player player) {
-		return object instanceof String ? tryTranslateString((String) object, player) : object;
-	}
-
-	private static String tryTranslateString(String string, Player player) {
-		if(string == null || string.indexOf(Translator.SIGN) < 0) {
-			return string;
-		}
-
-		String language = Translator.getLanguage(player);
-		TranslateString[] parts = parse(string);
-
-		StringBuilder result = new StringBuilder();
-
-		for(TranslateString part : parts) {
-			part.append(result, language);
-		}
-
-		return result.toString();
-	}
-
-	private static TranslateString[] parse(String string) {
-		ArrayList<TranslateString> translateStrings = new ArrayList<>();
-		Matcher matcher = tsPattern.matcher(string);
-
-		for(int i = 0, len = string.length(); i < len;) {
-			if(matcher.find(i)) {
-				if(matcher.start() != i) {
-					translateStrings.add(new FixedString(string.substring(i, matcher.start())));
-				}
-
-				translateStrings.add(new TranslatableString(string.substring(matcher.start(), matcher.end())));
-				i = matcher.end();
-			} else {
-				translateStrings.add(new FixedString(string.substring(i)));
-
-				break;
-			}
-		}
-
-		return translateStrings.toArray(new TranslateString[translateStrings.size()]);
-	}
-
-	private interface TranslateString {
-		public void append(StringBuilder stringBuilder, String language);
-	}
-
-	@AllArgsConstructor
-	private static class FixedString implements TranslateString {
-		private final String string;
-
-		@Override
-		public void append(StringBuilder stringBuilder, String language) {
-			stringBuilder.append(string);
-		}
-	}
-
-	@AllArgsConstructor
-	private static class TranslatableString implements TranslateString {
-		private String string;
-
-		@Override
-		public void append(StringBuilder stringBuilder, String language) {
-			string = string.substring(1, string.length() - 1);
-			String[] parts = string.split(";");
-			Object[] args = new Object[parts.length - 1];
-
-			for(int i = 1; i < parts.length; i++) {
-				if(parts[i] == null || parts[i].isEmpty()) {
-					continue;
-				}
-
-				String part = parts[i].toLowerCase();
-				char partType = part.charAt(part.length() - 1);
-
-				if(partTypeIdentifiers.contains(partType)) {
-					try {
-						part = part.substring(0, part.length() - 1);
-
-						NumberFormat formatter = NumberFormat.getInstance();
-						ParsePosition pos = new ParsePosition(0);
-						Number number = formatter.parse(part, pos);
-
-						if(part.length() == pos.getIndex()) {
-							switch(partType) {
-								case 'i':
-									args[i - 1] = number.intValue();
-									break;
-								case 'd':
-									args[i - 1] = number.doubleValue();
-									break;
-								case 'l':
-									args[i - 1] = number.longValue();
-									break;
-								case 'f':
-									args[i - 1] = number.floatValue();
-									break;
-							}
-						}
-					} catch(Exception ex) {
-						ex.printStackTrace();
-
-						args[i - 1] = parts[i];
-					}
-				} else {
-					args[i - 1] = parts[i];
-				}
-			}
-
-			stringBuilder.append(Translator.translate(language, parts[0], args));
-		}
+		return object instanceof String ? Translator.tryTranslateString((String) object, player) : object;
 	}
 
 	private static WrappedChatComponent translateChatComponent(WrappedChatComponent chatComponent, Player player) {
-		return WrappedChatComponent.fromJson(tryTranslateString(chatComponent.getJson(), player));
+		return WrappedChatComponent.fromJson(Translator.tryTranslateString(chatComponent.getJson(), player));
 	}
 
 	private static ItemStack translateItemStack(ItemStack itemStack, Player player) {
@@ -295,14 +177,14 @@ public class PacketTranslator {
 		ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if(itemMeta.hasDisplayName()) {
-			itemMeta.setDisplayName(tryTranslateString(itemMeta.getDisplayName(), player));
+			itemMeta.setDisplayName(Translator.tryTranslateString(itemMeta.getDisplayName(), player));
 		}
 
 		if(itemMeta.hasLore()) {
 			List<String> newLore = new ArrayList<>();
 
 			for(String loreString : itemMeta.getLore()) {
-				newLore.add(tryTranslateString(loreString, player));
+				newLore.add(Translator.tryTranslateString(loreString, player));
 			}
 
 			itemMeta.setLore(newLore);
@@ -311,8 +193,8 @@ public class PacketTranslator {
 		if(itemStack.getType().equals(Material.WRITTEN_BOOK)) {
 			BookMeta bookMeta = (BookMeta) itemMeta;
 
-			bookMeta.setTitle(tryTranslateString(bookMeta.getTitle(), player));
-			bookMeta.setAuthor(tryTranslateString(bookMeta.getAuthor(), player));
+			bookMeta.setTitle(Translator.tryTranslateString(bookMeta.getTitle(), player));
+			bookMeta.setAuthor(Translator.tryTranslateString(bookMeta.getAuthor(), player));
 			bookMeta.setPages(translateList(bookMeta.getPages(), player));
 		}
 
@@ -353,7 +235,7 @@ public class PacketTranslator {
 	}
 
 	private static NbtBase<String> translateNBTString(NbtBase<String> nbtString, Player player) {
-		nbtString.setValue(tryTranslateString(nbtString.getValue(), player));
+		nbtString.setValue(Translator.tryTranslateString(nbtString.getValue(), player));
 
 		return nbtString;
 	}
@@ -386,7 +268,7 @@ public class PacketTranslator {
 		List<String> newList = new ArrayList<>(list.size());
 
 		for(String string : list) {
-			newList.add(tryTranslateString(string, player));
+			newList.add(Translator.tryTranslateString(string, player));
 		}
 
 		return newList;

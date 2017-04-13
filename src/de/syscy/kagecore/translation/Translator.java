@@ -7,10 +7,16 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,6 +29,7 @@ import com.google.common.base.Splitter;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.util.Util;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
@@ -30,6 +37,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Translator {
 	public static char SIGN = '\u00A7';
+	private static Pattern tsPattern = Pattern.compile(SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;");
+	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
+
 	private static @Getter @Setter(value = AccessLevel.PROTECTED) boolean enabled = false;
 
 	private static final Splitter languageFileSplitter = Splitter.on('=').limit(2);
@@ -184,5 +194,130 @@ public class Translator {
 		}
 
 		return text;
+	}
+
+	/**
+	 * Usually returns the same string. If the packet translator doesn't work, it returns the translated version (using the default locale)
+	 * @param packetTranslationString A packet translation string (A string containing one or multiple translation keys
+	 * @return The packetTranslationString or the translated result of it
+	 */
+	public String processPacketTranslationString(String packetTranslationString) {
+		if(enabled) {
+			return packetTranslationString;
+		} else {
+			return tryTranslateString(packetTranslationString, defaultLocale);
+		}
+	}
+
+	public static String tryTranslateString(String string, Player player) {
+		return tryTranslateString(string, getLanguage(player));
+	}
+
+	public static String tryTranslateString(String string, String language) {
+		if(string == null || string.indexOf(Translator.SIGN) < 0) {
+			return string;
+		}
+
+		TranslateString[] parts = parse(string);
+
+		StringBuilder result = new StringBuilder();
+
+		for(TranslateString part : parts) {
+			part.append(result, language);
+		}
+
+		return result.toString();
+	}
+
+	private static TranslateString[] parse(String string) {
+		ArrayList<TranslateString> translateStrings = new ArrayList<>();
+		Matcher matcher = tsPattern.matcher(string);
+
+		for(int i = 0, len = string.length(); i < len;) {
+			if(matcher.find(i)) {
+				if(matcher.start() != i) {
+					translateStrings.add(new FixedString(string.substring(i, matcher.start())));
+				}
+
+				translateStrings.add(new TranslatableString(string.substring(matcher.start(), matcher.end())));
+				i = matcher.end();
+			} else {
+				translateStrings.add(new FixedString(string.substring(i)));
+
+				break;
+			}
+		}
+
+		return translateStrings.toArray(new TranslateString[translateStrings.size()]);
+	}
+
+	private interface TranslateString {
+		public void append(StringBuilder stringBuilder, String language);
+	}
+
+	@AllArgsConstructor
+	private static class FixedString implements TranslateString {
+		private final String string;
+
+		@Override
+		public void append(StringBuilder stringBuilder, String language) {
+			stringBuilder.append(string);
+		}
+	}
+
+	@AllArgsConstructor
+	private static class TranslatableString implements TranslateString {
+		private String string;
+
+		@Override
+		public void append(StringBuilder stringBuilder, String language) {
+			string = string.substring(1, string.length() - 1);
+			String[] parts = string.split(";");
+			Object[] args = new Object[parts.length - 1];
+
+			for(int i = 1; i < parts.length; i++) {
+				if(parts[i] == null || parts[i].isEmpty()) {
+					continue;
+				}
+
+				String part = parts[i].toLowerCase();
+				char partType = part.charAt(part.length() - 1);
+
+				if(partTypeIdentifiers.contains(partType)) {
+					try {
+						part = part.substring(0, part.length() - 1);
+
+						NumberFormat formatter = NumberFormat.getInstance();
+						ParsePosition pos = new ParsePosition(0);
+						Number number = formatter.parse(part, pos);
+
+						if(part.length() == pos.getIndex()) {
+							switch(partType) {
+								case 'i':
+									args[i - 1] = number.intValue();
+									break;
+								case 'd':
+									args[i - 1] = number.doubleValue();
+									break;
+								case 'l':
+									args[i - 1] = number.longValue();
+									break;
+								case 'f':
+									args[i - 1] = number.floatValue();
+									break;
+							}
+						}
+					} catch(Exception ex) {
+						ex.printStackTrace();
+
+						args[i - 1] = parts[i];
+					}
+				} else {
+					args[i - 1] = parts[i];
+				}
+			}
+
+			stringBuilder.append(Translator.translate(language, parts[0], args));
+		}
 	}
 }
