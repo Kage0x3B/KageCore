@@ -256,7 +256,7 @@ public class CommandArguments {
 
 	public long getTime(String argumentName, long defaultValue) {
 		if(!nameToIndex.containsKey(argumentName.toLowerCase())) {
-			return null;
+			return 0;
 		}
 
 		return getTime(nameToIndex.get(argumentName.toLowerCase()), defaultValue);
