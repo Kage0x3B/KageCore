@@ -6,8 +6,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.bukkit.ChatColor;
-
 import com.huskehhh.mysql.Database;
 
 import de.syscy.kagecore.KageCore;
@@ -34,8 +32,6 @@ public class SQLiteDatabase extends Database {
 		if(checkConnection()) {
 			return connection;
 		}
-
-		KageCore.debugMessage(ChatColor.RED + "WARNING! Currently using sqlite as the database type. " + ChatColor.GOLD + "Only use this for testing purposes and only with a single server accessing it!");
 
 		File dataFolder = new File(KageCore.getPluginDirectory().getParentFile(), "pluginDatabases/");
 
