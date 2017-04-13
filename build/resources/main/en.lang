@@ -7,6 +7,7 @@ command.exception.invalidUsage=&cUsage: &7%s %s %s
 command.exception.invalidCommandArgument=&cInvalid argument: %s
 command.exception.exempt=&4%s &cis exempt from this command!
 command.exception.entityNotFound=Could not find a matching entity!
+command.exception.unknownTimeUnit=&cUnknown time unit: %s.
 
 command.help.header=------Help------
 command.help.entry=&6/%s %s &5| &4%s

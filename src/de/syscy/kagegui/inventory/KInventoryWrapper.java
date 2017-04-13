@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 import com.comphenix.packetwrapper.WrapperPlayServerWindowItems;
 
-import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Getter;
@@ -65,7 +65,7 @@ public class KInventoryWrapper implements IInventoryWrapper {
 					packet.setSlotData(buffer[i]);
 
 					try {
-						KageCore.getProtocolManager().sendServerPacket(gui.getPlayer(), packet.getHandle());
+						ProtocolUtil.getProtocolManager().sendServerPacket(gui.getPlayer(), packet.getHandle());
 					} catch(InvocationTargetException ex) {
 						ex.printStackTrace();
 					}
@@ -92,7 +92,7 @@ public class KInventoryWrapper implements IInventoryWrapper {
 		packet.setSlotData(getBufferList());
 
 		try {
-			KageCore.getProtocolManager().sendServerPacket(gui.getPlayer(), packet.getHandle());
+			ProtocolUtil.getProtocolManager().sendServerPacket(gui.getPlayer(), packet.getHandle());
 		} catch(InvocationTargetException ex) {
 			ex.printStackTrace();
 		}

@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 
-import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Getter;
 
@@ -63,7 +63,7 @@ public class KCraftingInventoryWrapper implements IInventoryWrapper {
 					packet.setSlotData(buffer[i]);
 
 					try {
-						KageCore.getProtocolManager().sendServerPacket(gui.getPlayer(), packet.getHandle());
+						ProtocolUtil.getProtocolManager().sendServerPacket(gui.getPlayer(), packet.getHandle());
 					} catch(InvocationTargetException ex) {
 						ex.printStackTrace();
 					}

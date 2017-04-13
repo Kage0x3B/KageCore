@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
 import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
 
-import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.util.ParticleEffects.ParticleData;
 import de.syscy.kagecore.versioncompat.PackageType;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
@@ -1526,7 +1526,7 @@ public enum ParticleEffects {
 			initializePacket(center);
 
 			try {
-				KageCore.getProtocolManager().sendServerPacket(getPlayer(player), packet.getHandle());
+				ProtocolUtil.getProtocolManager().sendServerPacket(getPlayer(player), packet.getHandle());
 			} catch(Exception exception) {
 				throw new PacketSendingException("Failed to send the packet to player '" + player.getName() + "'", exception);
 			}
