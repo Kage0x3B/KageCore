@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class CommandBase<T extends JavaPlugin> implements TabCompleter {
+public abstract class CommandBase<T extends JavaPlugin> implements CommandExecutor, TabCompleter {
 	protected final T plugin;
 	protected @Getter String command;
 
@@ -38,6 +39,14 @@ public abstract class CommandBase<T extends JavaPlugin> implements TabCompleter 
 	}
 
 	public abstract void onCommand(CommandSender sender);
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		arguments.update(sender, args);
+		onCommand(sender);
+
+		return true;
+	}
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

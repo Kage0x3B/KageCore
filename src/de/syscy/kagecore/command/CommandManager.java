@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,7 +15,7 @@ import de.syscy.kagecore.command.exception.InvalidUsageException;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.Util;
 
-public class CommandManager<T extends JavaPlugin> extends CommandBase<T> implements CommandExecutor {
+public class CommandManager<T extends JavaPlugin> extends CommandBase<T> {
 	private List<CommandBase<?>> commands = new ArrayList<>();
 
 	private int cmdPerPage = 6;
@@ -25,14 +24,6 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> impleme
 		super(plugin, command);
 
 		commandManager = this;
-	}
-
-	@Override
-	public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		arguments.update(sender, args);
-		onCommand(sender);
-
-		return true;
 	}
 
 	@Override
