@@ -3,12 +3,16 @@ package de.syscy.kagecore.worldedit;
 import org.bukkit.Location;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,6 +53,22 @@ public class Schematic {
 		}
 
 		clipboardHolder.setTransform(clipboardHolder.getTransform().combine(transform));
+	}
+
+	/**
+	 * Applies the current transform to the clipboard.
+	 * Usually this only happens immediately before the schematic is pasted.
+	 */
+	public void bakeTransform() throws WorldEditException, MaxChangedBlocksException {
+		WorldData worldData = editSession.getWorld().getWorldData();
+
+		FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboardHolder.getClipboard(), clipboardHolder.getTransform(), worldData);
+
+		Clipboard newClipboard = new BlockArrayClipboard(result.getTransformedRegion());
+		newClipboard.setOrigin(clipboardHolder.getClipboard().getOrigin());
+		Operations.complete(result.copyTo(newClipboard));
+
+		clipboardHolder = new ClipboardHolder(newClipboard, worldData);
 	}
 
 	public void paste(Location location) throws WorldEditException {
