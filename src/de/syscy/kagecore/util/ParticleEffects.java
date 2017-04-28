@@ -21,6 +21,7 @@ import de.syscy.kagecore.util.ParticleEffects.ParticleData;
 import de.syscy.kagecore.versioncompat.PackageType;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
+import lombok.Getter;
 
 /**
  * <b>ParticleEffect Library</b>
@@ -399,10 +400,10 @@ public enum ParticleEffects {
 
 	private static final Map<String, ParticleEffects> NAME_MAP = new HashMap<String, ParticleEffects>();
 	private static final Map<Integer, ParticleEffects> ID_MAP = new HashMap<Integer, ParticleEffects>();
-	private final String name;
-	private final int id;
-	private final int requiredVersion;
-	private final List<ParticleProperty> properties;
+	private final @Getter String name;
+	private final @Getter int id;
+	private final @Getter int requiredVersion;
+	private final @Getter List<ParticleProperty> properties;
 
 	// Initialize map for quick name and id lookup
 	static {
@@ -425,33 +426,6 @@ public enum ParticleEffects {
 		this.id = id;
 		this.requiredVersion = requiredVersion;
 		this.properties = Arrays.asList(properties);
-	}
-
-	/**
-	 * Returns the name of this particle effect
-	 *
-	 * @return The name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Returns the id of this particle effect
-	 *
-	 * @return The id
-	 */
-	public int getId() {
-		return id;
-	}
-
-	/**
-	 * Returns the required version for this particle effect (1.x)
-	 *
-	 * @return The required version
-	 */
-	public int getRequiredVersion() {
-		return requiredVersion;
 	}
 
 	/**
