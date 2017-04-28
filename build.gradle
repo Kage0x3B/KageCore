@@ -9,7 +9,7 @@ sourceSets.main.resources.srcDirs = [ "res/" ]
 repositories {
     jcenter()
 	mavenCentral()
-	maven { url "http://repo.dmulloy2.net/content/groups/public/" }
+	maven { url "http://repo.dmulloy2.net/content/groups/releases/" }
 }
 
 dependencies {
@@ -17,6 +17,5 @@ dependencies {
 	
 	compile files('libs/spigot-1.11.jar')
 	compile files('libs/worldedit-bukkit-6.1.5.jar')
-	
-	compile group: 'com.comphenix.protocol', name: 'ProtocolLib-API', version: '4.2.0'
+	compile files('libs/ProtocolLib.jar')
 }
