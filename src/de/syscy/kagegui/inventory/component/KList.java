@@ -99,11 +99,19 @@ public class KList extends KComponent {
 		components.add(component);
 
 		recalculateValues();
+
+		if(gui != null) {
+			gui.markDirty();
+		}
 	}
 
 	public void remove(KComponent component) {
 		if(components.remove(component)) {
 			recalculateValues();
+
+			if(gui != null) {
+				gui.markDirty();
+			}
 		}
 	}
 
