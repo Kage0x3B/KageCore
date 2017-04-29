@@ -101,6 +101,12 @@ public class KList extends KComponent {
 		recalculateValues();
 	}
 
+	public void remove(KComponent component) {
+		if(components.remove(component)) {
+			recalculateValues();
+		}
+	}
+
 	public void addNavigationComponent(int x, KComponent component) {
 		if(!(component instanceof KButton || component instanceof KLabel || component instanceof KCheckButton || component instanceof KItemContainer)) {
 			throw new IllegalArgumentException("Invalid component type for a list navigation: " + component);
