@@ -3,21 +3,31 @@ package de.syscy.kagegui.inventory.component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
+import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.ButtonClickListener;
 import de.syscy.kagegui.util.ClickType;
 import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 public class KButton extends KComponent {
+	public static final int STAY_UNTIL_CLICK = Integer.MAX_VALUE;
+	private static final LoreBuilder EMPTY_LORE = new LoreBuilder();
+
 	protected @Getter @Setter String title = "Button";
 	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
 	protected @Getter @Setter ItemIcon icon = new ItemIcon(Material.STONE);
 
 	protected ButtonClickListener[] clickListener = new ButtonClickListener[ClickType.VALUES.length];
+
+	private int statusTime = 0;
+	private String statusMessage;
+	private ItemIcon statusIcon;
 
 	public KButton(int x, int y) {
 		super(x, y);
@@ -26,15 +36,29 @@ public class KButton extends KComponent {
 	@Override
 	public void update() {
 		icon.update(gui);
+
+		statusTime--;
 	}
 
 	@Override
 	public void render(IInventoryWrapper inventory) {
-		this.renderItem(inventory, x, y, width, height, icon, title, loreBuilder);
+		if(statusTime > 0) {
+			this.renderItem(inventory, x, y, width, height, statusIcon, statusMessage, EMPTY_LORE);
+		} else {
+			this.renderItem(inventory, x, y, width, height, icon, title, loreBuilder);
+		}
 	}
 
 	@Override
 	public void onClick(InventoryClickEvent event, Player player, int localX, int localY) {
+		if(statusTime > 0) {
+			statusTime = 0;
+
+			gui.markDirty();
+
+			return;
+		}
+
 		ClickType clickType = ClickType.getType(event.getAction());
 
 		if(clickListener[clickType.ordinal()] != null) {
@@ -57,6 +81,33 @@ public class KButton extends KComponent {
 
 		if(actionDescription != null && !actionDescription.isEmpty()) {
 			loreBuilder.set(LoreBuilder.CLICK_ACTIONS + clickType.ordinal(), clickType.getLoreButtonPrefix() + ": " + actionDescription);
+		}
+	}
+
+	public void displayStatus(int time, Status status) {
+		displayStatus(time, status.getMessageKey(), status.getItemIcon());
+	}
+
+	/**
+	 * Time is not exactly measured in ticks, it is just decremented on every update whichs happens once every few ticks.
+	 */
+	public void displayStatus(int time, String message, ItemIcon statusIcon) {
+		statusTime = time;
+		statusMessage = message;
+		statusIcon = icon;
+
+		gui.markDirty();
+	}
+
+	@RequiredArgsConstructor
+	@SuppressWarnings("deprecation")
+	public static enum Status {
+		SUCCESS(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 5))), FAILED(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 14)));
+
+		private final @Getter ItemIcon itemIcon;
+
+		public String getMessageKey() {
+			return Translator.SIGN + "kgui.buttonStatus." + name().toLowerCase() + ";";
 		}
 	}
 }
