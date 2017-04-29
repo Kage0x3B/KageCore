@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.reflect.TypeToken;
+
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.SliderValueChangeListener;
@@ -12,7 +14,13 @@ import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
-public class KSlider extends KComponent {
+public class KSlider<T extends Number> extends KComponent {
+	private final TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
+		private static final long serialVersionUID = 1L;
+	};
+
+	private final Class<? super T> numberClass = typeToken.getRawType();
+
 	protected @Getter @Setter String title;
 	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
 
@@ -20,10 +28,10 @@ public class KSlider extends KComponent {
 	protected @Getter @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 2));
 	protected @Getter @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE));
 
-	protected @Getter int value = 0;
-	protected @Getter @Setter int step = 1;
-	protected @Getter int minValue = 0;
-	protected @Getter int maxValue = 100;
+	protected T value;
+	protected T step;
+	protected T minValue;
+	protected T maxValue;
 	protected @Getter int knobX;
 
 	protected @Setter SliderValueChangeListener valueChangeListener;
@@ -60,31 +68,31 @@ public class KSlider extends KComponent {
 		} else if(localX > 0 && localX < width && localX != knobX) {
 			knobX = localX;
 
-			float sections = (float) (width - 2);
-			float valueRange = (float) (maxValue - minValue);
+			int sections = width - 2;
+			double valueRange = maxValue.doubleValue() - minValue.doubleValue();
 
-			setValue((int) (valueRange / sections * (float) knobX) - (int) (valueRange / sections));
+			setValue(castNumber(valueRange / sections * (double) knobX - valueRange / sections));
 		}
 	}
 
-	public void setValue(int value) {
+	public void setValue(T value) {
 		this.value = value;
 
-		if(value > maxValue) {
-			value = maxValue;
+		if(value.doubleValue() > maxValue.doubleValue()) {
+			value = castNumber(maxValue);
 		}
 
-		if(value < minValue) {
-			value = minValue;
+		if(value.doubleValue() < minValue.doubleValue()) {
+			value = castNumber(minValue);
 		}
 
 		onValueChange();
 	}
 
 	public void increaseValue() {
-		value += step;
+		value = castNumber(value.doubleValue() + step.doubleValue());
 
-		if(value > maxValue) {
+		if(value.doubleValue() > maxValue.doubleValue()) {
 			value = maxValue;
 		}
 
@@ -92,9 +100,9 @@ public class KSlider extends KComponent {
 	}
 
 	public void decreaseValue() {
-		value -= step;
+		value = castNumber(value.doubleValue() - step.doubleValue());
 
-		if(value < minValue) {
+		if(value.doubleValue() < minValue.doubleValue()) {
 			value = minValue;
 		}
 
@@ -106,30 +114,68 @@ public class KSlider extends KComponent {
 			valueChangeListener.onValueChange(this);
 		}
 
-		float sections = (float) (width - 2);
-		float valueRange = (float) (maxValue - minValue);
+		int sections = width - 2;
+		double valueRange = maxValue.doubleValue() - minValue.doubleValue();
 
 		if(width > 3) {
-			knobX = (int) ((float) value / valueRange * sections) + 1;
+			knobX = (int) (value.doubleValue() / valueRange * sections + 1);
 		}
 
 		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "Current value: " + value);
 		gui.markDirty();
 	}
 
-	public void setMinValue(int minValue) {
+	public void setMinValue(T minValue) {
 		this.minValue = minValue;
 
-		if(value < minValue) {
+		if(value.doubleValue() < minValue.doubleValue()) {
 			value = minValue;
 		}
 	}
 
-	public void setMaxValue(int maxValue) {
+	public void setMaxValue(T maxValue) {
 		this.maxValue = maxValue;
 
-		if(value > maxValue) {
+		if(value.doubleValue() > maxValue.doubleValue()) {
 			value = maxValue;
+		}
+	}
+
+	public void setStep(T step) {
+		this.step = step;
+	}
+
+	public T getValue() {
+		return castNumber(value);
+	}
+
+	public T getMinValue() {
+		return castNumber(minValue);
+	}
+
+	public T getMaxValue() {
+		return castNumber(maxValue);
+	}
+
+	//A cool little trick I came up with *proud of myself* :D
+	@SuppressWarnings("unchecked")
+	private T castNumber(Number number) {
+		if(numberClass.equals(Integer.class)) {
+			return (T) numberClass.cast(number.intValue());
+		} else if(numberClass.equals(Double.class)) {
+			return (T) numberClass.cast(number.doubleValue());
+		} else if(numberClass.equals(Float.class)) {
+			return (T) numberClass.cast(number.floatValue());
+		} else if(numberClass.equals(Double.class)) {
+			return (T) numberClass.cast(number.doubleValue());
+		} else if(numberClass.equals(Long.class)) {
+			return (T) numberClass.cast(number.longValue());
+		} else if(numberClass.equals(Short.class)) {
+			return (T) numberClass.cast(number.shortValue());
+		} else if(numberClass.equals(Byte.class)) {
+			return (T) numberClass.cast(number.byteValue());
+		} else {
+			return null;
 		}
 	}
 }
