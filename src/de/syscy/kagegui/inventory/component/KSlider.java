@@ -34,7 +34,7 @@ public class KSlider<T extends Number> extends KComponent {
 	protected T maxValue;
 	protected @Getter int knobX;
 
-	protected @Setter SliderValueChangeListener valueChangeListener;
+	protected @Setter SliderValueChangeListener<T> valueChangeListener;
 
 	public KSlider(int x, int y) {
 		super(x, y);
