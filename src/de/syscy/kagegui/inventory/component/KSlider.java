@@ -5,8 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.common.reflect.TypeToken;
-
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.SliderValueChangeListener;
@@ -15,11 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class KSlider<T extends Number> extends KComponent {
-	private final TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
-		private static final long serialVersionUID = 1L;
-	};
-
-	private final Class<? super T> numberClass = typeToken.getRawType();
+	private final Class<?> numberClass;
 
 	protected @Getter @Setter String title;
 	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
@@ -28,16 +22,18 @@ public class KSlider<T extends Number> extends KComponent {
 	protected @Getter @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 2));
 	protected @Getter @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE));
 
-	protected T value;
-	protected T step;
-	protected T minValue;
-	protected T maxValue;
+	protected T value = castNumber(1);
+	protected T step = castNumber(1);
+	protected T minValue = castNumber(1);
+	protected T maxValue = castNumber(100);
 	protected @Getter int knobX;
 
 	protected @Setter SliderValueChangeListener<T> valueChangeListener;
 
-	public KSlider(int x, int y) {
+	public KSlider(Class<T> numberClass, int x, int y) {
 		super(x, y);
+
+		this.numberClass = numberClass;
 
 		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "Current value: " + value);
 
@@ -68,6 +64,8 @@ public class KSlider<T extends Number> extends KComponent {
 		} else if(localX > 0 && localX < width && localX != knobX) {
 			knobX = localX;
 
+			checkValues();
+
 			int sections = width - 2;
 			double valueRange = maxValue.doubleValue() - minValue.doubleValue();
 
@@ -77,6 +75,8 @@ public class KSlider<T extends Number> extends KComponent {
 
 	public void setValue(T value) {
 		this.value = value;
+
+		checkValues();
 
 		if(value.doubleValue() > maxValue.doubleValue()) {
 			value = castNumber(maxValue);
@@ -90,6 +90,8 @@ public class KSlider<T extends Number> extends KComponent {
 	}
 
 	public void increaseValue() {
+		checkValues();
+
 		value = castNumber(value.doubleValue() + step.doubleValue());
 
 		if(value.doubleValue() > maxValue.doubleValue()) {
@@ -100,6 +102,8 @@ public class KSlider<T extends Number> extends KComponent {
 	}
 
 	public void decreaseValue() {
+		checkValues();
+
 		value = castNumber(value.doubleValue() - step.doubleValue());
 
 		if(value.doubleValue() < minValue.doubleValue()) {
@@ -113,6 +117,8 @@ public class KSlider<T extends Number> extends KComponent {
 		if(valueChangeListener != null) {
 			valueChangeListener.onValueChange(this);
 		}
+
+		checkValues();
 
 		int sections = width - 2;
 		double valueRange = maxValue.doubleValue() - minValue.doubleValue();
@@ -128,6 +134,8 @@ public class KSlider<T extends Number> extends KComponent {
 	public void setMinValue(T minValue) {
 		this.minValue = minValue;
 
+		checkValues();
+
 		if(value.doubleValue() < minValue.doubleValue()) {
 			value = minValue;
 		}
@@ -135,6 +143,8 @@ public class KSlider<T extends Number> extends KComponent {
 
 	public void setMaxValue(T maxValue) {
 		this.maxValue = maxValue;
+
+		checkValues();
 
 		if(value.doubleValue() > maxValue.doubleValue()) {
 			value = maxValue;
@@ -146,15 +156,39 @@ public class KSlider<T extends Number> extends KComponent {
 	}
 
 	public T getValue() {
+		checkValues();
+
 		return castNumber(value);
 	}
 
 	public T getMinValue() {
+		checkValues();
+
 		return castNumber(minValue);
 	}
 
 	public T getMaxValue() {
+		checkValues();
+
 		return castNumber(maxValue);
+	}
+
+	private void checkValues() {
+		if(value == null) {
+			value = castNumber(1);
+		}
+
+		if(step == null) {
+			step = castNumber(1);
+		}
+
+		if(minValue == null) {
+			minValue = castNumber(1);
+		}
+
+		if(maxValue == null) {
+			maxValue = castNumber(100);
+		}
 	}
 
 	//A cool little trick I came up with *proud of myself* :D
