@@ -64,6 +64,8 @@ public class KGUI implements IInventoryGUI<KComponent> {
 			bukkitInventory = Bukkit.createInventory(player, size, title);
 		}
 
+		markDirty();
+
 		inventoryWrapper = new KInventoryWrapper(this, bukkitInventory);
 		player.openInventory(bukkitInventory);
 

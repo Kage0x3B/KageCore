@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class KSlider<T extends Number> extends KComponent {
-	private final Class<?> numberClass;
+	private final Class<T> numberClass;
 
 	protected @Getter @Setter String title;
 	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
@@ -22,10 +22,10 @@ public class KSlider<T extends Number> extends KComponent {
 	protected @Getter @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 2));
 	protected @Getter @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE));
 
-	protected T value = castNumber(1);
-	protected T step = castNumber(1);
-	protected T minValue = castNumber(1);
-	protected T maxValue = castNumber(100);
+	protected T value;
+	protected T step;
+	protected T minValue;
+	protected T maxValue;
 	protected @Getter int knobX;
 
 	protected @Setter SliderValueChangeListener<T> valueChangeListener;
@@ -125,10 +125,14 @@ public class KSlider<T extends Number> extends KComponent {
 
 		if(width > 3) {
 			knobX = (int) (value.doubleValue() / valueRange * sections + 1);
+			knobX = Math.min(knobX, x + width - 1);
 		}
 
 		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, "Current value: " + value);
-		gui.markDirty();
+
+		if(gui != null) {
+			gui.markDirty();
+		}
 	}
 
 	public void setMinValue(T minValue) {
@@ -192,7 +196,6 @@ public class KSlider<T extends Number> extends KComponent {
 	}
 
 	//A cool little trick I came up with *proud of myself* :D
-	@SuppressWarnings("unchecked")
 	private T castNumber(Number number) {
 		if(numberClass.equals(Integer.class)) {
 			return (T) numberClass.cast(number.intValue());

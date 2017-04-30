@@ -101,6 +101,8 @@ public class KList extends KComponent {
 		recalculateValues();
 
 		if(gui != null) {
+			onPageChanged();
+
 			gui.markDirty();
 		}
 	}
@@ -110,6 +112,8 @@ public class KList extends KComponent {
 			recalculateValues();
 
 			if(gui != null) {
+				onPageChanged();
+
 				gui.markDirty();
 			}
 		}

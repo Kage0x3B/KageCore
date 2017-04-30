@@ -37,7 +37,17 @@ public class KButton extends KComponent {
 	public void update() {
 		icon.update(gui);
 
-		statusTime--;
+		if(statusIcon != null) {
+			statusIcon.update(gui);
+		}
+
+		if(statusTime > 0) {
+			statusTime--;
+
+			if(statusTime == 0) {
+				gui.markDirty();
+			}
+		}
 	}
 
 	@Override
@@ -94,7 +104,7 @@ public class KButton extends KComponent {
 	public void displayStatus(int time, String message, ItemIcon statusIcon) {
 		statusTime = time;
 		statusMessage = message;
-		statusIcon = icon;
+		this.statusIcon = statusIcon;
 
 		gui.markDirty();
 	}
