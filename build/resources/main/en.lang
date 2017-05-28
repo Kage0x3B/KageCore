@@ -38,6 +38,9 @@ kgui.loreButtonPrefix.shiftClick=Shift Click
 kgui.loreButtonPrefix.drop=Drop
 kgui.loreButtonPrefix.ctrlDrop=Ctrl-Drop
 
+kgui.buttonStatus.success=&aSuccess
+kgui.buttonStatus.failed=&cFailed
+
 kgui.list.previousPage=Previous page
 kgui.list.nextPage=Next page
 kgui.list.firstPage=First page
