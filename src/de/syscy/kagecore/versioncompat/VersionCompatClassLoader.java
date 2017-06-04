@@ -13,7 +13,7 @@ import lombok.Getter;
 public class VersionCompatClassLoader {
 	private static @Getter String serverVersion;
 
-	private static Map<Class<?>, Object> compatibleClassCache;
+	private static Map<Class<?>, Reflect> compatibleClassCache;
 
 	public static void init() {
 		serverVersion = Bukkit.getServer().getClass().getPackage().getName().substring(23);
@@ -48,8 +48,41 @@ public class VersionCompatClassLoader {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T loadClass(Class<T> interfaceClass, Object... args) {
+		T instance = (T) Reflect.on(getClass(interfaceClass, args)).create(args).get();
+
+		return instance;
+	}
+
+	/**
+	 * Loads an instance of a class with the specified version for the current server version, used for compatibility with different server versions.<br><br>
+	 * When searching for a class, the following locations are searched:
+	 * <ul>
+	 * <li><i>interfacePackage.interfaceClassName_serverVersion</i></li>
+	 * <li><i>interfacePackage.serverVersion.interfaceClassName_serverVersion</i></li>
+	 * <li><i>interfacePackage.versioncompat.interfaceClassName_serverVersion</i></li>
+	 * <li><i>interfacePackage.interfaceClassName_Fallback</i></li>
+	 * <li><i>interfacePackage.versioncompat.interfaceClassName_Fallback</i></li>
+	 * </ul>
+	 *
+	 * Example:<br>
+	 * The interface is in com.test.MyInterface and the version is v1_11_R1.<br>
+	 * The version compatible instance or fallback class is then searched in these places:<br><br>
+	 * <ul>
+	 * <li><i>com.test.MyInterface_v1_11_R1</i></li>
+	 * <li><i>com.test.v1_11_R1.MyInterface_v1_11_R1</i></li>
+	 * <li><i>com.test.versioncompat.MyInterface_v1_11_R1</i></li>
+	 * <li><i>com.test.MyInterface_Fallback</i></li>
+	 * <li><i>com.test.versioncompat.MyInterface_Fallback</i></li>
+	 * </ul>
+	 *
+	 * @param interfaceClass an interface class
+	 * @param args arguments for the constructor of the version compatible class
+	 * @return An instance of a class with the specified interface if a version compatible class was found, it returns a fallback class or null.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getClass(Class<T> interfaceClass, Object... args) {
 		if(compatibleClassCache.containsKey(interfaceClass)) {
-			return (T) compatibleClassCache.get(interfaceClass);
+			return (Class<T>) compatibleClassCache.get(interfaceClass).type();
 		}
 
 		Reflect compatibleClass = null;
@@ -86,17 +119,17 @@ public class VersionCompatClassLoader {
 			return null;
 		}
 
-		T instance = (T) compatibleClass.create(args).get();
+		compatibleClassCache.put(interfaceClass, compatibleClass);
 
-		compatibleClassCache.put(interfaceClass, instance);
-
-		return instance;
+		return (Class<T>) compatibleClass.type();
 	}
 
-	public static Reflect loadClass(String classPath) {
+	private static Reflect loadClass(String classPath) {
 		try {
 			return Reflect.on(classPath);
 		} catch(ReflectException ex) {
+			ex.printStackTrace();
+
 			return null;
 		}
 	}
