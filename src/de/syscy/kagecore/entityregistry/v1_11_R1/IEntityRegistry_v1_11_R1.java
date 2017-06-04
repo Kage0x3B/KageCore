@@ -1,4 +1,4 @@
-package de.syscy.kagecore.util;
+package de.syscy.kagecore.entityregistry.v1_11_R1;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -13,6 +13,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import de.syscy.kagecore.entityregistry.IEntityRegistry;
 import net.minecraft.server.v1_11_R1.BlockPosition;
 import net.minecraft.server.v1_11_R1.Entity;
 import net.minecraft.server.v1_11_R1.EntityInsentient;
@@ -22,26 +23,19 @@ import net.minecraft.server.v1_11_R1.RegistryMaterials;
 import net.minecraft.server.v1_11_R1.World;
 
 @SuppressWarnings(value = { "rawtypes", "unchecked" })
-public class CustomEntityRegistry extends RegistryMaterials {
-	private static CustomEntityRegistry instance = null;
-
+public class IEntityRegistry_v1_11_R1 extends RegistryMaterials implements IEntityRegistry { //TODO: Add support for different versions
 	private final BiMap<MinecraftKey, Class<? extends Entity>> keyToClass = HashBiMap.create();
 	private final BiMap<Class<? extends Entity>, MinecraftKey> classToKey = keyToClass.inverse();
 	private final BiMap<Class<? extends Entity>, Integer> classToId = HashBiMap.create();
 
 	private final RegistryMaterials<MinecraftKey, Class<? extends Entity>> wrappedRegistry;
 
-	private CustomEntityRegistry(RegistryMaterials<MinecraftKey, Class<? extends Entity>> originalRegistry) {
+	private IEntityRegistry_v1_11_R1(RegistryMaterials<MinecraftKey, Class<? extends Entity>> originalRegistry) {
 		wrappedRegistry = originalRegistry;
 	}
 
-	public static CustomEntityRegistry getInstance() {
-		if(instance != null) {
-			return instance;
-		}
-
-		instance = new CustomEntityRegistry(EntityTypes.b);
-
+	@Override
+	public void init() {
 		try {
 			Field registryMaterialsField = EntityTypes.class.getDeclaredField("b");
 			registryMaterialsField.setAccessible(true);
@@ -50,23 +44,20 @@ public class CustomEntityRegistry extends RegistryMaterials {
 			modifiersField.setAccessible(true);
 			modifiersField.setInt(registryMaterialsField, registryMaterialsField.getModifiers() & ~Modifier.FINAL);
 
-			registryMaterialsField.set(null, instance);
+			registryMaterialsField.set(null, this);
 		} catch(Exception ex) {
-			instance = null;
-
 			throw new RuntimeException("Unable to override the old entity RegistryMaterials", ex);
 		}
-
-		return instance;
 	}
 
-	public static <T extends Entity> T spawn(Class<T> entityClass, Location location) {
+	@Override
+	public org.bukkit.entity.Entity spawnEntity(Class<?> entityClass, Location location) {
 		World world = ((CraftWorld) location.getWorld()).getHandle();
 
-		T entity = null;
+		Entity entity = null;
 
 		try {
-			entity = entityClass.getConstructor(World.class).newInstance(world);
+			entity = (Entity) entityClass.getConstructor(World.class).newInstance(world);
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -80,18 +71,15 @@ public class CustomEntityRegistry extends RegistryMaterials {
 		((CraftLivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
 		world.addEntity(entity, SpawnReason.CUSTOM);
 
-		return entity;
+		return entity.getBukkitEntity();
 	}
 
-	public static void registerCustomEntity(int entityId, String entityName, Class<? extends Entity> entityClass) {
-		getInstance().putCustomEntity(entityId, entityName, entityClass);
-	}
-
-	public void putCustomEntity(int entityId, String entityName, Class<? extends Entity> entityClass) {
+	@Override
+	public void registerEntity(int entityId, String entityName, Class<?> entityClass) {
 		MinecraftKey minecraftKey = new MinecraftKey(entityName);
 
-		keyToClass.put(minecraftKey, entityClass);
-		classToId.put(entityClass, entityId);
+		keyToClass.put(minecraftKey, (Class<? extends Entity>) entityClass);
+		classToId.put((Class<? extends Entity>) entityClass, entityId);
 	}
 
 	@Nullable
