@@ -15,7 +15,6 @@ import de.syscy.kagecore.command.CommandManager;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.BoundingBox;
-import de.syscy.kagecore.util.ExecuteJSCommand;
 import de.syscy.kagecore.util.book.BookUtil;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
@@ -58,7 +57,7 @@ public class KageCore extends JavaPlugin {
 		debug = kageCoreConfig.isDebug();
 
 		kcCommandManager = new CommandManager<KageCore>(this, "kageCore");
-		kcCommandManager.addCommand(new ExecuteJSCommand(this)); //DEBUG: Probably better to remove this later
+		//		kcCommandManager.addCommand(new ExecuteJSCommand(this));
 		getCommand("kageCore").setExecutor(kcCommandManager);
 		getCommand("kageCore").setTabCompleter(kcCommandManager);
 
