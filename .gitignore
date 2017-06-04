@@ -27,6 +27,8 @@ build
 .gradle
 gradle.properties
 
+*.jardesc
+
 Thumbs.db
 
 bguilibOLD
