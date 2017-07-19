@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
@@ -100,6 +100,10 @@ public class ItemAttributes {
 
 	public static enum Slot {
 		MAINHAND, OFFHAND, HEAD, CHEST, LEGS, FEET;
+
+		public static Slot fromString(String slotName) {
+			return valueOf(slotName.toUpperCase());
+		}
 	}
 
 	public static class Attribute {

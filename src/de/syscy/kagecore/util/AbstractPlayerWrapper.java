@@ -23,9 +23,12 @@ import org.bukkit.SoundCategory;
 import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
@@ -212,12 +215,6 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public List<Block> getLineOfSight(HashSet<Byte> blockIds, int distance) {
-		return bukkitPlayer.getLineOfSight(blockIds, distance);
-	}
-
-	@Override
 	public List<Block> getLineOfSight(Set<Material> materials, int distance) {
 		return bukkitPlayer.getLineOfSight(materials, distance);
 	}
@@ -280,20 +277,8 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public int _INVALID_getLastDamage() {
-		return bukkitPlayer._INVALID_getLastDamage();
-	}
-
-	@Override
 	public void setLastDamage(double lastDamage) {
 		bukkitPlayer.setLastDamage(lastDamage);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setLastDamage(int lastDamage) {
-		bukkitPlayer._INVALID_setLastDamage(lastDamage);
 	}
 
 	@Override
@@ -759,20 +744,8 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public void _INVALID_damage(int amount) {
-		bukkitPlayer._INVALID_damage(amount);
-	}
-
-	@Override
 	public void damage(double amount, Entity source) {
 		bukkitPlayer.damage(amount, source);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_damage(int amount, Entity source) {
-		bukkitPlayer._INVALID_damage(amount, source);
 	}
 
 	@Override
@@ -781,20 +754,8 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public int _INVALID_getHealth() {
-		return bukkitPlayer._INVALID_getHealth();
-	}
-
-	@Override
 	public void setHealth(double health) {
 		bukkitPlayer.setHealth(health);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setHealth(int health) {
-		bukkitPlayer._INVALID_setHealth(health);
 	}
 
 	@Override
@@ -805,20 +766,8 @@ public abstract class AbstractPlayerWrapper implements Player {
 
 	@Override
 	@Deprecated
-	public int _INVALID_getMaxHealth() {
-		return bukkitPlayer._INVALID_getMaxHealth();
-	}
-
-	@Override
-	@Deprecated
 	public void setMaxHealth(double maxHealth) {
 		bukkitPlayer.setMaxHealth(maxHealth);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setMaxHealth(int maxHealth) {
-		bukkitPlayer._INVALID_setMaxHealth(maxHealth);
 	}
 
 	@Override
@@ -870,12 +819,6 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public boolean isBanned() {
 		return bukkitPlayer.isBanned();
-	}
-
-	@Override
-	@Deprecated
-	public void setBanned(boolean banned) {
-		bukkitPlayer.setBanned(banned);
 	}
 
 	@Override
@@ -1094,16 +1037,19 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void awardAchievement(Achievement achievement) {
 		bukkitPlayer.awardAchievement(achievement);
 	}
 
 	@Override
+	@Deprecated
 	public void removeAchievement(Achievement achievement) {
 		bukkitPlayer.removeAchievement(achievement);
 	}
 
 	@Override
+	@Deprecated
 	public boolean hasAchievement(Achievement achievement) {
 		return bukkitPlayer.hasAchievement(achievement);
 	}
@@ -1740,5 +1686,74 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public double getWidth() {
 		return bukkitPlayer.getWidth();
+	}
+
+	@Override
+	public void setCooldown(Material material, int cooldown) {
+		bukkitPlayer.setCooldown(material, cooldown);
+	}
+
+	@Override
+	public boolean fromMobSpawner() {
+		return bukkitPlayer.fromMobSpawner();
+	}
+
+	@Override
+	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
+		return null;
+	}
+
+	@Override
+	public int getCooldown(Material material) {
+		return bukkitPlayer.getCooldown(material);
+	}
+
+	@Override
+	public String getLocale() {
+		return null;
+	}
+
+	@Override
+	public PistonMoveReaction getPistonMoveReaction() {
+		return bukkitPlayer.getPistonMoveReaction();
+	}
+
+	@Override
+	@Deprecated
+	public void setShoulderEntityLeft(Entity entity) {
+		bukkitPlayer.setShoulderEntityLeft(entity);
+	}
+
+	@Override
+	@Deprecated
+	public void setShoulderEntityRight(Entity entity) {
+		bukkitPlayer.setShoulderEntityRight(entity);
+	}
+
+	@Override
+	@Deprecated
+	public Entity getShoulderEntityLeft() {
+		return bukkitPlayer.getShoulderEntityLeft();
+	}
+
+	@Override
+	@Deprecated
+	public Entity getShoulderEntityRight() {
+		return bukkitPlayer.getShoulderEntityRight();
+	}
+
+	@Override
+	public boolean hasCooldown(Material material) {
+		return bukkitPlayer.hasCooldown(material);
+	}
+
+	@Override
+	public Entity releaseLeftShoulderEntity() {
+		return bukkitPlayer.releaseLeftShoulderEntity();
+	}
+
+	@Override
+	public Entity releaseRightShoulderEntity() {
+		return bukkitPlayer.releaseRightShoulderEntity();
 	}
 }

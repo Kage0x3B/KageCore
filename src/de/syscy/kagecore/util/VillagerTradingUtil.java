@@ -2,29 +2,29 @@ package de.syscy.kagecore.util;
 
 import java.util.List;
 
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftVillager;
-import org.bukkit.craftbukkit.v1_11_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftMerchantRecipe;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftVillager;
+import org.bukkit.craftbukkit.v1_12_R1.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftMerchantRecipe;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.MerchantRecipe;
 
 import io.netty.buffer.Unpooled;
 import lombok.experimental.UtilityClass;
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.Container;
-import net.minecraft.server.v1_11_R1.ContainerMerchant;
-import net.minecraft.server.v1_11_R1.EntityHuman;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.IChatBaseComponent;
-import net.minecraft.server.v1_11_R1.IMerchant;
-import net.minecraft.server.v1_11_R1.InventoryMerchant;
-import net.minecraft.server.v1_11_R1.MerchantRecipeList;
-import net.minecraft.server.v1_11_R1.PacketDataSerializer;
-import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_11_R1.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_11_R1.World;
+import net.minecraft.server.v1_12_R1.BlockPosition;
+import net.minecraft.server.v1_12_R1.Container;
+import net.minecraft.server.v1_12_R1.ContainerMerchant;
+import net.minecraft.server.v1_12_R1.EntityHuman;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.IMerchant;
+import net.minecraft.server.v1_12_R1.InventoryMerchant;
+import net.minecraft.server.v1_12_R1.MerchantRecipeList;
+import net.minecraft.server.v1_12_R1.PacketDataSerializer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_12_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_12_R1.World;
 
 @UtilityClass
 public class VillagerTradingUtil {
@@ -73,7 +73,7 @@ public class VillagerTradingUtil {
 		}
 
 		@Override
-		public void a(final net.minecraft.server.v1_11_R1.MerchantRecipe merchantRecipe) {
+		public void a(final net.minecraft.server.v1_12_R1.MerchantRecipe merchantRecipe) {
 
 		}
 
@@ -89,7 +89,7 @@ public class VillagerTradingUtil {
 		}
 
 		@Override
-		public void a(final net.minecraft.server.v1_11_R1.ItemStack itemStack) {
+		public void a(final net.minecraft.server.v1_12_R1.ItemStack itemStack) {
 
 		}
 
@@ -109,12 +109,12 @@ public class VillagerTradingUtil {
 		}
 
 		@Override
-		public World t_() {
+		public World u_() {
 			return null;
 		}
 
 		@Override
-		public BlockPosition u_() {
+		public BlockPosition v_() {
 			return null;
 		}
 	}

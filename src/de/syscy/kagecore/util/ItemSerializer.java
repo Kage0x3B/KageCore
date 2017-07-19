@@ -8,12 +8,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_11_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.NBTTagList;
+import net.minecraft.server.v1_12_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
+import net.minecraft.server.v1_12_R1.NBTTagList;
 
 public final class ItemSerializer {
 	public final static String serializeItemStacks(final ItemStack[] itemStacks) {
@@ -23,7 +23,7 @@ public final class ItemSerializer {
 
 		for(ItemStack itemStack : itemStacks) {
 			NBTTagCompound outputObject = new NBTTagCompound();
-			net.minecraft.server.v1_11_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+			net.minecraft.server.v1_12_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 
 			if(nmsItemStack != null) {
 				nmsItemStack.save(outputObject);
@@ -65,7 +65,7 @@ public final class ItemSerializer {
 			NBTTagCompound inputObject = (NBTTagCompound) itemList.get(i);
 
 			if(!inputObject.isEmpty()) {
-				items[i] = CraftItemStack.asCraftMirror(new net.minecraft.server.v1_11_R1.ItemStack(inputObject));
+				items[i] = CraftItemStack.asCraftMirror(new net.minecraft.server.v1_12_R1.ItemStack(inputObject));
 			}
 		}
 

@@ -1,4 +1,4 @@
-package de.syscy.kagecore.entityregistry.v1_11_R1;
+package de.syscy.kagecore.entityregistry.v1_12_R1;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -6,31 +6,31 @@ import java.lang.reflect.Modifier;
 import javax.annotation.Nullable;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import de.syscy.kagecore.entityregistry.IEntityRegistry;
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.Entity;
-import net.minecraft.server.v1_11_R1.EntityInsentient;
-import net.minecraft.server.v1_11_R1.EntityTypes;
-import net.minecraft.server.v1_11_R1.MinecraftKey;
-import net.minecraft.server.v1_11_R1.RegistryMaterials;
-import net.minecraft.server.v1_11_R1.World;
+import net.minecraft.server.v1_12_R1.BlockPosition;
+import net.minecraft.server.v1_12_R1.Entity;
+import net.minecraft.server.v1_12_R1.EntityInsentient;
+import net.minecraft.server.v1_12_R1.EntityTypes;
+import net.minecraft.server.v1_12_R1.MinecraftKey;
+import net.minecraft.server.v1_12_R1.RegistryMaterials;
+import net.minecraft.server.v1_12_R1.World;
 
 @SuppressWarnings(value = { "rawtypes", "unchecked" })
-public class IEntityRegistry_v1_11_R1 extends RegistryMaterials implements IEntityRegistry { //TODO: Add support for different versions
+public class IEntityRegistry_v1_12_R1 extends RegistryMaterials implements IEntityRegistry { //TODO: Add support for different versions
 	private final BiMap<MinecraftKey, Class<? extends Entity>> keyToClass = HashBiMap.create();
 	private final BiMap<Class<? extends Entity>, MinecraftKey> classToKey = keyToClass.inverse();
 	private final BiMap<Class<? extends Entity>, Integer> classToId = HashBiMap.create();
 
 	private final RegistryMaterials<MinecraftKey, Class<? extends Entity>> wrappedRegistry;
 
-	private IEntityRegistry_v1_11_R1(RegistryMaterials<MinecraftKey, Class<? extends Entity>> originalRegistry) {
+	private IEntityRegistry_v1_12_R1(RegistryMaterials<MinecraftKey, Class<? extends Entity>> originalRegistry) {
 		wrappedRegistry = originalRegistry;
 	}
 

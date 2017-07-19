@@ -2,18 +2,18 @@ package de.syscy.kagecore.translation;
 
 import java.io.IOException;
 
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 
 import com.google.common.io.ByteArrayDataOutput;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
-import net.minecraft.server.v1_11_R1.Item;
-import net.minecraft.server.v1_11_R1.ItemStack;
-import net.minecraft.server.v1_11_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_11_R1.NBTReadLimiter;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_12_R1.Item;
+import net.minecraft.server.v1_12_R1.ItemStack;
+import net.minecraft.server.v1_12_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_12_R1.NBTReadLimiter;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 public class NetworkUtil {
 	public static void writeItemStack(ByteArrayDataOutput out, org.bukkit.inventory.ItemStack bukkitItemStack) {
@@ -28,7 +28,7 @@ public class NetworkUtil {
 
 			NBTTagCompound nbtTagCompound = null;
 
-			if(itemStack.getItem().usesDurability() || itemStack.getItem().q()) {
+			if(itemStack.getItem().usesDurability() || itemStack.getItem().p()) { //I hope p() is right.. don't know exactly
 				itemStack = itemStack.cloneItemStack();
 				CraftItemStack.setItemMeta(itemStack, CraftItemStack.getItemMeta(itemStack));
 				nbtTagCompound = itemStack.getTag();
