@@ -38,7 +38,7 @@ public class KCraftingGUI implements IInventoryGUI<KCraftingComponent> {
 
 		bukkitInventory = (CraftingInventory) inventory;
 
-		inventoryWrapper = new KCraftingInventoryWrapper(this, bukkitInventory);
+		inventoryWrapper = new KCraftingInventoryWrapper(this);
 	}
 
 	@Override

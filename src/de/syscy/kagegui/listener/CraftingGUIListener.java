@@ -59,6 +59,8 @@ public class CraftingGUIListener implements Listener {
 
 			if(event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
 				event.setCancelled(true);
+				player.updateInventory(); //TODO: Works but maybe don't update the whole inv.
+				craftingGUI.getInventoryWrapper().flush(true);
 
 				craftingGUI.onClick(event, event.getRawSlot());
 			}

@@ -3,7 +3,6 @@ package de.syscy.kagegui.crafting;
 import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
@@ -16,14 +15,12 @@ public class KCraftingInventoryWrapper implements IInventoryWrapper {
 	private final ItemStack background = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
 
 	private final KCraftingGUI gui;
-	private final CraftingInventory bukkitInventory;
 
 	private ItemStack[] buffer;
 	private @Getter ItemStack[] lastItems;
 
-	public KCraftingInventoryWrapper(KCraftingGUI gui, CraftingInventory inventory) {
+	public KCraftingInventoryWrapper(KCraftingGUI gui) {
 		this.gui = gui;
-		bukkitInventory = inventory;
 
 		buffer = new ItemStack[getSize()];
 		lastItems = new ItemStack[getSize()];
@@ -49,12 +46,6 @@ public class KCraftingInventoryWrapper implements IInventoryWrapper {
 	public void flush(boolean sendToPlayer) {
 		for(int i = getSize() - 1; i >= 0; i--) {
 			if(buffer[i] != background || i == 0) {
-				if(i == 0) {
-					bukkitInventory.setResult(buffer[i]);
-				} else {
-					bukkitInventory.setItem(i, buffer[i]);
-				}
-
 				if(sendToPlayer) {
 					WrapperPlayServerSetSlot packet = new WrapperPlayServerSetSlot();
 
