@@ -1,4 +1,4 @@
-package de.syscy.kagecore.entityregistry.v1_12_R1;
+package de.syscy.kagecore.entityregistry.versioncompat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -17,6 +17,7 @@ import de.syscy.kagecore.entityregistry.IEntityRegistry;
 import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.Entity;
 import net.minecraft.server.v1_12_R1.EntityInsentient;
+import net.minecraft.server.v1_12_R1.EntityLiving;
 import net.minecraft.server.v1_12_R1.EntityTypes;
 import net.minecraft.server.v1_12_R1.MinecraftKey;
 import net.minecraft.server.v1_12_R1.RegistryMaterials;
@@ -30,8 +31,8 @@ public class IEntityRegistry_v1_12_R1 extends RegistryMaterials implements IEnti
 
 	private final RegistryMaterials<MinecraftKey, Class<? extends Entity>> wrappedRegistry;
 
-	private IEntityRegistry_v1_12_R1(RegistryMaterials<MinecraftKey, Class<? extends Entity>> originalRegistry) {
-		wrappedRegistry = originalRegistry;
+	private IEntityRegistry_v1_12_R1() {
+		wrappedRegistry = EntityTypes.b;
 	}
 
 	@Override
@@ -68,7 +69,10 @@ public class IEntityRegistry_v1_12_R1 extends RegistryMaterials implements IEnti
 			((EntityInsentient) entity).prepare(world.D(new BlockPosition(entity)), null);
 		}
 
-		((CraftLivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
+		if(entity instanceof EntityLiving) {
+			((CraftLivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
+		}
+
 		world.addEntity(entity, SpawnReason.CUSTOM);
 
 		return entity.getBukkitEntity();

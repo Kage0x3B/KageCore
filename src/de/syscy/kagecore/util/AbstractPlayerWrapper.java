@@ -64,6 +64,7 @@ import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.BaseComponent;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractPlayerWrapper implements Player {
 	private final @Getter Player bukkitPlayer;
 	private final @Getter Reflect playerReflect;

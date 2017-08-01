@@ -1,9 +1,10 @@
-package de.syscy.kagecore.entityregistry;
+package de.syscy.kagecore.entityregistry.versioncompat;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.entityregistry.IEntityRegistry;
 
 public class IEntityRegistry_Fallback implements IEntityRegistry {
 	@Override

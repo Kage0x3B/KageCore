@@ -11,14 +11,9 @@ import de.syscy.kagecore.versioncompat.reflect.ReflectException;
 import lombok.Getter;
 
 public class VersionCompatClassLoader {
-	private static @Getter String serverVersion;
+	private static @Getter String serverVersion = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 
-	private static Map<Class<?>, Reflect> compatibleClassCache;
-
-	public static void init() {
-		serverVersion = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-		compatibleClassCache = new HashMap<>();
-	}
+	private static Map<Class<?>, Reflect> compatibleClassCache = new HashMap<>();
 
 	/**
 	 * Loads an instance of a class with the specified version for the current server version, used for compatibility with different server versions.<br><br>
@@ -128,8 +123,6 @@ public class VersionCompatClassLoader {
 		try {
 			return Reflect.on(classPath);
 		} catch(ReflectException ex) {
-			ex.printStackTrace();
-
 			return null;
 		}
 	}

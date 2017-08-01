@@ -12,13 +12,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.base.Joiner;
 
 import de.syscy.kagecore.command.CommandManager;
+import de.syscy.kagecore.entityregistry.EntityRegistry;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.BoundingBox;
 import de.syscy.kagecore.util.book.BookUtil;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
 import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
-import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import de.syscy.kagegui.KageGUI;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,8 +49,6 @@ public class KageCore extends JavaPlugin {
 
 		saveDefaultConfig();
 
-		VersionCompatClassLoader.init();
-
 		kageCoreConfig = new KageCoreConfig(getConfig());
 		kageCoreConfig.init();
 
@@ -74,6 +72,7 @@ public class KageCore extends JavaPlugin {
 			KageCore.debugMessage("ProtocolLib not installed. Translations and more disabled!");
 		}
 
+		EntityRegistry.init();
 		BookUtil.init();
 
 		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
