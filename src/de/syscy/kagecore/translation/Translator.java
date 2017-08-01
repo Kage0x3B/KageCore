@@ -42,12 +42,18 @@ public class Translator {
 
 	private static @Getter @Setter(value = AccessLevel.PROTECTED) boolean enabled = false;
 
+	private static final @Getter File mainLanguageDirectory = new File("./lang");
+
 	private static final Splitter languageFileSplitter = Splitter.on('=').limit(2);
 	private static @Getter String defaultLocale = "en";
 
 	private static Map<String, Map<String, String>> translations = new HashMap<>();
 
 	private static @Getter Map<Player, String> playerLanguages = new HashMap<>();
+
+	public static void addLanguageFiles(JavaPlugin plugin) {
+		addLanguageFiles(plugin, new File(mainLanguageDirectory, plugin.getName()));
+	}
 
 	public static void addLanguageFiles(JavaPlugin plugin, File languageDirectory) {
 		if(!languageDirectory.exists()) {

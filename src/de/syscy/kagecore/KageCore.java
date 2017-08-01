@@ -59,7 +59,7 @@ public class KageCore extends JavaPlugin {
 		getCommand("kageCore").setExecutor(kcCommandManager);
 		getCommand("kageCore").setTabCompleter(kcCommandManager);
 
-		Translator.addLanguageFiles(this, new File(pluginDirectory, "lang"));
+		Translator.addLanguageFiles(this);
 		Translator.addLanguageFiles(null, new File(pluginDirectory.getParentFile().getParentFile(), "lang"));
 
 		for(World world : Bukkit.getWorlds()) {
