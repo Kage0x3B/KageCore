@@ -1289,12 +1289,12 @@ public abstract class AbstractPlayerWrapper implements Player {
 
 	@Override
 	public void hidePlayer(Player player) {
-		bukkitPlayer.hidePlayer(player);
+		bukkitPlayer.hidePlayer(toBukkitPlayer(player));
 	}
 
 	@Override
 	public void showPlayer(Player player) {
-		bukkitPlayer.showPlayer(player);
+		bukkitPlayer.showPlayer(toBukkitPlayer(player));
 	}
 
 	@Override
@@ -1756,5 +1756,9 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public Entity releaseRightShoulderEntity() {
 		return bukkitPlayer.releaseRightShoulderEntity();
+	}
+
+	public static Player toBukkitPlayer(Player player) {
+		return player instanceof AbstractPlayerWrapper ? ((AbstractPlayerWrapper) player).bukkitPlayer : player;
 	}
 }
