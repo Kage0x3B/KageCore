@@ -62,10 +62,16 @@ public class ItemAttributes {
 
 		public static final AttributeType GENERIC_MAX_HEALTH = new AttributeType("generic.maxHealth").register();
 		public static final AttributeType GENERIC_FOLLOW_RANGE = new AttributeType("generic.followRange").register();
-		public static final AttributeType GENERIC_ATTACK_DAMAGE = new AttributeType("generic.attackDamage").register();
-		public static final AttributeType GENERIC_ATTACK_SPEED = new AttributeType("generic.attackSpeed").register();
-		public static final AttributeType GENERIC_MOVEMENT_SPEED = new AttributeType("generic.movementSpeed").register();
 		public static final AttributeType GENERIC_KNOCKBACK_RESISTANCE = new AttributeType("generic.knockbackResistance").register();
+		public static final AttributeType GENERIC_MOVEMENT_SPEED = new AttributeType("generic.movementSpeed").register();
+		public static final AttributeType GENERIC_ATTACK_DAMAGE = new AttributeType("generic.attackDamage").register();
+		public static final AttributeType GENERIC_ARMOR = new AttributeType("generic.armor").register();
+		public static final AttributeType GENERIC_ARMOR_TOUGHNESS = new AttributeType("generic.armorToughness").register();
+		public static final AttributeType GENERIC_ATTACK_SPEED = new AttributeType("generic.attackSpeed").register();
+		public static final AttributeType GENERIC_LUCK = new AttributeType("generic.luck").register();
+		public static final AttributeType HORSE_JUMP_STRENGTH = new AttributeType("horse.jumpStrength").register();
+		public static final AttributeType GENERIC_FLYING_SPEED = new AttributeType("generic.flyingSpeed").register();
+		public static final AttributeType ZOMBIE_SPAWN_REINFORCEMENTS = new AttributeType("zombie.spawnReinforcements").register();
 
 		private final @Getter String minecraftID;
 
