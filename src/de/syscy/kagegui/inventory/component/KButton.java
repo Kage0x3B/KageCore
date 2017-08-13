@@ -1,16 +1,19 @@
 package de.syscy.kagegui.inventory.component;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.listener.ButtonClickListener;
 import de.syscy.kagegui.util.ClickType;
 import de.syscy.kagegui.util.LoreBuilder;
+
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -95,16 +98,24 @@ public class KButton extends KComponent {
 	}
 
 	public void displayStatus(int time, Status status) {
-		displayStatus(time, status.getMessageKey(), status.getItemIcon());
+		displayStatus(time, status.getMessageKey(), status.getItemIcon(), status.getSound(), 1.0f);
+	}
+
+	public void displayStatus(int time, String message, ItemIcon statusIcon) {
+		displayStatus(time, message, statusIcon, null, 0.0f);
 	}
 
 	/**
 	 * Time is not exactly measured in ticks, it is just decremented on every update whichs happens once every few ticks.
 	 */
-	public void displayStatus(int time, String message, ItemIcon statusIcon) {
+	public void displayStatus(int time, String message, ItemIcon statusIcon, Sound sound, float pitch) {
 		statusTime = time;
 		statusMessage = message;
 		this.statusIcon = statusIcon;
+
+		if(sound != null) {
+			gui.getPlayer().playSound(gui.getPlayer().getLocation(), sound, SoundCategory.MASTER, 1.0f, pitch);
+		}
 
 		gui.markDirty();
 	}
@@ -112,9 +123,10 @@ public class KButton extends KComponent {
 	@RequiredArgsConstructor
 	@SuppressWarnings("deprecation")
 	public static enum Status {
-		SUCCESS(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 5))), FAILED(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 14)));
+		SUCCESS(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 5)), Sound.BLOCK_NOTE_BELL), FAILED(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 14)), Sound.ENTITY_ARMORSTAND_BREAK);
 
 		private final @Getter ItemIcon itemIcon;
+		private final @Getter Sound sound;
 
 		public String getMessageKey() {
 			return Translator.SIGN + "kgui.buttonStatus." + name().toLowerCase() + ";";
