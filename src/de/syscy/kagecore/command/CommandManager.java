@@ -3,10 +3,6 @@ package de.syscy.kagecore.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.command.exception.AccessDeniedException;
 import de.syscy.kagecore.command.exception.CommandException;
@@ -14,6 +10,10 @@ import de.syscy.kagecore.command.exception.CommandNotFoundException;
 import de.syscy.kagecore.command.exception.InvalidUsageException;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.Util;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandManager<T extends JavaPlugin> extends CommandBase<T> {
 	private List<CommandBase<?>> commands = new ArrayList<>();
@@ -182,7 +182,7 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> {
 	@Override
 	public final List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		if(args.length == 1) {
-			List<String> allCommands = new ArrayList<String>();
+			List<String> allCommands = new ArrayList<>();
 
 			for(CommandBase<?> commandBase : commands) {
 				if(commandBase.getCommand().toLowerCase().startsWith(args[0].toLowerCase()) && commandBase.isAuthorized(sender)) {
@@ -206,7 +206,7 @@ public class CommandManager<T extends JavaPlugin> extends CommandBase<T> {
 	}
 
 	private List<CommandBase<?>> getAvailableCommands(CommandSender sender) {
-		List<CommandBase<?>> availableCommands = new ArrayList<CommandBase<?>>();
+		List<CommandBase<?>> availableCommands = new ArrayList<>();
 
 		for(CommandBase<?> command : commands) {
 			if(command.isAuthorized(sender)) {

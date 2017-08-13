@@ -2,6 +2,18 @@ package de.syscy.kagecore;
 
 import java.io.File;
 
+import de.syscy.kagecore.command.CommandManager;
+import de.syscy.kagecore.entityregistry.EntityRegistry;
+import de.syscy.kagecore.protocol.ProtocolUtil;
+import de.syscy.kagecore.translation.Translator;
+import de.syscy.kagecore.util.BoundingBox;
+import de.syscy.kagecore.util.ExecuteJSCommand;
+import de.syscy.kagecore.util.TestNotification;
+import de.syscy.kagecore.util.book.BookUtil;
+import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
+import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
+import de.syscy.kagegui.KageGUI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -11,16 +23,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.base.Joiner;
 
-import de.syscy.kagecore.command.CommandManager;
-import de.syscy.kagecore.entityregistry.EntityRegistry;
-import de.syscy.kagecore.protocol.ProtocolUtil;
-import de.syscy.kagecore.translation.Translator;
-import de.syscy.kagecore.util.BoundingBox;
-import de.syscy.kagecore.util.TestNotification;
-import de.syscy.kagecore.util.book.BookUtil;
-import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
-import de.syscy.kagecore.util.bungee.KagePluginMessageListener;
-import de.syscy.kagegui.KageGUI;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,8 +57,8 @@ public class KageCore extends JavaPlugin {
 
 		debug = kageCoreConfig.isDebug();
 
-		kcCommandManager = new CommandManager<KageCore>(this, "kageCore");
-		//		kcCommandManager.addCommand(new ExecuteJSCommand(this));
+		kcCommandManager = new CommandManager<>(this, "kageCore");
+		kcCommandManager.addCommand(new ExecuteJSCommand(this));
 		kcCommandManager.addCommand(new TestNotification(this));
 		getCommand("kageCore").setExecutor(kcCommandManager);
 		getCommand("kageCore").setTabCompleter(kcCommandManager);

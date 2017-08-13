@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import de.syscy.kagecore.KageCore;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -19,7 +21,6 @@ import org.bukkit.util.BlockIterator;
 
 import com.comphenix.packetwrapper.AbstractPacket;
 
-import de.syscy.kagecore.KageCore;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
@@ -66,7 +67,7 @@ public class Util {
 
 	public Entity getLookingAtEntity(Player player, int maxRange) {
 		List<Entity> nearbyEntities = player.getNearbyEntities(maxRange, maxRange, maxRange);
-		ArrayList<LivingEntity> nearbyLivingEntities = new ArrayList<LivingEntity>();
+		List<LivingEntity> nearbyLivingEntities = new ArrayList<>();
 
 		for(Entity entity : nearbyEntities) {
 			if(entity instanceof LivingEntity) {

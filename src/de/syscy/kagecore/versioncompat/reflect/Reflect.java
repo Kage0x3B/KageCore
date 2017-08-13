@@ -308,7 +308,7 @@ public class Reflect {
 	 * @return A map containing field names and wrapped values.
 	 */
 	public Map<String, Reflect> fields() {
-		final Map<String, Reflect> result = new LinkedHashMap<String, Reflect>();
+		final Map<String, Reflect> result = new LinkedHashMap<>();
 		Class<?> type = type();
 
 		do {
