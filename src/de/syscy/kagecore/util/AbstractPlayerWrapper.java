@@ -2,11 +2,12 @@ package de.syscy.kagecore.util;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 
 import org.bukkit.Achievement;
 import org.bukkit.Effect;
@@ -60,7 +61,6 @@ import org.bukkit.util.Vector;
 
 import com.destroystokyo.paper.Title;
 
-import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -221,20 +221,8 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public Block getTargetBlock(HashSet<Byte> blockIds, int distance) {
-		return bukkitPlayer.getTargetBlock(blockIds, distance);
-	}
-
-	@Override
 	public Block getTargetBlock(Set<Material> materials, int distance) {
 		return bukkitPlayer.getTargetBlock(materials, distance);
-	}
-
-	@Override
-	@Deprecated
-	public List<Block> getLastTwoTargetBlocks(HashSet<Byte> blockIds, int distance) {
-		return bukkitPlayer.getLastTwoTargetBlocks(blockIds, distance);
 	}
 
 	@Override
@@ -1760,5 +1748,10 @@ public abstract class AbstractPlayerWrapper implements Player {
 
 	public static Player toBukkitPlayer(Player player) {
 		return player instanceof AbstractPlayerWrapper ? ((AbstractPlayerWrapper) player).bukkitPlayer : player;
+	}
+
+	@Override
+	public void setKiller(Player killer) {
+		bukkitPlayer.setKiller(killer);
 	}
 }
