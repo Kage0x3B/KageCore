@@ -15,6 +15,6 @@ dependencies {
 	compile group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
 	
 	compile files('libs/spigot-1.12.jar')
-	compile files('libs/worldedit-bukkit-6.1.7.2.jar')
+	compile files('libs/worldedit-bukkit-6.1.7.3.jar')
 	compile files('libs/ProtocolLib.jar')
 }
