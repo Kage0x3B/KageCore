@@ -47,3 +47,6 @@ kgui.list.firstPage=First page
 kgui.list.lastPage=Last page
 kgui.list.currentPage=Current page: %s
 kgui.textInput.lore1=Click to edit...
+
+kgui.cycleButton.nextItem=Next item
+kgui.cycleButton.previousItem=Previous item
