@@ -14,12 +14,13 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 public class CycleButton extends KButton {
 	private @Getter String titleKey;
 	private @Getter CycleItem[] items;
 
-	private @Getter int currentIndex = 0;
+	private @Getter @Setter int currentIndex = 0;
 
 	/**
 	 * Use this constructor with an enum implementing the {@link ICycleItemEnum} interface. You can then get back the enum value of the currently selected item with {@link CycleButton#getCurrentEnumValue()}
@@ -47,9 +48,9 @@ public class CycleButton extends KButton {
 	public void render(IInventoryWrapper inventory) {
 		CycleItem currentItem = items[currentIndex];
 
-		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, Translator.SIGN + currentItem.getItemNameKey() + ";");
+		loreBuilder.set(LoreBuilder.KCOMPONENT_LORE, currentItem.getItemNameKey());
 
-		this.renderItem(inventory, x, y, width, height, currentItem.getItemIcon(), Translator.SIGN + titleKey + ";", loreBuilder);
+		this.renderItem(inventory, x, y, width, height, currentItem.getItemIcon(), titleKey, loreBuilder);
 	}
 
 	public ICycleItemEnum getCurrentEnumValue() {
