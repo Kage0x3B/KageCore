@@ -2,17 +2,18 @@ package de.syscy.kagegui.inventory.component;
 
 import java.util.LinkedList;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.icon.ItemIcon;
 import de.syscy.kagegui.inventory.KGUI;
 import de.syscy.kagegui.inventory.listener.ButtonClickListener;
 import de.syscy.kagegui.util.LoreBuilder;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -87,7 +88,7 @@ public class KList extends KComponent {
 	}
 
 	public void add(KComponent component) {
-		if(!(component instanceof KButton || component instanceof KLabel || component instanceof KCheckButton || component instanceof KItemContainer)) {
+		if(!(component instanceof KButton || component instanceof KLabel || component instanceof KCheckButton || component instanceof KItemContainer || component instanceof KTextInput)) {
 			throw new IllegalArgumentException("Invalid component type for a list: " + component);
 		}
 
@@ -167,9 +168,12 @@ public class KList extends KComponent {
 		}
 	}
 
-	private void onPageChanged() {
+	public void onPageChanged() {
 		currentPageComponents.clear();
-		gui.getInventoryWrapper().clear();
+
+		if(gui.getInventoryWrapper() != null) {
+			gui.getInventoryWrapper().clear();
+		}
 
 		for(int i = currentPage * componentsPerPage; i < currentPage * componentsPerPage + componentsPerPage && i < components.size(); i++) {
 			currentPageComponents.add(components.get(i));
@@ -198,7 +202,7 @@ public class KList extends KComponent {
 		lastPage = currentPage;
 	}
 
-	private void recalculateValues() {
+	public void recalculateValues() {
 		componentsPerPage = width * Math.max(1, height - 1 - listBottomMargin);
 
 		totalPages = (int) Math.ceil((float) components.size() / (float) componentsPerPage);
