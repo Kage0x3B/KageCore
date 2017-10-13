@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.syscy.kagecore.KageCore;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,7 +19,6 @@ import org.bukkit.inventory.meta.BookMeta.Generation;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
-import de.syscy.kagecore.KageCore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,8 +73,8 @@ public class KBook {
 	}
 
 	public KBook(ItemStack itemStack) {
-		if(!itemStack.getType().equals(Material.WRITTEN_BOOK)) {
-			throw new IllegalArgumentException("the itemStack needs to be a written book");
+		if(!itemStack.hasItemMeta() || !(itemStack.getItemMeta() instanceof BookMeta)) {
+			throw new IllegalArgumentException("the itemstack needs to be a book");
 		}
 
 		BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
