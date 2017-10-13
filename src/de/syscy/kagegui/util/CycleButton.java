@@ -22,7 +22,7 @@ public class CycleButton extends KButton {
 	private @Getter int currentIndex = 0;
 
 	/**
-	 * Use
+	 * Use this constructor with an enum implementing the {@link ICycleItemEnum} interface. You can then get back the enum value of the currently selected item with {@link CycleButton#getCurrentEnumValue()}
 	 */
 	public CycleButton(int x, int y, String titleKey, ICycleItemEnum[] itemEnumValues) {
 		this(x, y, titleKey, fromEnumValues(itemEnumValues));
@@ -35,6 +35,7 @@ public class CycleButton extends KButton {
 			throw new InvalidParameterException("items can't be null or empty!");
 		}
 
+		this.titleKey = titleKey;
 		this.items = items;
 
 		setClickListener(ClickType.GENERAL, new CycleClickListener(1), null);
