@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import de.syscy.kagecore.util.BoundingBox;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -22,7 +24,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.world.registry.WorldData;
 
-import de.syscy.kagecore.util.BoundingBox;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

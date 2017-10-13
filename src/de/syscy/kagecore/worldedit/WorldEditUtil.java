@@ -2,6 +2,7 @@ package de.syscy.kagecore.worldedit;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -12,7 +13,6 @@ import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.world.World;
 
-import de.syscy.kagecore.KageCore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -32,7 +32,7 @@ public class WorldEditUtil {
 				worldEditPlugin = (WorldEditPlugin) plugin;
 				worldEdit = worldEditPlugin.getWorldEdit();
 			} else {
-				KageCore.debugMessage("WorldEdit is not installed!");
+				Logger.getLogger("KageCore").info("WorldEdit is not installed!");
 
 				return false;
 			}
