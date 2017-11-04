@@ -5,12 +5,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.KageCoreConfig;
 import de.syscy.kagegui.crafting.IDefaultCraftingGUIProvider;
@@ -21,6 +15,13 @@ import de.syscy.kagegui.listener.CraftingGUIListener;
 import de.syscy.kagegui.listener.GUIListener;
 import de.syscy.kagegui.yaml.crafting.YamlCraftingGUI;
 import de.syscy.kagegui.yaml.inventory.KComponentFactory;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
@@ -36,6 +37,8 @@ public class KageGUI {
 	private static @Getter Map<Player, KCraftingGUI> currentCraftingGuis = new WeakHashMap<>();
 
 	private static @Getter @Setter IDefaultCraftingGUIProvider defaultCraftingGUIProvider;
+
+	private static @Getter @Setter int craftingGuiInteractBlock = 0;
 
 	public static void init(JavaPlugin plugin) {
 		KageGUI.plugin = plugin;
@@ -118,6 +121,8 @@ public class KageGUI {
 		for(KCraftingGUI gui : currentCraftingGuis.values()) {
 			gui.update();
 		}
+
+		craftingGuiInteractBlock--;
 	}
 
 	private static void render() {

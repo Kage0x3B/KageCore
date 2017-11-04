@@ -3,13 +3,6 @@ package de.syscy.kagegui.inventory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-
 import de.syscy.kagegui.IInventoryGUI;
 import de.syscy.kagegui.IInventoryWrapper;
 import de.syscy.kagegui.KageGUI;
@@ -18,6 +11,14 @@ import de.syscy.kagegui.inventory.container.KPanel;
 import de.syscy.kagegui.inventory.container.KTabbedPanel;
 import de.syscy.kagegui.inventory.listener.GUICloseListener;
 import de.syscy.kagegui.util.Util;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -99,6 +100,9 @@ public class KGUI implements IInventoryGUI<KComponent> {
 
 	public void close() {
 		player.closeInventory();
+
+		//Fixes a bug where when a player closes the inventory by clicking a button, the click event is also forwarded to the current crafting gui
+		KageGUI.setCraftingGuiInteractBlock(2);
 	}
 
 	public void hide() {
