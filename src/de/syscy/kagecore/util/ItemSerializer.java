@@ -11,10 +11,12 @@ import java.math.BigInteger;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.experimental.ExtensionMethod;
 import net.minecraft.server.v1_12_R1.NBTCompressedStreamTools;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.NBTTagList;
 
+@ExtensionMethod(LombokExtensionUtility.class)
 public final class ItemSerializer {
 	public final static String serializeItemStacks(final ItemStack[] itemStacks) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -45,7 +47,7 @@ public final class ItemSerializer {
 	}
 
 	public static ItemStack[] deserializeItemStacks(String data) {
-		if(data == null || data.isEmpty()) {
+		if(data.isNullOrEmpty()) {
 			return new ItemStack[0];
 		}
 
