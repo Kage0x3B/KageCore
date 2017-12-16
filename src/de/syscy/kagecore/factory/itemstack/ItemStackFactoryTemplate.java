@@ -2,6 +2,18 @@ package de.syscy.kagecore.factory.itemstack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.factory.AdventureFactory;
+import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
+import de.syscy.kagecore.util.ItemAttributes;
+import de.syscy.kagecore.util.ItemAttributes.Attribute;
+import de.syscy.kagecore.util.ItemAttributes.Attribute.Builder;
+import de.syscy.kagecore.util.ItemAttributes.AttributeType;
+import de.syscy.kagecore.util.ItemAttributes.Slot;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,15 +26,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.AdventureFactory;
-import de.syscy.kagecore.factory.FactoryTemplate;
-import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
-import de.syscy.kagecore.util.ItemAttributes;
-import de.syscy.kagecore.util.ItemAttributes.Attribute;
-import de.syscy.kagecore.util.ItemAttributes.Attribute.Builder;
-import de.syscy.kagecore.util.ItemAttributes.AttributeType;
-import de.syscy.kagecore.util.ItemAttributes.Slot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -180,17 +183,20 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 			itemStackTemplateModifier.modify(itemStack, templateYaml);
 		}
 
-		if(itemAttributeList.isEmpty()) {
-			return itemStack;
+		if(!itemAttributeList.isEmpty()) {
+			ItemAttributes itemAttributes = new ItemAttributes(itemStack);
+
+			for(Attribute attribute : itemAttributeList) {
+				itemAttributes.add(attribute);
+			}
+
+			itemStack = (CraftItemStack) itemAttributes.getStack();
+		} else {
+			Reflect.on(itemStack.getItemMeta()).set("internalTag", null);
+			((Map<?, ?>) Reflect.on(itemStack.getItemMeta()).get("unhandledTags")).clear();
 		}
 
-		ItemAttributes itemAttributes = new ItemAttributes(itemStack);
-
-		for(Attribute attribute : itemAttributeList) {
-			itemAttributes.add(attribute);
-		}
-
-		return itemAttributes.getStack();
+		return itemStack;
 	}
 
 	@RequiredArgsConstructor
