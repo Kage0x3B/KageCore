@@ -3,9 +3,9 @@ package de.syscy.kagegui.yaml.inventory;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.configuration.ConfigurationSection;
-
 import de.syscy.kagegui.inventory.component.KComponent;
+
+import org.bukkit.configuration.ConfigurationSection;
 
 public class KComponentFactory {
 	private static Map<String, IKComponentFactory> componentFactories = new HashMap<>();
@@ -14,7 +14,6 @@ public class KComponentFactory {
 		componentFactories.put("button", new KButtonFactory());
 		componentFactories.put("checkButton", new KCheckButtonFactory());
 		componentFactories.put("itemContainer", new KItemContainerFactory());
-		componentFactories.put("itemSpinner", new KItemSpinnerFactory());
 		componentFactories.put("label", new KLabelFactory());
 		componentFactories.put("list", new KListFactory());
 		componentFactories.put("slider", new KSliderFactory());
