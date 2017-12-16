@@ -6,6 +6,8 @@ import java.util.Random;
 
 import de.syscy.kagecore.util.Util;
 
+import com.google.common.base.Splitter;
+
 public abstract class LootValue {
 	public abstract int getValue(Random random);
 
@@ -42,6 +44,7 @@ public abstract class LootValue {
 					return new RangeValue(min, max);
 				}
 			} else if(string.contains(",")) {
+				;
 				String[] split = string.split(",");
 
 				if(split.length < 2) {
@@ -50,7 +53,7 @@ public abstract class LootValue {
 
 				List<Integer> numberList = new ArrayList<>();
 
-				for(String numberString : split) {
+				for(String numberString : Splitter.on(',').omitEmptyStrings().trimResults().split(string)) {
 					if(!Util.isNumber(numberString)) {
 						throw new IllegalArgumentException(string + " is not a valid list of numbers!");
 					}
