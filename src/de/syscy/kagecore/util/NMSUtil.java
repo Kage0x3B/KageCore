@@ -3,6 +3,8 @@ package de.syscy.kagecore.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -10,20 +12,15 @@ import lombok.experimental.ExtensionMethod;
 
 @ExtensionMethod(LombokExtensionUtility.class)
 public class NMSUtil {
+	//TODO: Update to use Reflect!!
 	public static void sendPacket(Player player, Object packet) {
-		try {
-			Object handle = player.getClass().getMethod("getHandle").invoke(player);
-			Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-			playerConnection.getClass().getMethod("sendPacket", "Packet".getNMSClass()).invoke(playerConnection, packet);
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
+		Reflect.on(player.getHandle()).field("playerConnection").call("sendPacket", packet);
 	}
 
 	public static void sendActionBar(Player player, String message) {
 		try {
-			Object chatComponentText = "ChatComponentText".getNMSClass().getConstructor(new Class[] { String.class }).newInstance(new Object[] { message });
-			Object chatPacket = "PacketPlayOutChat".getNMSClass().getConstructor(new Class[] { "IChatBaseComponent".getNMSClass(), Byte.TYPE }).newInstance(new Object[] { chatComponentText, (byte) 2 });
+			Object chatComponentText = "ChatComponentText".getNMSReflect().type().getConstructor(new Class[] { String.class }).newInstance(new Object[] { message });
+			Object chatPacket = "PacketPlayOutChat".getNMSReflect().type().getConstructor(new Class[] { "IChatBaseComponent".getNMSReflect().type(), Byte.TYPE }).newInstance(new Object[] { chatComponentText, (byte) 2 });
 
 			sendPacket(player, chatPacket);
 		} catch(Exception ex) {
@@ -41,29 +38,29 @@ public class NMSUtil {
 			Object subtitlePacket;
 
 			if(title != null) {
-				object = "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0].getField("TIMES").get((Object) null);
-				chatTitle = "IChatBaseComponent".getNMSClass().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + title + "\"}" });
-				subtitleConstructor = "PacketPlayOutTitle".getNMSClass().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0], "IChatBaseComponent".getNMSClass(), Integer.TYPE, Integer.TYPE, Integer.TYPE });
+				object = "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0].getField("TIMES").get((Object) null);
+				chatTitle = "IChatBaseComponent".getNMSReflect().type().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + title + "\"}" });
+				subtitleConstructor = "PacketPlayOutTitle".getNMSReflect().type().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0], "IChatBaseComponent".getNMSReflect().type(), Integer.TYPE, Integer.TYPE, Integer.TYPE });
 				titlePacket = subtitleConstructor.newInstance(new Object[] { object, chatTitle, fadeIn, stay, fadeOut });
 				sendPacket(player, titlePacket);
 
-				object = "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0].getField("TITLE").get((Object) null);
-				chatTitle = "IChatBaseComponent".getNMSClass().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + title + "\"}" });
-				subtitleConstructor = "PacketPlayOutTitle".getNMSClass().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0], "IChatBaseComponent".getNMSClass() });
+				object = "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0].getField("TITLE").get((Object) null);
+				chatTitle = "IChatBaseComponent".getNMSReflect().type().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + title + "\"}" });
+				subtitleConstructor = "PacketPlayOutTitle".getNMSReflect().type().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0], "IChatBaseComponent".getNMSReflect().type() });
 				titlePacket = subtitleConstructor.newInstance(new Object[] { object, chatTitle });
 				sendPacket(player, titlePacket);
 			}
 
 			if(subtitle != null) {
-				object = "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0].getField("TIMES").get((Object) null);
-				chatSubtitle = "IChatBaseComponent".getNMSClass().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + title + "\"}" });
-				subtitleConstructor = "PacketPlayOutTitle".getNMSClass().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0], "IChatBaseComponent".getNMSClass(), Integer.TYPE, Integer.TYPE, Integer.TYPE });
+				object = "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0].getField("TIMES").get((Object) null);
+				chatSubtitle = "IChatBaseComponent".getNMSReflect().type().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + title + "\"}" });
+				subtitleConstructor = "PacketPlayOutTitle".getNMSReflect().type().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0], "IChatBaseComponent".getNMSReflect().type(), Integer.TYPE, Integer.TYPE, Integer.TYPE });
 				subtitlePacket = subtitleConstructor.newInstance(new Object[] { object, chatSubtitle, fadeIn, stay, fadeOut });
 				sendPacket(player, subtitlePacket);
 
-				object = "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0].getField("SUBTITLE").get((Object) null);
-				chatSubtitle = "IChatBaseComponent".getNMSClass().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + subtitle + "\"}" });
-				subtitleConstructor = "PacketPlayOutTitle".getNMSClass().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSClass().getDeclaredClasses()[0], "IChatBaseComponent".getNMSClass(), Integer.TYPE, Integer.TYPE, Integer.TYPE });
+				object = "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0].getField("SUBTITLE").get((Object) null);
+				chatSubtitle = "IChatBaseComponent".getNMSReflect().type().getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object) null, new Object[] { "{\"text\":\"" + subtitle + "\"}" });
+				subtitleConstructor = "PacketPlayOutTitle".getNMSReflect().type().getConstructor(new Class[] { "PacketPlayOutTitle".getNMSReflect().type().getDeclaredClasses()[0], "IChatBaseComponent".getNMSReflect().type(), Integer.TYPE, Integer.TYPE, Integer.TYPE });
 				subtitlePacket = subtitleConstructor.newInstance(new Object[] { object, chatSubtitle, fadeIn, stay, fadeOut });
 				sendPacket(player, subtitlePacket);
 			}
@@ -91,9 +88,9 @@ public class NMSUtil {
 		footer = footer.replaceAll("%player%", player.getDisplayName());
 
 		try {
-			Object tabHeader = "IChatBaseComponent".getNMSClass().getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
-			Object tabFooter = "IChatBaseComponent".getNMSClass().getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
-			Constructor<?> titleConstructor = "PacketPlayOutPlayerListHeaderFooter".getNMSClass().getConstructor("IChatBaseComponent".getNMSClass());
+			Object tabHeader = "IChatBaseComponent".getNMSReflect().type().getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
+			Object tabFooter = "IChatBaseComponent".getNMSReflect().type().getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
+			Constructor<?> titleConstructor = "PacketPlayOutPlayerListHeaderFooter".getNMSReflect().type().getConstructor("IChatBaseComponent".getNMSReflect().type());
 			Object packet = titleConstructor.newInstance(tabHeader);
 			Field field = packet.getClass().getDeclaredField("b");
 			field.setAccessible(true);

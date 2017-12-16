@@ -1,7 +1,6 @@
 package de.syscy.kagecore.util;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.function.Function;
 
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.protocol.ProtocolUtil;
@@ -10,6 +9,7 @@ import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import de.syscy.kagecore.versioncompat.reflect.ReflectException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -19,18 +19,8 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.mysql.jdbc.StringUtils;
 
-import lombok.Getter;
-
 public class LombokExtensionUtility {
-	private static final @Getter(lazy = true) String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
-	public static <T> T or(T object, T ifNull) {
-		return object != null ? object : ifNull;
-	}
-
-	public static <T> T notNull(T object, Function<T, T> function) {
-		return function.apply(object);
-	}
+	private static final String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public static boolean isNullOrEmpty(String string) {
 		return StringUtils.isNullOrEmpty(string);
@@ -80,14 +70,16 @@ public class LombokExtensionUtility {
 		return null;
 	}
 
-	public static Class<?> getNMSClass(String name) {
-		try {
-			return Class.forName("net.minecraft.server." + serverVersion + "." + name);
-		} catch(ClassNotFoundException ex) {
-			ex.printStackTrace();
+	public static Reflect getNMSReflect(String name) {
+		return Reflect.on("net.minecraft.server." + serverVersion + "." + name);
+	}
 
-			return null;
-		}
+	public static Reflect getCraftBukkitReflect(String name) {
+		return Reflect.on("org.bukkit.craftbukkit." + serverVersion + "." + name);
+	}
+
+	public static String getVersionString(Server bukkitServer) {
+		return serverVersion;
 	}
 
 	public static void sendTr(String key, CommandSender sender, Object... args) {
