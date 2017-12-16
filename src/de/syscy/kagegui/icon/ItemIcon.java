@@ -1,13 +1,16 @@
 package de.syscy.kagegui.icon;
 
+import de.syscy.kagegui.IInventoryGUI;
+import de.syscy.kagegui.util.LoreBuilder;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.syscy.kagegui.IInventoryGUI;
-import de.syscy.kagegui.util.LoreBuilder;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class ItemIcon {
 	protected @Getter ItemStack itemStack;
 
