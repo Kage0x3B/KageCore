@@ -28,8 +28,8 @@ public class LocationSection extends KConfigurationSection {
 
 		if(configSection != null) {
 			configSection.set("x", location.getBlockX());
-			configSection.set("x", location.getBlockY());
-			configSection.set("x", location.getBlockZ());
+			configSection.set("y", location.getBlockY());
+			configSection.set("z", location.getBlockZ());
 		}
 	}
 }
