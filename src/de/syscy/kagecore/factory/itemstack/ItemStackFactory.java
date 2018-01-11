@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import de.syscy.kagecore.factory.AbstractAdventureFactory;
+import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.IFactoryProviderPlugin;
+import de.syscy.kagecore.factory.InvalidTemplateException;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -13,15 +19,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import de.syscy.kagecore.factory.AbstractAdventureFactory;
-import de.syscy.kagecore.factory.FactoryTemplate;
-import de.syscy.kagecore.factory.IFactoryProviderPlugin;
-import de.syscy.kagecore.factory.InvalidTemplateException;
-import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import lombok.Getter;
 
 public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
-	private final IFactoryProviderPlugin plugin;
+	private final @Getter IFactoryProviderPlugin plugin;
 	private final ItemFactoryNMS itemFactoryNMS;
 
 	private final LoadingCache<String, ItemStack> cache;

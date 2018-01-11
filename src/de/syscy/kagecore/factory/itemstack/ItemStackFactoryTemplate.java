@@ -1,12 +1,14 @@
 package de.syscy.kagecore.factory.itemstack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.AdventureFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
 import de.syscy.kagecore.util.ItemAttributes;
 import de.syscy.kagecore.util.ItemAttributes.Attribute;
@@ -16,6 +18,8 @@ import de.syscy.kagecore.util.ItemAttributes.Slot;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,16 +29,21 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
+	private static Map<String, SpecificItemMetaHandler<?>> specificItemMetaHandlers = new HashMap<>();
+
 	@SuppressWarnings("unused")
 	private final ItemFactoryNMS itemFactoryNMS;
 
-	private AdventureFactory<ItemStack> factory;
+	private ItemStackFactory itemStackFactory;
 	private YamlConfiguration templateYaml;
 
 	private Material material;
@@ -51,7 +60,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 	@Override
 	public void load(AdventureFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
-		this.factory = factory;
+		itemStackFactory = (ItemStackFactory) factory;
 		this.templateYaml = templateYaml;
 
 		material = Material.matchMaterial(templateYaml.getString("material"));
@@ -177,9 +186,24 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		itemMeta.setUnbreakable(unbreakable);
 
 		itemMeta.addItemFlags(itemFlags);
+
+		ConfigurationSection specialMetadataSection = templateYaml.getConfigurationSection("specialMeta");
+
+		for(String key : specialMetadataSection.getKeys(false)) {
+			String metadataName = key.toLowerCase();
+
+			if(specificItemMetaHandlers.containsKey(metadataName)) {
+				try {
+					specificItemMetaHandlers.get(metadataName).handleSpecialMetadata(itemStackFactory.getPlugin(), itemMeta, specialMetadataSection.getConfigurationSection(key));
+				} catch(Exception ex) {
+					throw new RuntimeException("Error in special metadata for \"" + key + "\"", ex);
+				}
+			}
+		}
+
 		itemStack.setItemMeta(itemMeta);
 
-		for(ItemStackTemplateModifier itemStackTemplateModifier : ((ItemStackFactory) factory).getItemStackTemplateModifier()) {
+		for(ItemStackTemplateModifier itemStackTemplateModifier : ((ItemStackFactory) itemStackFactory).getItemStackTemplateModifier()) {
 			itemStackTemplateModifier.modify(itemStack, templateYaml);
 		}
 
@@ -203,5 +227,57 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	private static class EnchantmentTemplatePart {
 		private final @Getter Enchantment enchantment;
 		private final @Getter int level;
+	}
+
+	private static abstract class SpecificItemMetaHandler<T> {
+		protected abstract void handleSpecialMetadata(final IFactoryProviderPlugin plugin, final T itemMeta, final ConfigurationSection specialMetaSection);
+
+		public void handleSpecialMetadata(final IFactoryProviderPlugin plugin, final ItemMeta itemMeta, final ConfigurationSection specialMetaSection) {
+			handleSpecialMetadata(plugin, (T) itemMeta, specialMetaSection);
+		}
+
+		protected Color parseColor(String value) {
+			DyeColor dyeColor = null;
+
+			try {
+				dyeColor = DyeColor.valueOf(value.toUpperCase());
+			} catch(Exception ex) {
+
+			}
+
+			return dyeColor == null ? null : dyeColor.getColor();
+		}
+	}
+
+	static {
+		specificItemMetaHandlers.put("potion", new SpecificItemMetaHandler<PotionMeta>() {
+			@Override
+			protected void handleSpecialMetadata(IFactoryProviderPlugin plugin, PotionMeta potionMeta, ConfigurationSection specialMetaSection) {
+				PotionType potionType = parsePotionType(specialMetaSection.getString("type"));
+				boolean extended = specialMetaSection.getBoolean("extended", false);
+				boolean upgraded = specialMetaSection.getBoolean("upgraded", false);
+
+				PotionData potionData = new PotionData(potionType, extended, upgraded);
+				potionMeta.setBasePotionData(potionData);
+
+				Color color = parseColor(specialMetaSection.getString("color", ""));
+
+				if(color != null) {
+					potionMeta.setColor(color);
+				}
+			}
+
+			private PotionType parsePotionType(String value) {
+				PotionType potionType = PotionType.UNCRAFTABLE;
+
+				try {
+					potionType = PotionType.valueOf(value.toUpperCase());
+				} catch(Exception ex) {
+
+				}
+
+				return potionType;
+			}
+		});
 	}
 }
