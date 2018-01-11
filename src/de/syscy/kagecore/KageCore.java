@@ -8,6 +8,7 @@ import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.BoundingBox;
 import de.syscy.kagecore.util.ExecuteJSCommand;
+import de.syscy.kagecore.util.GlowUtil;
 import de.syscy.kagecore.util.TestNotification;
 import de.syscy.kagecore.util.book.BookUtil;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
@@ -78,6 +79,7 @@ public class KageCore extends JavaPlugin {
 
 		EntityRegistry.init();
 		BookUtil.init();
+		Bukkit.getPluginManager().registerEvents(new GlowUtil(), this);
 
 		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
 			@Override
