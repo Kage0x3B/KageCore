@@ -7,14 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.inventory.ItemStack;
-
 import de.syscy.kagecore.util.loottable.LootSelectorLootTable;
 import de.syscy.kagecore.util.loottable.LootTableInfo;
 import de.syscy.kagecore.util.loottable.condition.LootItemCondition;
 import de.syscy.kagecore.util.loottable.value.LootValue;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.inventory.ItemStack;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -70,6 +71,10 @@ public abstract class LootSelectorEntry implements ConfigurationSerializable {
 
 		switch(type) {
 			case "item":
+				if(yaml.getString("template", "air").equalsIgnoreCase("air")) {
+					return LootSelectorEmpty.fromYaml(yaml, weight, quality, conditions);
+				}
+
 				return LootItem.fromYaml(yaml, weight, quality, conditions);
 			case "loottable":
 				return LootSelectorLootTable.fromYaml(yaml, weight, quality, conditions);

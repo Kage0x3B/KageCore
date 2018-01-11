@@ -47,10 +47,10 @@ public class LootSelector implements ConfigurationSerializable {
 			return;
 		}
 
-		int n3 = random.nextInt(totalWeight);
+		int randomChance = random.nextInt(totalWeight);
 
 		for(LootSelectorEntry lootSelectorEntry : activeLootSelectorEntries) {
-			if((n3 -= lootSelectorEntry.getFinalWeight(random, lootTableInfo.getLuck())) >= 0) {
+			if((randomChance -= lootSelectorEntry.getFinalWeight(random, lootTableInfo.getLuck())) >= 0) {
 				continue;
 			}
 
