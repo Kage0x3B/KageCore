@@ -105,7 +105,6 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private static abstract class SpecificEntityHandler<T> {
 		public abstract void handleEntity(final IFactoryProviderPlugin plugin, final T entity, final YamlConfiguration templateYaml);
 
-		@SuppressWarnings("unchecked")
 		public void handleEntity(final IFactoryProviderPlugin plugin, final Entity entity, final YamlConfiguration templateYaml) {
 			handleEntity(plugin, (T) entity, templateYaml);
 		}
