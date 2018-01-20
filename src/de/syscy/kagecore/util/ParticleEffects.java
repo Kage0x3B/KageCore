@@ -1,10 +1,17 @@
 package de.syscy.kagecore.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import de.syscy.kagecore.protocol.ProtocolUtil;
+import de.syscy.kagecore.util.ParticleEffects.ParticleData;
+import de.syscy.kagecore.versioncompat.PackageType;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -16,11 +23,6 @@ import org.bukkit.util.Vector;
 import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
 import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
 
-import de.syscy.kagecore.protocol.ProtocolUtil;
-import de.syscy.kagecore.util.ParticleEffects.ParticleData;
-import de.syscy.kagecore.versioncompat.PackageType;
-import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
-import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
 
 /**
@@ -388,18 +390,11 @@ public enum ParticleEffects {
 	 * <li>The offset values have no influence on this particle effect
 	 * </ul>
 	 */
-	MOB_APPEARANCE("mobappearance", 41, 8),
-	DRAGONBREATH("dragonbreath", 42, 9),
-	ENDROD("endrod", 43, 9),
-	DAMAGEINDICATOR("damageindicator", 44, 9),
-	SWEEPATTACK("sweepattack", 45, 9),
-	FALLINGDUST("fallingdust", 46, 10, ParticleProperty.REQUIRES_DATA),
-	TOTEM("totem", 47, 11, ParticleProperty.DIRECTIONAL),
-	SPIT("spit", 48, 11, ParticleProperty.DIRECTIONAL);
+	MOB_APPEARANCE("mobappearance", 41, 8), DRAGONBREATH("dragonbreath", 42, 9), ENDROD("endrod", 43, 9), DAMAGEINDICATOR("damageindicator", 44, 9), SWEEPATTACK("sweepattack", 45, 9), FALLINGDUST("fallingdust", 46, 10, ParticleProperty.REQUIRES_DATA), TOTEM("totem", 47, 11, ParticleProperty.DIRECTIONAL), SPIT("spit", 48, 11, ParticleProperty.DIRECTIONAL);
 	//@formatter:on
 
-	private static final Map<String, ParticleEffects> NAME_MAP = new HashMap<String, ParticleEffects>();
-	private static final Map<Integer, ParticleEffects> ID_MAP = new HashMap<Integer, ParticleEffects>();
+	private static final Map<String, ParticleEffects> NAME_MAP = new HashMap<>();
+	private static final Map<Integer, ParticleEffects> ID_MAP = new HashMap<>();
 	private final @Getter String name;
 	private final @Getter int id;
 	private final @Getter int requiredVersion;
@@ -500,7 +495,7 @@ public enum ParticleEffects {
 	 * @param location Location to check
 	 * @return Whether the distance exceeds 256 or not
 	 */
-	private static boolean isLongDistance(Location location, List<Player> players) {
+	private static boolean isLongDistance(Location location, Collection<Player> players) {
 		String world = location.getWorld().getName();
 
 		for(Player player : players) {
@@ -583,7 +578,7 @@ public enum ParticleEffects {
 	 * @see ParticlePacket
 	 * @see ParticlePacket#sendTo(Location, List)
 	 */
-	public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, List<Player> players) throws ParticleVersionException, ParticleDataException, IllegalArgumentException {
+	public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Collection<Player> players) throws ParticleVersionException, ParticleDataException, IllegalArgumentException {
 		if(!isSupported()) {
 			throw new ParticleVersionException("This particle effect is not supported by your server version");
 		}
@@ -657,7 +652,7 @@ public enum ParticleEffects {
 	 * @see ParticlePacket#ParticlePacket(ParticleEffects, Vector, float, boolean, ParticleData)
 	 * @see ParticlePacket#sendTo(Location, List)
 	 */
-	public void display(Vector direction, float speed, Location center, List<Player> players) throws ParticleVersionException, ParticleDataException, IllegalArgumentException {
+	public void display(Vector direction, float speed, Location center, Collection<Player> players) throws ParticleVersionException, ParticleDataException, IllegalArgumentException {
 		if(!isSupported()) {
 			throw new ParticleVersionException("This particle effect is not supported by your server version");
 		}
@@ -724,7 +719,7 @@ public enum ParticleEffects {
 	 * @see ParticlePacket#ParticlePacket(ParticleEffects, ParticleColor, boolean)
 	 * @see ParticlePacket#sendTo(Location, List)
 	 */
-	public void display(ParticleColor color, Location center, List<Player> players) throws ParticleVersionException, ParticleColorException {
+	public void display(ParticleColor color, Location center, Collection<Player> players) throws ParticleVersionException, ParticleColorException {
 		if(!isSupported()) {
 			throw new ParticleVersionException("This particle effect is not supported by your server version");
 		}
@@ -796,7 +791,7 @@ public enum ParticleEffects {
 	 * @see ParticlePacket
 	 * @see ParticlePacket#sendTo(Location, List)
 	 */
-	public void display(ParticleData data, float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, List<Player> players) throws ParticleVersionException, ParticleDataException {
+	public void display(ParticleData data, float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Collection<Player> players) throws ParticleVersionException, ParticleDataException {
 		if(!isSupported()) {
 			throw new ParticleVersionException("This particle effect is not supported by your server version");
 		}
@@ -867,7 +862,7 @@ public enum ParticleEffects {
 	 * @see ParticlePacket
 	 * @see ParticlePacket#sendTo(Location, List)
 	 */
-	public void display(ParticleData data, Vector direction, float speed, Location center, List<Player> players) throws ParticleVersionException, ParticleDataException {
+	public void display(ParticleData data, Vector direction, float speed, Location center, Collection<Player> players) throws ParticleVersionException, ParticleDataException {
 		if(!isSupported()) {
 			throw new ParticleVersionException("This particle effect is not supported by your server version");
 		}
@@ -1500,7 +1495,7 @@ public enum ParticleEffects {
 			initializePacket(center);
 
 			try {
-				ProtocolUtil.getProtocolManager().sendServerPacket(getPlayer(player), packet.getHandle());
+				ProtocolUtil.getProtocolManager().sendServerPacket(AbstractPlayerWrapper.toBukkitPlayer(player), packet.getHandle());
 			} catch(Exception exception) {
 				throw new PacketSendingException("Failed to send the packet to player '" + player.getName() + "'", exception);
 			}
@@ -1514,7 +1509,7 @@ public enum ParticleEffects {
 		 * @throws IllegalArgumentException If the player list is empty
 		 * @see #sendTo(Location center, Player player)
 		 */
-		public void sendTo(Location center, List<Player> players) throws IllegalArgumentException {
+		public void sendTo(Location center, Collection<Player> players) throws IllegalArgumentException {
 			if(players.isEmpty()) {
 				throw new IllegalArgumentException("The player list is empty");
 			}
@@ -1546,14 +1541,6 @@ public enum ParticleEffects {
 				}
 
 				sendTo(center, player);
-			}
-		}
-
-		private Player getPlayer(Player player) {
-			if(player instanceof AbstractPlayerWrapper) {
-				return ((AbstractPlayerWrapper) player).getBukkitPlayer();
-			} else {
-				return player;
 			}
 		}
 
