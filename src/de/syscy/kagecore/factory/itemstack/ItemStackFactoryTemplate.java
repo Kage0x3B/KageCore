@@ -31,6 +31,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import lombok.Getter;
@@ -189,14 +191,16 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 		ConfigurationSection specialMetadataSection = templateYaml.getConfigurationSection("specialMeta");
 
-		for(String key : specialMetadataSection.getKeys(false)) {
-			String metadataName = key.toLowerCase();
+		if(specialMetadataSection != null) {
+			for(String key : specialMetadataSection.getKeys(false)) {
+				String metadataName = key.toLowerCase();
 
-			if(specificItemMetaHandlers.containsKey(metadataName)) {
-				try {
-					specificItemMetaHandlers.get(metadataName).handleSpecialMetadata(itemStackFactory.getPlugin(), itemMeta, specialMetadataSection.getConfigurationSection(key));
-				} catch(Exception ex) {
-					throw new RuntimeException("Error in special metadata for \"" + key + "\"", ex);
+				if(specificItemMetaHandlers.containsKey(metadataName)) {
+					try {
+						specificItemMetaHandlers.get(metadataName).handleSpecialMetadata(itemStackFactory.getPlugin(), itemMeta, specialMetadataSection.getConfigurationSection(key));
+					} catch(Exception ex) {
+						throw new RuntimeException("Error in special metadata for \"" + key + "\"", ex);
+					}
 				}
 			}
 		}
@@ -264,6 +268,20 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 				if(color != null) {
 					potionMeta.setColor(color);
+				}
+
+				if(specialMetaSection.contains("customEffects")) {
+					for(String customEffectKey : specialMetaSection.getConfigurationSection("customEffects").getKeys(false)) {
+						ConfigurationSection customEffectSection = specialMetaSection.getConfigurationSection("customEffects." + customEffectKey);
+
+						PotionEffectType customEffectType = PotionEffectType.getByName(customEffectSection.getString("type", ""));
+						int duration = customEffectSection.getInt("duration", 20);
+						int amplifier = customEffectSection.getInt("amplifier", 1);
+						boolean ambient = customEffectSection.getBoolean("ambient", false);
+						boolean particles = customEffectSection.getBoolean("particles", true);
+						Color customEffectColor = parseColor(customEffectSection.getString("color", ""));
+						potionMeta.addCustomEffect(new PotionEffect(customEffectType, duration, amplifier, ambient, particles, customEffectColor), true);
+					}
 				}
 			}
 
