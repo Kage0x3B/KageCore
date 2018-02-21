@@ -73,7 +73,11 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 		data = templateYaml.getInt("data", 0);
 
-		displayName = ChatColor.translateAlternateColorCodes('$', templateYaml.getString("displayName", ""));
+		displayName = ChatColor.translateAlternateColorCodes('&', templateYaml.getString("displayName", ""));
+
+		if(displayName != null && !displayName.trim().isEmpty()) {
+			displayName = ChatColor.RESET + displayName;
+		}
 
 		int i = 1;
 
@@ -276,7 +280,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 						PotionEffectType customEffectType = PotionEffectType.getByName(customEffectSection.getString("type", ""));
 						int duration = customEffectSection.getInt("duration", 20);
-						int amplifier = customEffectSection.getInt("amplifier", 1);
+						int amplifier = customEffectSection.getInt("amplifier", 0);
 						boolean ambient = customEffectSection.getBoolean("ambient", false);
 						boolean particles = customEffectSection.getBoolean("particles", true);
 						Color customEffectColor = parseColor(customEffectSection.getString("color", ""));
