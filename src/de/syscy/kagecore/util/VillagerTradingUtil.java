@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.v1_12_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftMerchantRecipe;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.MerchantRecipe;
 
 import io.netty.buffer.Unpooled;
@@ -28,11 +29,11 @@ import net.minecraft.server.v1_12_R1.World;
 
 @UtilityClass
 public class VillagerTradingUtil {
-	public static void openTrade(Player player, Villager villager) {
-		openTrade(player, ((CraftVillager) villager).getHandle().getScoreboardDisplayName(), villager.getRecipes());
+	public static InventoryView openTrade(Player player, Villager villager) {
+		return openTrade(player, ((CraftVillager) villager).getHandle().getScoreboardDisplayName(), villager.getRecipes());
 	}
 
-	public static void openTrade(Player player, IChatBaseComponent title, List<MerchantRecipe> merchantRecipes) {
+	public static InventoryView openTrade(Player player, IChatBaseComponent title, List<MerchantRecipe> merchantRecipes) {
 		final EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
 		final CustomMerchant customMerchant = new CustomMerchant(title, merchantRecipes);
@@ -41,7 +42,7 @@ public class VillagerTradingUtil {
 		final Container container = CraftEventFactory.callInventoryOpenEvent(nmsPlayer, new ContainerMerchant(nmsPlayer.inventory, customMerchant, nmsPlayer.world));
 
 		if(container == null) {
-			return;
+			return null;
 		}
 
 		int containerCounter = nmsPlayer.nextContainerCounter();
@@ -59,7 +60,11 @@ public class VillagerTradingUtil {
 			packetdataserializer.writeInt(containerCounter);
 			merchantrecipelist.a(packetdataserializer);
 			nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", packetdataserializer));
+
+			return container.getBukkitView();
 		}
+
+		return null;
 	}
 
 	public static class CustomMerchant implements IMerchant {
