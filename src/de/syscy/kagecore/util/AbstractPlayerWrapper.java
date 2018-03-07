@@ -1749,9 +1749,4 @@ public abstract class AbstractPlayerWrapper implements Player {
 	public static Player toBukkitPlayer(Player player) {
 		return player instanceof AbstractPlayerWrapper ? ((AbstractPlayerWrapper) player).bukkitPlayer : player;
 	}
-
-	@Override
-	public void setKiller(Player killer) {
-		bukkitPlayer.setKiller(killer);
-	}
 }
