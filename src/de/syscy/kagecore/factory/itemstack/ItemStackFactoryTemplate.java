@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
-	private static Map<String, SpecificItemMetaHandler<?>> specificItemMetaHandlers = new HashMap<>();
+	private static Map<String, CustomItemModifier<?>> customItemModifiers = new HashMap<>();
 
 	@SuppressWarnings("unused")
 	private final ItemFactoryNMS itemFactoryNMS;
@@ -193,17 +193,17 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 
 		itemMeta.addItemFlags(itemFlags);
 
-		ConfigurationSection specialMetadataSection = templateYaml.getConfigurationSection("specialMeta");
+		ConfigurationSection customItemModifierSection = templateYaml.getConfigurationSection("customData");
 
-		if(specialMetadataSection != null) {
-			for(String key : specialMetadataSection.getKeys(false)) {
-				String metadataName = key.toLowerCase();
+		if(customItemModifierSection != null) {
+			for(String key : customItemModifierSection.getKeys(false)) {
+				String modifierName = key.toLowerCase();
 
-				if(specificItemMetaHandlers.containsKey(metadataName)) {
+				if(customItemModifiers.containsKey(modifierName)) {
 					try {
-						specificItemMetaHandlers.get(metadataName).handleSpecialMetadata(itemStackFactory.getPlugin(), itemMeta, specialMetadataSection.getConfigurationSection(key));
+						customItemModifiers.get(modifierName).modifyItem0(itemStackFactory.getPlugin(), itemStack, itemMeta, customItemModifierSection.getConfigurationSection(key));
 					} catch(Exception ex) {
-						throw new RuntimeException("Error in special metadata for \"" + key + "\"", ex);
+						throw new RuntimeException("Error in item modifier for \"" + key + "\"", ex);
 					}
 				}
 			}
@@ -237,11 +237,11 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		private final @Getter int level;
 	}
 
-	private static abstract class SpecificItemMetaHandler<T> {
-		protected abstract void handleSpecialMetadata(final IFactoryProviderPlugin plugin, final T itemMeta, final ConfigurationSection specialMetaSection);
+	private static abstract class CustomItemModifier<T> {
+		protected abstract void modifyItem(final IFactoryProviderPlugin plugin, ItemStack itemStack, final T itemMeta, final ConfigurationSection specialMetaSection);
 
-		public void handleSpecialMetadata(final IFactoryProviderPlugin plugin, final ItemMeta itemMeta, final ConfigurationSection specialMetaSection) {
-			handleSpecialMetadata(plugin, (T) itemMeta, specialMetaSection);
+		public void modifyItem0(final IFactoryProviderPlugin plugin, ItemStack itemStack, final ItemMeta itemMeta, final ConfigurationSection specialMetaSection) {
+			modifyItem(plugin, itemStack, (T) itemMeta, specialMetaSection);
 		}
 
 		protected Color parseColor(String value) {
@@ -257,10 +257,14 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		}
 	}
 
+	public static void registerCustomItemModifier(String name, CustomItemModifier<?> itemModifier) {
+		customItemModifiers.put(name.toLowerCase(), itemModifier);
+	}
+
 	static {
-		specificItemMetaHandlers.put("potion", new SpecificItemMetaHandler<PotionMeta>() {
+		customItemModifiers.put("potion", new CustomItemModifier<PotionMeta>() {
 			@Override
-			protected void handleSpecialMetadata(IFactoryProviderPlugin plugin, PotionMeta potionMeta, ConfigurationSection specialMetaSection) {
+			protected void modifyItem(IFactoryProviderPlugin plugin, ItemStack itemStack, PotionMeta potionMeta, ConfigurationSection specialMetaSection) {
 				PotionType potionType = parsePotionType(specialMetaSection.getString("type"));
 				boolean extended = specialMetaSection.getBoolean("extended", false);
 				boolean upgraded = specialMetaSection.getBoolean("upgraded", false);
