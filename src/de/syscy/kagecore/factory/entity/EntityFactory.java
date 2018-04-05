@@ -8,14 +8,14 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.AbstractAdventureFactory;
+import de.syscy.kagecore.factory.AbstractItemFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import lombok.Getter;
 
-public class EntityFactory extends AbstractAdventureFactory<Entity> {
+public class EntityFactory extends AbstractItemFactory<Entity> {
 	private final @Getter IFactoryProviderPlugin plugin;
 	private final EntityFactoryNMS entityFactoryNMS;
 

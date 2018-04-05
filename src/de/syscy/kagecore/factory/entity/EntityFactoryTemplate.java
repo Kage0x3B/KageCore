@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.AdventureFactory;
+import de.syscy.kagecore.factory.ItemFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.util.Util;
@@ -59,7 +59,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private boolean silent;
 
 	@Override
-	public void load(final AdventureFactory<Entity> entityFactory, String templateName, final YamlConfiguration templateYaml) throws Exception {
+	public void load(final ItemFactory<Entity> entityFactory, String templateName, final YamlConfiguration templateYaml) throws Exception {
 		this.entityFactory = (EntityFactory) entityFactory;
 		this.templateName = templateName;
 		this.templateYaml = templateYaml;

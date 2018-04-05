@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.syscy.kagecore.factory.AbstractAdventureFactory;
+import de.syscy.kagecore.factory.AbstractItemFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
@@ -21,7 +21,7 @@ import com.google.common.cache.LoadingCache;
 
 import lombok.Getter;
 
-public class ItemStackFactory extends AbstractAdventureFactory<ItemStack> {
+public class ItemStackFactory extends AbstractItemFactory<ItemStack> {
 	private final @Getter IFactoryProviderPlugin plugin;
 	private final ItemFactoryNMS itemFactoryNMS;
 

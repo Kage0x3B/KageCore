@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.AdventureFactory;
+import de.syscy.kagecore.factory.ItemFactory;
 import de.syscy.kagecore.factory.FactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
@@ -61,7 +61,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	private List<Attribute> itemAttributeList = new ArrayList<>();
 
 	@Override
-	public void load(AdventureFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
+	public void load(ItemFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
 		itemStackFactory = (ItemStackFactory) factory;
 		this.templateYaml = templateYaml;
 
@@ -237,7 +237,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 		private final @Getter int level;
 	}
 
-	private static abstract class CustomItemModifier<T> {
+	public static abstract class CustomItemModifier<T> {
 		protected abstract void modifyItem(final IFactoryProviderPlugin plugin, ItemStack itemStack, final T itemMeta, final ConfigurationSection specialMetaSection);
 
 		public void modifyItem0(final IFactoryProviderPlugin plugin, ItemStack itemStack, final ItemMeta itemMeta, final ConfigurationSection specialMetaSection) {

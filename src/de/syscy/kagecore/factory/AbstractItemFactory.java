@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import lombok.Getter;
 
-public abstract class AbstractAdventureFactory<T> implements AdventureFactory<T> {
+public abstract class AbstractItemFactory<T> implements ItemFactory<T> {
 	private File folder;
 	private String templateFileExtension;
 
