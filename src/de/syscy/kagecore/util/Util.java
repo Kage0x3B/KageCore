@@ -17,6 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
 import com.comphenix.packetwrapper.AbstractPacket;
@@ -101,6 +102,26 @@ public class Util {
 		}
 
 		return null;
+	}
+
+	public List<ItemStack> splitUpItemStack(ItemStack inputItemStack) {
+		List<ItemStack> resultItemStacks = new ArrayList<>();
+
+		int maxStackSize = inputItemStack.getType().getMaxStackSize();
+		int maxSizeStacks = inputItemStack.getAmount() / maxStackSize;
+		int restAmount = inputItemStack.getAmount() % maxSizeStacks;
+
+		for(int i = 0; i < maxSizeStacks; i++) {
+			ItemStack itemStack = inputItemStack.clone();
+			itemStack.setAmount(maxStackSize);
+			resultItemStacks.add(itemStack);
+		}
+
+		ItemStack restItemStack = inputItemStack.clone();
+		restItemStack.setAmount(restAmount);
+		resultItemStacks.add(restItemStack);
+
+		return resultItemStacks;
 	}
 
 	public void printValues(AbstractPacket packet) {
