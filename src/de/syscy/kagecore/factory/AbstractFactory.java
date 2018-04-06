@@ -9,11 +9,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import lombok.Getter;
 
-public abstract class AbstractItemFactory<T> implements ItemFactory<T> {
+public abstract class AbstractFactory<T> implements IFactory<T> {
 	private File folder;
 	private String templateFileExtension;
 
-	protected @Getter Map<String, FactoryTemplate<T>> templates = new HashMap<>();
+	protected @Getter Map<String, IFactoryTemplate<T>> templates = new HashMap<>();
 
 	protected void loadTemplates(File folder, final String templateFileExtension) {
 		this.folder = folder;
@@ -38,7 +38,7 @@ public abstract class AbstractItemFactory<T> implements ItemFactory<T> {
 				String templateName = file.getName().substring(0, file.getName().indexOf('.')).toLowerCase();
 
 				try {
-					FactoryTemplate<T> template = createTemplate();
+					IFactoryTemplate<T> template = createTemplate();
 					template.load(this, templateName, templateYamlFile);
 
 					templates.put(templateName, template);
@@ -56,5 +56,5 @@ public abstract class AbstractItemFactory<T> implements ItemFactory<T> {
 		loadTemplates(folder, templateFileExtension);
 	}
 
-	protected abstract FactoryTemplate<T> createTemplate();
+	protected abstract IFactoryTemplate<T> createTemplate();
 }

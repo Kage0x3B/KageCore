@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.ItemFactory;
-import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.IFactory;
+import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
 import de.syscy.kagecore.util.ItemAttributes;
@@ -39,7 +39,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
+public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
 	private static Map<String, CustomItemModifier<?>> customItemModifiers = new HashMap<>();
 
 	@SuppressWarnings("unused")
@@ -61,7 +61,7 @@ public class ItemStackFactoryTemplate implements FactoryTemplate<ItemStack> {
 	private List<Attribute> itemAttributeList = new ArrayList<>();
 
 	@Override
-	public void load(ItemFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
+	public void load(IFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
 		itemStackFactory = (ItemStackFactory) factory;
 		this.templateYaml = templateYaml;
 

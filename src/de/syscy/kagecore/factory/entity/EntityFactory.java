@@ -2,20 +2,18 @@ package de.syscy.kagecore.factory.entity;
 
 import java.io.File;
 
+import de.syscy.kagecore.factory.AbstractFactory;
+import de.syscy.kagecore.factory.IFactoryProviderPlugin;
+import de.syscy.kagecore.factory.IFactoryTemplate;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
+
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.AbstractItemFactory;
-import de.syscy.kagecore.factory.FactoryTemplate;
-import de.syscy.kagecore.factory.IFactoryProviderPlugin;
-import de.syscy.kagecore.factory.InvalidTemplateException;
-import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
-import lombok.Getter;
-
-public class EntityFactory extends AbstractItemFactory<Entity> {
+public class EntityFactory extends AbstractFactory<Entity> implements IEntityFactory {
 	private final @Getter IFactoryProviderPlugin plugin;
 	private final EntityFactoryNMS entityFactoryNMS;
 
@@ -30,24 +28,21 @@ public class EntityFactory extends AbstractItemFactory<Entity> {
 		loadTemplates(new File(plugin.getDataFolder(), "entityTemplates"), "aet");
 	}
 
+	@Override
 	public Entity create(String templateName, Location location) {
 		if(templateName == null || templateName.isEmpty()) {
 			return null;
 		}
 
-		FactoryTemplate<Entity> template = templates.get(templateName.toLowerCase());
+		IFactoryTemplate<Entity> template = templates.get(templateName.toLowerCase());
 
 		if(template == null) {
 			EntityType entityType = EntityType.valueOf(templateName.toUpperCase());
 
-			if(entityType != null) {
-				Entity entity = location.getWorld().spawnEntity(location, entityType);
-				entity.setMetadata("templateName", new FixedMetadataValue(KageCore.getInstance(), templateName.toLowerCase()));
+			Entity entity = location.getWorld().spawnEntity(location, entityType);
+			entity.setMetadata("templateName", new FixedMetadataValue(plugin, templateName.toLowerCase()));
 
-				return entity;
-			} else {
-				throw new InvalidTemplateException("There is no template/EntityType with the name \"" + templateName.toLowerCase() + "\"!");
-			}
+			return entity;
 		}
 
 		try {
@@ -60,7 +55,7 @@ public class EntityFactory extends AbstractItemFactory<Entity> {
 	}
 
 	@Override
-	protected FactoryTemplate<Entity> createTemplate() {
+	protected IFactoryTemplate<Entity> createTemplate() {
 		return new EntityFactoryTemplate(entityFactoryNMS);
 	}
 }

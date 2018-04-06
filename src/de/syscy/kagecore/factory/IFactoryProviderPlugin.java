@@ -1,12 +1,12 @@
 package de.syscy.kagecore.factory;
 
+import de.syscy.kagecore.factory.entity.IEntityFactory;
+import de.syscy.kagecore.factory.itemstack.IItemStackFactory;
+
 import org.bukkit.plugin.Plugin;
 
-import de.syscy.kagecore.factory.entity.EntityFactory;
-import de.syscy.kagecore.factory.itemstack.ItemStackFactory;
-
 public interface IFactoryProviderPlugin extends Plugin {
-	public ItemStackFactory getItemStackFactory();
+	IItemStackFactory getItemStackFactory();
 
-	public EntityFactory getEntityFactory();
+	IEntityFactory getEntityFactory();
 }

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.factory.ItemFactory;
-import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.IFactory;
+import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.util.Util;
 
@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
-public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
+public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 	private static Map<EntityType, SpecificEntityHandler<?>> specificEntityHandlers = new HashMap<>();
 
 	private final EntityFactoryNMS entityFactoryNMS;
@@ -59,7 +59,7 @@ public class EntityFactoryTemplate implements FactoryTemplate<Entity> {
 	private boolean silent;
 
 	@Override
-	public void load(final ItemFactory<Entity> entityFactory, String templateName, final YamlConfiguration templateYaml) throws Exception {
+	public void load(final IFactory<Entity> entityFactory, String templateName, final YamlConfiguration templateYaml) throws Exception {
 		this.entityFactory = (EntityFactory) entityFactory;
 		this.templateName = templateName;
 		this.templateYaml = templateYaml;

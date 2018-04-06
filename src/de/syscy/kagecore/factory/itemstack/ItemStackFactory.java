@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.syscy.kagecore.factory.AbstractItemFactory;
-import de.syscy.kagecore.factory.FactoryTemplate;
+import de.syscy.kagecore.factory.AbstractFactory;
+import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.InvalidTemplateException;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
@@ -21,7 +21,7 @@ import com.google.common.cache.LoadingCache;
 
 import lombok.Getter;
 
-public class ItemStackFactory extends AbstractItemFactory<ItemStack> {
+public class ItemStackFactory extends AbstractFactory<ItemStack> implements IItemStackFactory {
 	private final @Getter IFactoryProviderPlugin plugin;
 	private final ItemFactoryNMS itemFactoryNMS;
 
@@ -63,7 +63,7 @@ public class ItemStackFactory extends AbstractItemFactory<ItemStack> {
 	}
 
 	private ItemStack loadTemplate(String templateName) throws Exception {
-		FactoryTemplate<ItemStack> template = templates.get(templateName.toLowerCase());
+		IFactoryTemplate<ItemStack> template = templates.get(templateName.toLowerCase());
 
 		if(template == null) {
 			Material material = Material.matchMaterial(templateName);
@@ -98,7 +98,7 @@ public class ItemStackFactory extends AbstractItemFactory<ItemStack> {
 	}
 
 	@Override
-	protected FactoryTemplate<ItemStack> createTemplate() {
+	protected IFactoryTemplate<ItemStack> createTemplate() {
 		return new ItemStackFactoryTemplate(itemFactoryNMS);
 	}
 
