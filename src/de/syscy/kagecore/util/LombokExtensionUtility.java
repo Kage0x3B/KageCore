@@ -1,23 +1,20 @@
 package de.syscy.kagecore.util;
 
-import java.lang.reflect.InvocationTargetException;
-
+import com.comphenix.packetwrapper.AbstractPacket;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+import com.mysql.jdbc.StringUtils;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import de.syscy.kagecore.versioncompat.reflect.ReflectException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
 
-import com.comphenix.packetwrapper.AbstractPacket;
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
-import com.mysql.jdbc.StringUtils;
+import java.lang.reflect.InvocationTargetException;
 
 public class LombokExtensionUtility {
 	private static final String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
@@ -32,14 +29,6 @@ public class LombokExtensionUtility {
 
 	public static ByteArrayDataInput toByteStream(byte[] data) {
 		return ByteStreams.newDataInput(data);
-	}
-
-	public static void instantRespawn(PlayerDeathEvent event) {
-		event.getEntity().setHealth(20);
-		event.getEntity().getActivePotionEffects().clear();
-		event.getEntity().setFoodLevel(20);
-		event.getEntity().setFireTicks(0);
-		event.getEntity().teleport(event.getEntity().getLocation());
 	}
 
 	public static Player toBukkitPlayer(Player player) {

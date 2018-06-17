@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 
 import org.bukkit.Bukkit;
@@ -21,9 +22,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.packetwrapper.WrapperPlayServerScoreboardTeam;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -110,15 +116,17 @@ public class GlowUtil implements Listener {
 			return;
 		}
 
-		sendGlowPacket(entity, wasGlowing, glowing, receiver);
+		//		sendGlowPacket(entity, wasGlowing, glowing, receiver);
 
 		if(oldColor != null && oldColor != Color.NONE/*We never add to NONE, so no need to remove*/) {
-			sendTeamPacket(entity, oldColor/*use the old color to remove the player from its team*/, false, false, tagVisibility, push, receiver);
+			//			sendTeamPacket(entity, oldColor/*use the old color to remove the player from its team*/, false, false, tagVisibility, push, receiver);
 		}
 
 		if(glowing) {
-			sendTeamPacket(entity, color, false, color != Color.NONE, tagVisibility, push, receiver);
+			//			sendTeamPacket(entity, color, false, color != Color.NONE, tagVisibility, push, receiver);
 		}
+
+		entity.setGlowing(glowing);
 	}
 
 	/**
@@ -256,10 +264,17 @@ public class GlowUtil implements Listener {
 	}
 
 	protected static void sendGlowPacket(Entity entity, boolean wasGlowing, boolean glowing, Player receiver) {
-		WrappedDataWatcher dataWatcher = new WrappedDataWatcher(entity);
+		WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
 		byte entityFlags = dataWatcher.getByte(0);
-		entityFlags = (byte) (glowing ? (entityFlags | 1 << 6) : (entityFlags & ~(1 << 6))); //6 = glowing index
-		dataWatcher.setObject(0, entityFlags, true);
+		byte newEntityFlags = (byte) (glowing ? (entityFlags | 1 << 6) : (entityFlags & ~(1 << 6))); //6 = glowing index
+		dataWatcher.setObject(0, newEntityFlags);
+
+		WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata();
+		metadataPacket.setEntityID(-entity.getEntityId());
+		metadataPacket.setMetadata(dataWatcher.getWatchableObjects());
+
+		sendPacket(metadataPacket.getHandle(), receiver);
+		KageCore.debugMessage("send glow packet with entityFlags " + entityFlags + "");
 	}
 
 	/**
@@ -293,7 +308,7 @@ public class GlowUtil implements Listener {
 
 		if(createNewTeam) {
 			teamPacket.setColor(color.getPacketValue()); //Color -> this is what we care about
-			teamPacket.setDisplayName("§" + color.getColorCode()); //prefix - for some reason this controls the color, even though there's the extra color value...
+			teamPacket.setDisplayName(color.getColorCode()); //prefix - for some reason this controls the color, even though there's the extra color value...
 			teamPacket.setSuffix("");
 			teamPacket.setPackOptionData(0); //Options - let's just ignore them for now
 		}
@@ -320,6 +335,34 @@ public class GlowUtil implements Listener {
 		} catch(InvocationTargetException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	public static void initPacketListener(KageCore plugin) {
+		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Server.ENTITY_METADATA) {
+			@Override
+			public void onPacketReceiving(PacketEvent event) {
+				WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata(event.getPacket());
+
+				if(metadataPacket.getEntityID() < 0) {
+					metadataPacket.setEntityID(-metadataPacket.getEntityID());
+
+					if(metadataPacket.getMetadata() == null || metadataPacket.getMetadata().isEmpty()) {
+						return;
+					}
+
+					Entity entity = metadataPacket.getEntity(event);
+
+					if(isGlowing(entity, event.getPlayer())) {
+						WrappedWatchableObject watchableObject = metadataPacket.getMetadata().get(0);
+						byte entityFlags = (byte) watchableObject.getValue();
+						byte newEntityFlags = (byte) (entityFlags | 1 << 6); //6 = glowing index
+						watchableObject.setValue(newEntityFlags);
+					}
+				}
+
+				event.setPacket(metadataPacket.getHandle());
+			}
+		});
 	}
 
 	/**

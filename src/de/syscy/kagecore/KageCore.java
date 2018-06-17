@@ -79,6 +79,7 @@ public class KageCore extends JavaPlugin {
 
 		EntityRegistry.init();
 		BookUtil.init();
+		//		GlowUtil.initPacketListener(this);
 		Bukkit.getPluginManager().registerEvents(new GlowUtil(), this);
 
 		Bukkit.getScheduler().runTaskLater(this, new Runnable() {

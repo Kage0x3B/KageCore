@@ -1,21 +1,13 @@
 package de.syscy.kagecore.factory.entity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.IFactory;
-import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
+import de.syscy.kagecore.factory.IFactoryTemplate;
+import de.syscy.kagecore.factory.InvalidTemplateException;
 import de.syscy.kagecore.util.Util;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -34,7 +26,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -79,6 +74,10 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 	@Override
 	public Entity create(final Object... args) throws Exception {
 		final Entity entity = entityFactoryNMS.createEntity(entityTypeID, (Location) args[0], nbt);
+
+		if(entity == null) {
+			throw new InvalidTemplateException("Can't spawn entity with type \"" + entityTypeID + "\" (in template " + templateName + ".aet)");
+		}
 
 		if(!customName.isEmpty()) {
 			entity.setCustomName(customName);
@@ -176,7 +175,7 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 					final PotionEffectType type = PotionEffectType.getByName(potionEffectName.toUpperCase());
 
 					final int duration = currentPotionEffectsSection.getInt("duration", Integer.MAX_VALUE);
-					final int amplifier = currentPotionEffectsSection.getInt("amplifier", 1);
+					final int amplifier = currentPotionEffectsSection.getInt("amplifier", 0);
 					final boolean ambient = currentPotionEffectsSection.getBoolean("ambient", false);
 					final boolean particles = currentPotionEffectsSection.getBoolean("particles", true);
 					final Color color = currentPotionEffectsSection.getColor("color", null);
@@ -308,7 +307,8 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 					final Variant horseVariant = Variant.valueOf(templateYaml.getString("horseVariant", "horse").toUpperCase());
 					horse.setVariant(horseVariant);
 
-					final org.bukkit.entity.Horse.Color horseColor = org.bukkit.entity.Horse.Color.valueOf(templateYaml.getString("horseColor", "white").toUpperCase());
+					final org.bukkit.entity.Horse.Color horseColor = org.bukkit.entity.Horse.Color.valueOf(templateYaml.getString("horseColor", "white")
+																													   .toUpperCase());
 					horse.setColor(horseColor);
 
 					final Style horseStyle = Style.valueOf(templateYaml.getString("horseStyle", "none").toUpperCase());
@@ -344,7 +344,8 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 		specificEntityHandlers.put(EntityType.OCELOT, new LivingEntityHandler<Ocelot>() {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Ocelot ocelot, final YamlConfiguration templateYaml) {
-				final org.bukkit.entity.Ocelot.Type catType = org.bukkit.entity.Ocelot.Type.valueOf(templateYaml.getString("catType", "wild_ocelot").toUpperCase());
+				final org.bukkit.entity.Ocelot.Type catType = org.bukkit.entity.Ocelot.Type.valueOf(templateYaml.getString("catType", "wild_ocelot")
+																												.toUpperCase());
 				ocelot.setCatType(catType);
 
 				ocelot.setSitting(templateYaml.getBoolean("sitting", false));
@@ -369,7 +370,8 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 		specificEntityHandlers.put(EntityType.RABBIT, new LivingEntityHandler<Rabbit>() {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Rabbit rabbit, final YamlConfiguration templateYaml) {
-				final org.bukkit.entity.Rabbit.Type rabbitType = org.bukkit.entity.Rabbit.Type.valueOf(templateYaml.getString("rabbitType", "brown").toUpperCase());
+				final org.bukkit.entity.Rabbit.Type rabbitType = org.bukkit.entity.Rabbit.Type.valueOf(templateYaml.getString("rabbitType", "brown")
+																												   .toUpperCase());
 				rabbit.setRabbitType(rabbitType);
 			}
 		});

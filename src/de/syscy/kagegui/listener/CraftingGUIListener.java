@@ -2,9 +2,7 @@ package de.syscy.kagegui.listener;
 
 import de.syscy.kagegui.KageGUI;
 import de.syscy.kagegui.crafting.KCraftingGUI;
-
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftInventoryCrafting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,15 +48,19 @@ public class CraftingGUIListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
 
-		if(KageGUI.getCraftingGuiInteractBlock() > 0) {
-			return;
-		}
-
 		if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
 			return;
 		}
 
-		if(KageGUI.getCurrentCraftingGuis().containsKey(player) && player.getOpenInventory().getTopInventory() instanceof CraftInventoryCrafting) {
+		if(KageGUI.getCraftingGuiInteractBlock() > 0) {
+			return;
+		}
+
+		if(KageGUI.getCurrentGuis().containsKey(player)) {
+			return;
+		}
+
+		if(KageGUI.getCurrentCraftingGuis().containsKey(player)) {
 			KCraftingGUI craftingGUI = KageGUI.getCurrentCraftingGuis().get(player);
 
 			if(event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
