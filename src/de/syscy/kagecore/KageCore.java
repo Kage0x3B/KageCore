@@ -66,6 +66,7 @@ public class KageCore extends JavaPlugin {
 
 		Translator.addLanguageFiles(this);
 		Translator.addLanguageFiles(null, new File(pluginDirectory.getParentFile().getParentFile(), "lang"));
+		Translator.addMinecraftLanguageFiles();
 
 		for(World world : Bukkit.getWorlds()) {
 			getConfig().addDefault("hotbar." + world.getName(), "");

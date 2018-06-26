@@ -51,6 +51,10 @@ public class Translator {
 
 	private static @Getter Map<Player, String> playerLanguages = new HashMap<>();
 
+	public static void addMinecraftLanguageFiles() {
+		addLanguageFiles(null, new File(mainLanguageDirectory, "Minecraft"));
+	}
+
 	public static void addLanguageFiles(JavaPlugin plugin) {
 		addLanguageFiles(plugin, new File(mainLanguageDirectory, plugin.getName()));
 	}
@@ -70,56 +74,55 @@ public class Translator {
 			}
 		}
 
-		File[] languageFiles = languageDirectory.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.matches("..\\.lang"); //Matches language file filenames like "en.lang", "xx.lang"
-			}
+		File[] languageFiles = languageDirectory.listFiles((dir, name) -> {
+			return name.matches("..\\.lang"); //Matches language file filenames like "en.lang", "xx.lang"
 		});
 
-		for(File languageFile : languageFiles) {
-			String locale = languageFile.getName().split("\\.")[0].toLowerCase();
+		if(languageFiles != null) {
+			for(File languageFile : languageFiles) {
+				String locale = languageFile.getName().split("\\.")[0].toLowerCase();
 
-			Map<String, String> currentTranslations = new HashMap<>();
+				Map<String, String> currentTranslations = new HashMap<>();
 
-			try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF8"))) {
-				String line;
+				try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF8"))) {
+					String line;
 
-				while((line = reader.readLine()) != null) {
-					if(!line.isEmpty()) {
-						List<String> lineSplit = languageFileSplitter.splitToList(line);
+					while((line = reader.readLine()) != null) {
+						if(!line.isEmpty()) {
+							List<String> lineSplit = languageFileSplitter.splitToList(line);
 
-						String key = lineSplit.get(0).toLowerCase();
-						String translation = lineSplit.size() == 2 ? lineSplit.get(1) : "";
+							String key = lineSplit.get(0).toLowerCase();
+							String translation = lineSplit.size() == 2 ? lineSplit.get(1) : "";
 
-						currentTranslations.put(key, translation);
+							currentTranslations.put(key, translation);
+						}
 					}
+				} catch(IOException ex) {
+					ex.printStackTrace();
 				}
-			} catch(IOException ex) {
-				ex.printStackTrace();
-			}
 
-			if(!currentTranslations.isEmpty()) {
-				if(!translations.containsKey(locale)) {
-					translations.put(locale, currentTranslations);
-				} else {
-					translations.get(locale).putAll(currentTranslations);
+				if(!currentTranslations.isEmpty()) {
+					if(!translations.containsKey(locale)) {
+						translations.put(locale, currentTranslations);
+					} else {
+						translations.get(locale).putAll(currentTranslations);
+					}
 				}
 			}
 		}
 	}
 
-	public static String getLanguage(Entity player) {
-		if(player instanceof Player) {
-			return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
+	public static String getLanguage(Entity entity) {
+		if(entity instanceof Player) {
+			return playerLanguages.containsKey(entity) ? playerLanguages.get(entity) : defaultLocale;
 		}
 
 		return defaultLocale;
 	}
 
-	public static String getLanguage(CommandSender player) {
-		if(player instanceof Player) {
-			return playerLanguages.containsKey(player) ? playerLanguages.get(player) : defaultLocale;
+	public static String getLanguage(CommandSender sender) {
+		if(sender instanceof Player) {
+			return playerLanguages.containsKey(sender) ? playerLanguages.get(sender) : defaultLocale;
 		}
 
 		return defaultLocale;
