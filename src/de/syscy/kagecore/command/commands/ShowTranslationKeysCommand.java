@@ -1,30 +1,16 @@
 package de.syscy.kagecore.command.commands;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.command.CommandBase;
 import de.syscy.kagecore.command.PlayerCommandBase;
-import de.syscy.kagecore.command.argument.StringListArgument;
 import de.syscy.kagecore.translation.Translator;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.*;
+import java.util.List;
 
 public class ShowTranslationKeysCommand extends PlayerCommandBase<KageCore> {
 	public ShowTranslationKeysCommand(KageCore plugin) {
