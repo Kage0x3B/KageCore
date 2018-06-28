@@ -15,8 +15,8 @@ import io.chazza.advancementapi.AdvancementAPI;
 import io.chazza.advancementapi.AdvancementAPI.AdvancementAPIBuilder;
 import io.chazza.advancementapi.FrameType;
 
-public class TestNotification extends CommandBase<KageCore> {
-	public TestNotification(KageCore plugin) {
+public class TestNotificationCommand extends CommandBase<KageCore> {
+	public TestNotificationCommand(KageCore plugin) {
 		super(plugin, "testNotification", StringArgument.create("title").build(), StringArgument.create("description").build(), StringArgument.create("icon").build(), StringArgument.create("frame").build());
 	}
 
