@@ -1,4 +1,4 @@
-package de.syscy.kagecore.util;
+package de.syscy.kagecore.command.commands;
 
 import java.util.UUID;
 
