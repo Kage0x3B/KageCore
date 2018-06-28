@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class ShowTranslationKeysCommand extends PlayerCommandBase<KageCore> {
 	}
 
 	@Override
-	public void onPlayerCommand(@NotNull Player sender) {
+	public void onPlayerCommand(Player sender) {
 		ItemStack itemInHand = sender.getInventory().getItemInMainHand();
 
 		if(itemInHand == null || itemInHand.getType() == Material.AIR) {
