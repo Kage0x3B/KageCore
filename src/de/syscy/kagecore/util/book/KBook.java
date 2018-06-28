@@ -1,11 +1,11 @@
 package de.syscy.kagecore.util.book;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import de.syscy.kagecore.KageCore;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,12 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.BookMeta.Generation;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 public class KBook {
@@ -37,8 +34,8 @@ public class KBook {
 	public KBook(File yamlFile) {
 		YamlConfiguration bookYaml = YamlConfiguration.loadConfiguration(yamlFile);
 
-		title = ChatColor.translateAlternateColorCodes('$', bookYaml.getString("title", "Book"));
-		author = ChatColor.translateAlternateColorCodes('$', bookYaml.getString("author", "Kage0x3B"));
+		title = ChatColor.translateAlternateColorCodes('&', bookYaml.getString("title", "Book"));
+		author = ChatColor.translateAlternateColorCodes('&', bookYaml.getString("author", "Kage0x3B"));
 		String generationString = bookYaml.getString("generation", "original");
 
 		try {
@@ -63,7 +60,7 @@ public class KBook {
 							pageContent = pagesSection.getString(key);
 						}
 
-						pages.add(ChatColor.translateAlternateColorCodes('$', pageContent));
+						pages.add(ChatColor.translateAlternateColorCodes('&', pageContent));
 					} catch(Exception ex) {
 						ex.printStackTrace();
 					}
