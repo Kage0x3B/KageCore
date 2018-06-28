@@ -36,7 +36,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Translator {
-	public static char SIGN = '\u00A7';
+	public static char SIGN = '$';
 	private static Pattern tsPattern = Pattern.compile(SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;");
 	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 
