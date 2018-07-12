@@ -42,8 +42,7 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 	private String templateName;
 	private YamlConfiguration templateYaml;
 
-	private String entityTypeID;
-	private String nbt;
+	private EntityType entityType;
 
 	private String customName;
 
@@ -59,8 +58,13 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 		this.templateName = templateName;
 		this.templateYaml = templateYaml;
 
-		entityTypeID = templateYaml.getString("entityTypeID", "");
-		nbt = templateYaml.getString("nbt", "");
+		try {
+			entityType = EntityType.valueOf(templateYaml.getString("entityType", "").toUpperCase());
+		} catch(IllegalArgumentException ex) {
+			entityType = EntityType.fromName(templateYaml.getString("entityType", ""));
+		}
+		//entityTypeID = templateYaml.getString("entityTypeID", "");
+		//nbt = templateYaml.getString("nbt", "");
 
 		customName = ChatColor.translateAlternateColorCodes('&', templateYaml.getString("customName", ""));
 
@@ -73,10 +77,13 @@ public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
 
 	@Override
 	public Entity create(final Object... args) throws Exception {
-		final Entity entity = entityFactoryNMS.createEntity(entityTypeID, (Location) args[0], nbt);
+		Location location = (Location) args[0];
+
+		final Entity entity = location.getWorld().spawnEntity(location, entityType);
+		//final Entity entity = entityFactoryNMS.createEntity(entityTypeID, (Location) args[0], nbt);
 
 		if(entity == null) {
-			throw new InvalidTemplateException("Can't spawn entity with type \"" + entityTypeID + "\" (in template " + templateName + ".aet)");
+			throw new InvalidTemplateException("Can't spawn entity with type \"" + entityType + "\" (in template " + templateName + ".aet)");
 		}
 
 		if(!customName.isEmpty()) {
