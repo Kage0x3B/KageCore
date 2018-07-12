@@ -1,31 +1,6 @@
 package de.syscy.kagecore.translation;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.google.common.base.Splitter;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.util.Util;
 import lombok.AccessLevel;
@@ -33,11 +8,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.*;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class Translator {
 	public static char SIGN = '$';
-	private static Pattern tsPattern = Pattern.compile(SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;");
+	private static Pattern tsPattern = Pattern.compile("\\" + SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;");
 	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 
 	private static @Getter @Setter(value = AccessLevel.PROTECTED) boolean enabled = false;
@@ -257,11 +244,11 @@ public class Translator {
 			}
 		}
 
-		return translateStrings.toArray(new TranslateString[translateStrings.size()]);
+		return translateStrings.toArray(new TranslateString[0]);
 	}
 
 	private interface TranslateString {
-		public void append(StringBuilder stringBuilder, String language);
+		void append(StringBuilder stringBuilder, String language);
 	}
 
 	@AllArgsConstructor
