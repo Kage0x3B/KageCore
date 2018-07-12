@@ -3,6 +3,7 @@ package de.syscy.kagegui.listener;
 import de.syscy.kagegui.KageGUI;
 import de.syscy.kagegui.crafting.KCraftingGUI;
 import org.bukkit.GameMode;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftInventoryCrafting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class CraftingGUIListener implements Listener {
@@ -56,7 +58,7 @@ public class CraftingGUIListener implements Listener {
 			return;
 		}
 
-		if(KageGUI.getCurrentGuis().containsKey(player)) {
+		if(player.getOpenInventory() == null || !isInventoryCrafting(player.getOpenInventory().getTopInventory())) {
 			return;
 		}
 
@@ -71,6 +73,15 @@ public class CraftingGUIListener implements Listener {
 				craftingGUI.onClick(event, event.getRawSlot());
 			}
 		}
+	}
+
+	private boolean isInventoryCrafting(Inventory inventory) {
+		if(!(inventory instanceof CraftInventoryCrafting)) {
+			return false;
+		}
+
+		//Workbenches have a size of 10 (9 crafting slots + 1 result slot), player inv crafting only a size of 5
+		return inventory.getSize() <= 5;
 	}
 
 	@EventHandler
