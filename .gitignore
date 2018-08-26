@@ -32,3 +32,5 @@ gradle.properties
 Thumbs.db
 
 bguilibOLD
+\.idea/
+\.out/
