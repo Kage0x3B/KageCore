@@ -81,7 +81,7 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 	/**
 	 * Update payload contents with a Netty buffer
 	 *
-	 * @param content - new payload content
+	 * @param contents - new payload content
 	 */
 	public void setContentsBuffer(ByteBuf contents) {
 		handle.getModifier().withType(ByteBuf.class).write(0, MinecraftReflection.getPacketDataSerializer(contents));

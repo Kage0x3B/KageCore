@@ -336,9 +336,10 @@ public class ChunkPacketProcessor {
 
 	/**
 	 * Retrieve the number of 2048 byte segments per chunklet.
-	 * <p<
+	 * <p>
 	 * This is usually one for The Overworld, and zero for both The End and The
 	 * Nether.
+	 * </p>
 	 * 
 	 * @return Number of skylight byte segments.
 	 */
