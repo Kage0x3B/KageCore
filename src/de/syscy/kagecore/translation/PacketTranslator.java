@@ -1,23 +1,6 @@
 package de.syscy.kagecore.translation;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import com.comphenix.packetwrapper.WrapperPlayClientSettings;
-import com.comphenix.packetwrapper.WrapperPlayServerCustomPayload;
-import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
-import com.comphenix.packetwrapper.WrapperPlayServerOpenWindow;
-import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
-import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving;
-import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
-import com.comphenix.packetwrapper.WrapperPlayServerWindowItems;
+import com.comphenix.packetwrapper.*;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -31,12 +14,20 @@ import com.comphenix.protocol.wrappers.nbt.NbtList;
 import com.comphenix.protocol.wrappers.nbt.NbtType;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @UtilityClass
 public class PacketTranslator {
@@ -53,22 +44,19 @@ public class PacketTranslator {
 		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
 			@Override
 			public void onPacketReceiving(final PacketEvent event) {
-				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-					@Override
-					public void run() {
-						WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
+				Bukkit.getScheduler().runTaskLater(plugin, () -> {
+					WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
 
-						String language = wrapper.getLocale().substring(0, 2);
-						String lastLanguage = Translator.getPlayerLanguages().get(event.getPlayer());
+					String language = wrapper.getLocale().substring(0, 2);
+					String lastLanguage = Translator.getPlayerLanguages().get(event.getPlayer());
 
-						if(lastLanguage == null || lastLanguage.isEmpty()) {
-							lastLanguage = Translator.getDefaultLocale();
-						}
-
-						Translator.getPlayerLanguages().put(event.getPlayer(), language);
-
-						Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
+					if(lastLanguage == null || lastLanguage.isEmpty()) {
+						lastLanguage = Translator.getDefaultLocale();
 					}
+
+					Translator.getPlayerLanguages().put(event.getPlayer(), language);
+
+					Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
 				}, 0);
 			}
 		});
@@ -227,7 +215,7 @@ public class PacketTranslator {
 			NbtList<?> nbtList = (NbtList<?>) nbt;
 
 			if(nbtList.getElementType() == NbtType.TAG_STRING) {
-				return translateNBTList((NbtList<String>) nbtList, player);
+				return translateNBTStringList((NbtList<String>) nbtList, player);
 			}
 		}
 
@@ -248,10 +236,10 @@ public class PacketTranslator {
 		return nbtCompound;
 	}
 
-	private static NbtList<String> translateNBTList(NbtList<String> nbtList, Player player) {
+	private static NbtList<String> translateNBTStringList(NbtList<String> nbtList, Player player) {
 		List<NbtBase<String>> newList = new ArrayList<>();
 
-		for(NbtBase<String> nbtString : nbtList.getValue()) {
+		for(NbtBase<String> nbtString : nbtList.asCollection()) {
 			newList.add(translateNBTString(nbtString, player));
 		}
 
