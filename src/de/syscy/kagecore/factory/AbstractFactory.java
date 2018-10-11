@@ -1,13 +1,11 @@
 package de.syscy.kagecore.factory;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.HashMap;
-import java.util.Map;
-
+import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import lombok.Getter;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractFactory<T> implements IFactory<T> {
 	private File folder;
@@ -23,14 +21,9 @@ public abstract class AbstractFactory<T> implements IFactory<T> {
 			folder.mkdirs();
 		}
 
-		File[] files = folder.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File file) {
-				return file.isDirectory() || file.getName().endsWith("." + templateFileExtension);
-			}
-		});
+		File[] files = folder.listFiles(file -> file.isDirectory() || file.getName().endsWith("." + templateFileExtension));
 
-		for(File file : files) {
+		for(File file : files != null ? files : new File[0]) {
 			if(file.isDirectory()) {
 				loadTemplates(file, templateFileExtension);
 			} else {

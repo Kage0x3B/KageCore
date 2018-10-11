@@ -1,17 +1,18 @@
 package de.syscy.kagecore.factory.entity;
 
-import java.io.File;
-
+import de.syscy.kagecore.event.SpawnTemplateEntityEvent;
 import de.syscy.kagecore.factory.AbstractFactory;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
-
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.io.File;
 
 public class EntityFactory extends AbstractFactory<Entity> implements IEntityFactory {
 	private final @Getter IFactoryProviderPlugin plugin;
@@ -34,7 +35,7 @@ public class EntityFactory extends AbstractFactory<Entity> implements IEntityFac
 			return null;
 		}
 
-		IFactoryTemplate<Entity> template = templates.get(templateName.toLowerCase());
+		IEntityTemplate template = (IEntityTemplate) templates.get(templateName.toLowerCase());
 
 		if(template == null) {
 			EntityType entityType = EntityType.valueOf(templateName.toUpperCase());
@@ -42,11 +43,17 @@ public class EntityFactory extends AbstractFactory<Entity> implements IEntityFac
 			Entity entity = location.getWorld().spawnEntity(location, entityType);
 			entity.setMetadata("templateName", new FixedMetadataValue(plugin, templateName.toLowerCase()));
 
+			Bukkit.getPluginManager().callEvent(new SpawnTemplateEntityEvent(entity, location, null, templateName));
+
 			return entity;
 		}
 
 		try {
-			return template.create(location);
+			Entity entity = template.create(location);
+
+			Bukkit.getPluginManager().callEvent(new SpawnTemplateEntityEvent(entity, location, null, templateName));
+
+			return entity;
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -56,6 +63,6 @@ public class EntityFactory extends AbstractFactory<Entity> implements IEntityFac
 
 	@Override
 	protected IFactoryTemplate<Entity> createTemplate() {
-		return new EntityFactoryTemplate(entityFactoryNMS);
+		return new EntityTemplate(entityFactoryNMS);
 	}
 }

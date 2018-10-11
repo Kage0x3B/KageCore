@@ -1,13 +1,7 @@
 package de.syscy.kagecore.factory.itemstack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.IFactory;
-import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import de.syscy.kagecore.factory.itemstack.ItemStackFactory.ItemStackTemplateModifier;
 import de.syscy.kagecore.util.ItemAttributes;
@@ -16,7 +10,8 @@ import de.syscy.kagecore.util.ItemAttributes.Attribute.Builder;
 import de.syscy.kagecore.util.ItemAttributes.AttributeType;
 import de.syscy.kagecore.util.ItemAttributes.Slot;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -35,33 +30,34 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
-public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
+public class ItemStackTemplate implements IItemStackTemplate {
 	private static Map<String, CustomItemModifier<?>> customItemModifiers = new HashMap<>();
 
-	@SuppressWarnings("unused")
-	private final ItemFactoryNMS itemFactoryNMS;
+	@SuppressWarnings("unused") private final IItemFactoryNMS IItemFactoryNMS;
 
-	private ItemStackFactory itemStackFactory;
-	private YamlConfiguration templateYaml;
+	private @Getter ItemStackFactory itemStackFactory;
+	private @Getter YamlConfiguration templateYaml;
 
-	private Material material;
-	private int data;
+	private @Getter Material material;
+	private @Getter int data;
 	//	private String nbt;
 
-	private String displayName;
-	private final List<String> lore = new ArrayList<>();
-	private final List<EnchantmentTemplatePart> enchantments = new ArrayList<>();
-	private ItemFlag[] itemFlags = new ItemFlag[0];
-	private boolean unbreakable;
+	private @Getter String displayName;
+	private @Getter final List<String> lore = new ArrayList<>();
+	private @Getter final List<EnchantmentTemplatePart> enchantments = new ArrayList<>();
+	private @Getter ItemFlag[] itemFlags = new ItemFlag[0];
+	private @Getter boolean unbreakable;
 
-	private List<Attribute> itemAttributeList = new ArrayList<>();
+	private @Getter List<Attribute> itemAttributeList = new ArrayList<>();
 
 	@Override
-	public void load(IFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) throws Exception {
+	public void load(IFactory<ItemStack> factory, String templateName, YamlConfiguration templateYaml) {
 		itemStackFactory = (ItemStackFactory) factory;
 		this.templateYaml = templateYaml;
 
@@ -75,7 +71,7 @@ public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
 
 		displayName = ChatColor.translateAlternateColorCodes('&', templateYaml.getString("displayName", ""));
 
-		if(displayName != null && !displayName.trim().isEmpty()) {
+		if(!displayName.trim().isEmpty()) {
 			displayName = ChatColor.RESET + displayName;
 		}
 
@@ -103,15 +99,13 @@ public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
 				try {
 					ItemFlag itemFlag = ItemFlag.valueOf(itemFlagName.toUpperCase());
 
-					if(itemFlag != null) {
-						itemFlagList.add(itemFlag);
-					}
-				} catch(Exception ex) {
+					itemFlagList.add(itemFlag);
+				} catch(Exception ignored) {
 
 				}
 			}
 
-			itemFlags = itemFlagList.toArray(new ItemFlag[itemFlagList.size()]);
+			itemFlags = itemFlagList.toArray(new ItemFlag[0]);
 		} else if(templateYaml.isString("itemFlags")) {
 			if(templateYaml.getString("itemFlags").equalsIgnoreCase("all")) {
 				itemFlags = ItemFlag.values();
@@ -170,7 +164,7 @@ public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public ItemStack create(Object... args) throws Exception {
+	public ItemStack create(Object... args) {
 		if(material == Material.AIR) {
 			return new ItemStack(material);
 		}
@@ -211,7 +205,7 @@ public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
 
 		itemStack.setItemMeta(itemMeta);
 
-		for(ItemStackTemplateModifier itemStackTemplateModifier : ((ItemStackFactory) itemStackFactory).getItemStackTemplateModifier()) {
+		for(ItemStackTemplateModifier itemStackTemplateModifier : itemStackFactory.getItemStackTemplateModifier()) {
 			itemStackTemplateModifier.modify(itemStack, templateYaml);
 		}
 
@@ -232,7 +226,7 @@ public class ItemStackFactoryTemplate implements IFactoryTemplate<ItemStack> {
 	}
 
 	@RequiredArgsConstructor
-	private static class EnchantmentTemplatePart {
+	public static class EnchantmentTemplatePart {
 		private final @Getter Enchantment enchantment;
 		private final @Getter int level;
 	}

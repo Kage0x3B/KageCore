@@ -3,9 +3,9 @@ package de.syscy.kagecore.factory;
 import java.util.Map;
 
 public interface IFactory<T> {
-	public void loadTemplates();
+	void loadTemplates();
 
-	public Map<String, IFactoryTemplate<T>> getTemplates();
+	Map<String, IFactoryTemplate<T>> getTemplates();
 
-	public void reload();
+	void reload();
 }

@@ -3,9 +3,9 @@ package de.syscy.kagecore.factory.entity;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.IFactory;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
-import de.syscy.kagecore.factory.IFactoryTemplate;
 import de.syscy.kagecore.factory.InvalidTemplateException;
 import de.syscy.kagecore.util.Util;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -33,24 +33,24 @@ import java.util.Map;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
-public class EntityFactoryTemplate implements IFactoryTemplate<Entity> {
+public class EntityTemplate implements IEntityTemplate {
 	private static Map<EntityType, SpecificEntityHandler<?>> specificEntityHandlers = new HashMap<>();
 
 	private final EntityFactoryNMS entityFactoryNMS;
 
-	private EntityFactory entityFactory;
-	private String templateName;
-	private YamlConfiguration templateYaml;
+	private @Getter EntityFactory entityFactory;
+	private @Getter String templateName;
+	private @Getter YamlConfiguration templateYaml;
 
-	private EntityType entityType;
+	private @Getter EntityType entityType;
 
-	private String customName;
+	private @Getter String customName;
 
-	private int fireTicks;
-	private boolean glowing;
-	private boolean gravity;
-	private boolean invulnerable;
-	private boolean silent;
+	private @Getter int fireTicks;
+	private @Getter boolean glowing;
+	private @Getter boolean gravity;
+	private @Getter boolean invulnerable;
+	private @Getter boolean silent;
 
 	@Override
 	public void load(final IFactory<Entity> entityFactory, String templateName, final YamlConfiguration templateYaml) throws Exception {

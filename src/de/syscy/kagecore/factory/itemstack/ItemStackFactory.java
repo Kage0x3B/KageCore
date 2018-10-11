@@ -1,29 +1,26 @@
 package de.syscy.kagecore.factory.itemstack;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import de.syscy.kagecore.factory.AbstractFactory;
+import de.syscy.kagecore.factory.IFactoryProviderPlugin;
+import de.syscy.kagecore.factory.IFactoryTemplate;
+import de.syscy.kagecore.factory.InvalidTemplateException;
+import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
+import lombok.Getter;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.syscy.kagecore.factory.AbstractFactory;
-import de.syscy.kagecore.factory.IFactoryTemplate;
-import de.syscy.kagecore.factory.IFactoryProviderPlugin;
-import de.syscy.kagecore.factory.InvalidTemplateException;
-import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
-
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
-import lombok.Getter;
-
 public class ItemStackFactory extends AbstractFactory<ItemStack> implements IItemStackFactory {
 	private final @Getter IFactoryProviderPlugin plugin;
-	private final ItemFactoryNMS itemFactoryNMS;
+	private final IItemFactoryNMS IItemFactoryNMS;
 
 	private final LoadingCache<String, ItemStack> cache;
 
@@ -33,7 +30,7 @@ public class ItemStackFactory extends AbstractFactory<ItemStack> implements IIte
 	public ItemStackFactory(IFactoryProviderPlugin plugin) {
 		this.plugin = plugin;
 
-		itemFactoryNMS = VersionCompatClassLoader.loadClass(ItemFactoryNMS.class);
+		IItemFactoryNMS = VersionCompatClassLoader.loadClass(IItemFactoryNMS.class);
 
 		cache = CacheBuilder.newBuilder().build(new CacheLoader<String, ItemStack>() {
 			@Override
@@ -99,14 +96,14 @@ public class ItemStackFactory extends AbstractFactory<ItemStack> implements IIte
 
 	@Override
 	protected IFactoryTemplate<ItemStack> createTemplate() {
-		return new ItemStackFactoryTemplate(itemFactoryNMS);
+		return new ItemStackTemplate(IItemFactoryNMS);
 	}
 
-	public static interface ItemStackModifier {
-		public void modify(ItemStack itemStack);
+	public interface ItemStackModifier {
+		void modify(ItemStack itemStack);
 	}
 
-	public static interface ItemStackTemplateModifier {
-		public void modify(ItemStack itemStack, YamlConfiguration templateYaml);
+	public interface ItemStackTemplateModifier {
+		void modify(ItemStack itemStack, YamlConfiguration templateYaml);
 	}
 }
