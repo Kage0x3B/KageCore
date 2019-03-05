@@ -1,15 +1,5 @@
 package de.syscy.kagecore.worldedit;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import de.syscy.kagecore.util.BoundingBox;
-
-import org.bukkit.Location;
-import org.bukkit.World;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -23,8 +13,12 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.world.registry.WorldData;
-
+import de.syscy.kagecore.util.BoundingBox;
 import lombok.experimental.UtilityClass;
+import org.bukkit.Location;
+import org.bukkit.World;
+
+import java.io.*;
 
 @UtilityClass
 public class SchematicLoader {
@@ -44,22 +38,41 @@ public class SchematicLoader {
 	/**
 	 * Loads a schematic from a file
 	 * @param world The world in which the schematic will be used
-	 * @param file
+	 * @param schematicFile
 	 */
 	public static Schematic load(World world, File schematicFile) throws IOException {
+		try(FileInputStream fileInputStream = new FileInputStream(schematicFile)) {
+			ClipboardFormat clipboardFormat = ClipboardFormat.findByFile(schematicFile);
+
+			return load(world, fileInputStream, clipboardFormat);
+		}
+	}
+
+	/**
+	 * Loads a schematic from a file
+	 * @param world The world in which the schematic will be used
+	 * @param schematicDataStream Input stream with schematic data
+	 * @param clipboardFormat schematic format, usually set to {@link ClipboardFormat}.SCHEMATIC
+	 * @return
+	 * @throws IOException
+	 */
+	public static Schematic load(World world, InputStream schematicDataStream, ClipboardFormat clipboardFormat) throws IOException {
 		if(!WorldEditUtil.initWorldEdit()) {
 			return null;
 		}
 
 		com.sk89q.worldedit.world.World weWorld = WorldEditUtil.getWEWorld(world);
-		WorldData worldData = weWorld.getWorldData();
 
-		ClipboardFormat format = ClipboardFormat.findByFile(schematicFile);
+		if(weWorld == null) {
+			return null;
+		}
+
+		WorldData worldData = weWorld.getWorldData();
 
 		Closer closer = Closer.create();
 
-		BufferedInputStream inputStream = closer.register(new BufferedInputStream(closer.register(new FileInputStream(schematicFile))));
-		ClipboardReader clipboardReader = format.getReader(inputStream);
+		BufferedInputStream inputStream = closer.register(new BufferedInputStream(schematicDataStream));
+		ClipboardReader clipboardReader = clipboardFormat.getReader(inputStream);
 
 		Clipboard clipboard = clipboardReader.read(worldData);
 		ClipboardHolder clipboardHolder = new ClipboardHolder(clipboard, worldData);
