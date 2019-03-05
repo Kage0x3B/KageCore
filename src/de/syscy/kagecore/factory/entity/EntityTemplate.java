@@ -26,10 +26,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -204,18 +201,18 @@ public class EntityTemplate implements IEntityTemplate {
 
 				final EntityEquipment entityEquipment = livingEntity.getEquipment();
 
-				entityEquipment.setItemInMainHand(plugin.getItemStackFactory().create(equipmentSection.getString("mainHand")));
+				entityEquipment.setItemInMainHand(plugin.getItemStackFactory().create(equipmentSection.getString("mainHand", "")));
 				entityEquipment.setItemInMainHandDropChance((float) equipmentSection.getDouble("mainHandDropChance", 0.0));
-				entityEquipment.setItemInOffHand(plugin.getItemStackFactory().create(equipmentSection.getString("offHand")));
+				entityEquipment.setItemInOffHand(plugin.getItemStackFactory().create(equipmentSection.getString("offHand", "")));
 				entityEquipment.setItemInOffHandDropChance((float) equipmentSection.getDouble("offHandDropChance", 0.0));
 
-				entityEquipment.setHelmet(plugin.getItemStackFactory().create(equipmentSection.getString("helmet")));
+				entityEquipment.setHelmet(plugin.getItemStackFactory().create(equipmentSection.getString("helmet", "")));
 				entityEquipment.setHelmetDropChance((float) equipmentSection.getDouble("helmetDropChance", 0.0));
-				entityEquipment.setChestplate(plugin.getItemStackFactory().create(equipmentSection.getString("chestplate")));
+				entityEquipment.setChestplate(plugin.getItemStackFactory().create(equipmentSection.getString("chestplate", "")));
 				entityEquipment.setChestplateDropChance((float) equipmentSection.getDouble("chestplateDropChance", 0.0));
-				entityEquipment.setLeggings(plugin.getItemStackFactory().create(equipmentSection.getString("leggings")));
+				entityEquipment.setLeggings(plugin.getItemStackFactory().create(equipmentSection.getString("leggings", "")));
 				entityEquipment.setLeggingsDropChance((float) equipmentSection.getDouble("leggingsDropChance", 0.0));
-				entityEquipment.setBoots(plugin.getItemStackFactory().create(equipmentSection.getString("boots")));
+				entityEquipment.setBoots(plugin.getItemStackFactory().create(equipmentSection.getString("boots", "")));
 				entityEquipment.setBootsDropChance((float) equipmentSection.getDouble("bootsDropChance", 0.0));
 			}
 
@@ -415,6 +412,7 @@ public class EntityTemplate implements IEntityTemplate {
 		});
 		specificEntityHandlers.put(EntityType.WITCH, new LivingEntityHandler<Witch>());
 		specificEntityHandlers.put(EntityType.WITHER, new LivingEntityHandler<Wither>());
+		specificEntityHandlers.put(EntityType.WITHER_SKELETON, new LivingEntityHandler<WitherSkeleton>());
 		specificEntityHandlers.put(EntityType.WOLF, new LivingEntityHandler<Wolf>() {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Wolf wolf, final YamlConfiguration templateYaml) {
@@ -449,6 +447,23 @@ public class EntityTemplate implements IEntityTemplate {
 		specificEntityHandlers.put(EntityType.STRAY, new LivingEntityHandler<Stray>());
 		specificEntityHandlers.put(EntityType.VEX, new LivingEntityHandler<Vex>());
 		specificEntityHandlers.put(EntityType.VINDICATOR, new LivingEntityHandler<Vindicator>());
+
+		specificEntityHandlers.put(EntityType.ELDER_GUARDIAN, new LivingEntityHandler<ElderGuardian>());
+		specificEntityHandlers.put(EntityType.SKELETON_HORSE, new LivingEntityHandler<SkeletonHorse>());
+		specificEntityHandlers.put(EntityType.ZOMBIE_HORSE, new LivingEntityHandler<ZombieHorse>());
+		specificEntityHandlers.put(EntityType.DONKEY, new LivingEntityHandler<Donkey>());
+		specificEntityHandlers.put(EntityType.MULE, new LivingEntityHandler<Mule>());
+		specificEntityHandlers.put(EntityType.EVOKER, new LivingEntityHandler<Evoker>());
+		specificEntityHandlers.put(EntityType.ILLUSIONER, new LivingEntityHandler<Illusioner>());
+		specificEntityHandlers.put(EntityType.LLAMA, new LivingEntityHandler<Llama>());
+		specificEntityHandlers.put(EntityType.PARROT, new LivingEntityHandler<Parrot>());
+
+		/*Set<EntityType> ignoreTypeSet = Collections.emptySet();
+		for(EntityType type : EntityType.values()) {
+			if(!specificEntityHandlers.containsKey(type) && !ignoreTypeSet.contains(type)) {
+				KageCore.debugMessage("No specific entity type handler for " + type.name());
+			}
+		}*/
 	}
 
 	private static void handleVillager(final IFactoryProviderPlugin plugin, final Villager villager, final YamlConfiguration templateYaml) {
@@ -474,31 +489,25 @@ public class EntityTemplate implements IEntityTemplate {
 				final int maxUses = currentMerchantRecipeSection.getInt("maxUses", Integer.MAX_VALUE);
 				final boolean experienceReward = currentMerchantRecipeSection.getBoolean("experienceReward", false);
 
-				if(resultItemStack != null) {
-					final MerchantRecipe merchantRecipe = new MerchantRecipe(resultItemStack, uses, maxUses, experienceReward);
+				final MerchantRecipe merchantRecipe = new MerchantRecipe(resultItemStack, uses, maxUses, experienceReward);
 
-					if(currentMerchantRecipeSection.contains("ingredient1")) {
-						final String ingredientName = currentMerchantRecipeSection.getString("ingredient1");
-						final ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
-						ingredientItemStack.setAmount(currentMerchantRecipeSection.getInt("ingredient1Amount", 1));
+				if(currentMerchantRecipeSection.contains("ingredient1")) {
+					final String ingredientName = currentMerchantRecipeSection.getString("ingredient1");
+					final ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
+					ingredientItemStack.setAmount(currentMerchantRecipeSection.getInt("ingredient1Amount", 1));
 
-						if(ingredientItemStack != null) {
-							merchantRecipe.addIngredient(ingredientItemStack);
-						}
-					}
-
-					if(currentMerchantRecipeSection.contains("ingredient2")) {
-						final String ingredientName = currentMerchantRecipeSection.getString("ingredient2");
-						final ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
-						ingredientItemStack.setAmount(currentMerchantRecipeSection.getInt("ingredient2Amount", 1));
-
-						if(ingredientItemStack != null) {
-							merchantRecipe.addIngredient(ingredientItemStack);
-						}
-					}
-
-					merchantRecipes.add(merchantRecipe);
+					merchantRecipe.addIngredient(ingredientItemStack);
 				}
+
+				if(currentMerchantRecipeSection.contains("ingredient2")) {
+					final String ingredientName = currentMerchantRecipeSection.getString("ingredient2");
+					final ItemStack ingredientItemStack = plugin.getItemStackFactory().create(ingredientName);
+					ingredientItemStack.setAmount(currentMerchantRecipeSection.getInt("ingredient2Amount", 1));
+
+					merchantRecipe.addIngredient(ingredientItemStack);
+				}
+
+				merchantRecipes.add(merchantRecipe);
 			}
 
 			if(!merchantRecipes.isEmpty()) {
