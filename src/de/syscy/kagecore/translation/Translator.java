@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.*;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class Translator {
 	public static char SIGN = '$';
-	private static Pattern tsPattern = Pattern.compile("\\" + SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9 ]+)*;");
+	private static Pattern tsPattern = Pattern.compile("\\" + SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9_ ]+)*;");
 	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 
 	private static @Getter @Setter(value = AccessLevel.PROTECTED) boolean enabled = false;
@@ -71,7 +72,7 @@ public class Translator {
 
 				Map<String, String> currentTranslations = new HashMap<>();
 
-				try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF8"))) {
+				try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), StandardCharsets.UTF_8))) {
 					String line;
 
 					while((line = reader.readLine()) != null) {
@@ -177,15 +178,15 @@ public class Translator {
 			try {
 				return String.format(text, args);
 			} catch(IllegalFormatException ex) {
-				String argsString = "";
+				StringBuilder argsString = new StringBuilder();
 
 				for(Object arg : args) {
-					argsString += arg.toString() + "(" + arg.getClass().getSimpleName() + "), ";
+					argsString.append(arg.toString()).append("(").append(arg.getClass().getSimpleName()).append("), ");
 				}
 
-				argsString = argsString.isEmpty() ? argsString : argsString.substring(0, argsString.length() - 2);
+				argsString = new StringBuilder((argsString.length() == 0) ? argsString.toString() : argsString.substring(0, argsString.length() - 2));
 
-				KageCore.debugMessage("Format error: " + text + " (" + key + ") with " + args.length + " args: " + argsString);
+				KageCore.debugMessage("Format error: " + text + " (" + key + ") with " + args.length + " args: " + argsString.toString());
 			}
 		}
 
