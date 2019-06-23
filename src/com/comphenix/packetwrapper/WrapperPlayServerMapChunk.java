@@ -18,8 +18,12 @@
  */
 package com.comphenix.packetwrapper;
 
+import java.util.List;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.nbt.NbtBase;
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 
 public class WrapperPlayServerMapChunk extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.MAP_CHUNK;
@@ -73,14 +77,6 @@ public class WrapperPlayServerMapChunk extends AbstractPacket {
 		handle.getIntegers().write(1, value);
 	}
 
-	public Object getChunkMap() {
-		return handle.getModifier().read(2);
-	}
-
-	public void setChunkMap(Object value) {
-		handle.getModifier().write(2, value);
-	}
-
 	/**
 	 * Retrieve Ground-Up continuous.
 	 * <p>
@@ -101,5 +97,42 @@ public class WrapperPlayServerMapChunk extends AbstractPacket {
 	 */
 	public void setGroundUpContinuous(boolean value) {
 		handle.getBooleans().write(0, value);
+	}
+
+	/**
+	 * Bitmask with bits set to 1 for every 16×16×16 chunk section whose data is
+	 * included in Data. The least significant bit represents the chunk section at
+	 * the bottom of the chunk column (from y=0 to y=15).
+	 * @return the bitmask
+	 */
+	public int getBitmask() {
+		return handle.getIntegers().read(2);
+	}
+
+	public void setBitmask(int value) {
+		handle.getIntegers().write(2, value);
+	}
+
+	/**
+	 * See <a href="http://wiki.vg/Chunk_Format#Data_structure">the wiki</a>
+	 * @return the data array
+	 */
+	public byte[] getData() {
+		return handle.getByteArrays().read(0);
+	}
+
+	public void setData(byte[] value) {
+		handle.getByteArrays().write(0, value);
+	}
+
+	/**
+	 * @return all block entities in the chunk
+	 */
+	public List<NbtBase<?>> getTileEntities() {
+		return handle.getListNbtModifier().read(0);
+	}
+
+	public void setTileEntities(List<NbtBase<?>> value) {
+		handle.getListNbtModifier().write(0, value);
 	}
 }

@@ -18,7 +18,7 @@ import lombok.Setter;
 public class KTextInput extends KComponent implements ChatInputCallback {
 	protected @Getter @Setter String title;
 	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
-	protected @Getter @Setter ItemIcon icon = new ItemIcon(new ItemStack(Material.BOOK_AND_QUILL));
+	protected @Getter @Setter ItemIcon icon = new ItemIcon(new ItemStack(Material.WRITABLE_BOOK));
 
 	protected @Getter String text = "";
 

@@ -1,15 +1,14 @@
 package de.syscy.kagecore.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.sk89q.worldedit.regions.CuboidRegion;
+import de.syscy.kagecore.worldedit.WorldEditUtil;
+import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-
-import lombok.Getter;
-import lombok.ToString;
+import java.util.HashMap;
+import java.util.Map;
 
 @ToString
 public class BoundingBox implements ConfigurationSerializable {
@@ -20,8 +19,8 @@ public class BoundingBox implements ConfigurationSerializable {
 		this((Location) map.get("min"), (Location) map.get("max"));
 	}
 
-	public BoundingBox(CuboidSelection selection) {
-		this(selection.getMinimumPoint(), selection.getMaximumPoint());
+	public BoundingBox(CuboidRegion selection) {
+		this(WorldEditUtil.toLocation(selection.getWorld(), selection.getMinimumPoint()), WorldEditUtil.toLocation(selection.getWorld(), selection.getMaximumPoint()));
 	}
 
 	public BoundingBox(Location min, Location max) {

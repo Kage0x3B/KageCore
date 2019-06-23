@@ -33,10 +33,26 @@ public class WrapperPlayClientAbilities extends AbstractPacket {
 		super(packet, TYPE);
 	}
 
+	public boolean isInvulnerable() {
+		return handle.getBooleans().read(0);
+	}
+
+	public void setInvulnerable(boolean value) {
+		handle.getBooleans().write(0, value);
+	}
+
+	/**Misspelled.
+	 * @see #isInvulnerable()
+	 */
+	@Deprecated
 	public boolean isInvulnurable() {
 		return handle.getBooleans().read(0);
 	}
 
+	/**Misspelled.
+	 * @see #setInvulnerable(boolean)
+	 */
+	@Deprecated
 	public void setInvulnurable(boolean value) {
 		handle.getBooleans().write(0, value);
 	}

@@ -1,20 +1,22 @@
 package de.syscy.kagecore.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
+import com.comphenix.packetwrapper.WrapperPlayServerScoreboardTeam;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.protocol.ProtocolUtil;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,17 +24,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
-import com.comphenix.packetwrapper.WrapperPlayServerScoreboardTeam;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 public class GlowUtil implements Listener {
 	private static Map<UUID, GlowData> dataMap = new HashMap<>();
@@ -51,7 +44,7 @@ public class GlowUtil implements Listener {
 	 * Set the glowing-color of an entity
 	 *
 	 * @param entity        {@link Entity} to update
-	 * @param color         {@link org.GlowUtil.glow.GlowAPI.Color} of the glow, or <code>null</code> to stop glowing
+	 * @param color         {@link de.syscy.kagecore.util.GlowUtil.Color} of the glow, or <code>null</code> to stop glowing
 	 * @param tagVisibility visibility of the name-tag (always, hideForOtherTeams, hideForOwnTeam, never)
 	 * @param push          push behaviour (always, pushOtherTeams, pushOwnTeam, never)
 	 * @param receiver      {@link Player} that will see the update
@@ -133,7 +126,7 @@ public class GlowUtil implements Listener {
 	 * Set the glowing-color of an entity
 	 *
 	 * @param entity   {@link Entity} to update
-	 * @param color    {@link org.GlowUtil.glow.GlowAPI.Color} of the glow, or <code>null</code> to stop glowing
+	 * @param color    {@link de.syscy.kagecore.util.GlowUtil.Color} of the glow, or <code>null</code> to stop glowing
 	 * @param receiver {@link Player} that will see the update
 	 */
 	public static void setGlowing(Entity entity, Color color, Player receiver) {
@@ -170,7 +163,7 @@ public class GlowUtil implements Listener {
 	 * Set the glowing-color of an entity
 	 *
 	 * @param entity    {@link Entity} to update
-	 * @param color     {@link org.GlowUtil.glow.GlowAPI.Color} of the glow, or <code>null</code> to stop glowing
+	 * @param color     {@link de.syscy.kagecore.util.GlowUtil.Color} of the glow, or <code>null</code> to stop glowing
 	 * @param receivers Collection of {@link Player}s that will see the update
 	 */
 	public static void setGlowing(Entity entity, Color color, Collection<? extends Player> receivers) {
@@ -183,7 +176,7 @@ public class GlowUtil implements Listener {
 	 * Set the glowing-color of an entity
 	 *
 	 * @param entities Collection of {@link Entity} to update
-	 * @param color    {@link org.GlowUtil.glow.GlowAPI.Color} of the glow, or <code>null</code> to stop glowing
+	 * @param color    {@link de.syscy.kagecore.util.GlowUtil.Color} of the glow, or <code>null</code> to stop glowing
 	 * @param receiver {@link Player} that will see the update
 	 */
 	public static void setGlowing(Collection<? extends Entity> entities, Color color, Player receiver) {
@@ -196,7 +189,7 @@ public class GlowUtil implements Listener {
 	 * Set the glowing-color of an entity
 	 *
 	 * @param entities  Collection of {@link Entity} to update
-	 * @param color     {@link org.GlowUtil.glow.GlowAPI.Color} of the glow, or <code>null</code> to stop glowing
+	 * @param color     {@link de.syscy.kagecore.util.GlowUtil.Color} of the glow, or <code>null</code> to stop glowing
 	 * @param receivers Collection of {@link Player}s that will see the update
 	 */
 	public static void setGlowing(Collection<? extends Entity> entities, Color color, Collection<? extends Player> receivers) {
@@ -251,7 +244,7 @@ public class GlowUtil implements Listener {
 	 *
 	 * @param entity   {@link Entity} to get the color for
 	 * @param receiver {@link Player} receiver of the color (as used in the setGlowing methods)
-	 * @return the {@link org.GlowUtil.glow.GlowAPI.Color}, or <code>null</code> if the entity doesn't appear glowing to the player
+	 * @return the {@link de.syscy.kagecore.util.GlowUtil.Color}, or <code>null</code> if the entity doesn't appear glowing to the player
 	 */
 	public static Color getGlowColor(Entity entity, Player receiver) {
 		if(!dataMap.containsKey(entity.getUniqueId())) {
@@ -307,9 +300,9 @@ public class GlowUtil implements Listener {
 		teamPacket.setCollisionRule(push);
 
 		if(createNewTeam) {
-			teamPacket.setColor(color.getPacketValue()); //Color -> this is what we care about
-			teamPacket.setDisplayName(color.getColorCode()); //prefix - for some reason this controls the color, even though there's the extra color value...
-			teamPacket.setSuffix("");
+			//teamPacket.setColor(color.getPacketValue()); //Color -> this is what we care about //TODO: Translate color
+			teamPacket.setDisplayName(WrappedChatComponent.fromText(color.getTeamName())); //prefix - for some reason this controls the color, even though there's the extra color value...
+			teamPacket.setSuffix(WrappedChatComponent.fromText(""));
 			teamPacket.setPackOptionData(0); //Options - let's just ignore them for now
 		}
 

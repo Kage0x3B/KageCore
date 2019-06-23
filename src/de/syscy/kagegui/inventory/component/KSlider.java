@@ -19,8 +19,8 @@ public class KSlider<T extends Number> extends KComponent {
 	protected final @Getter LoreBuilder loreBuilder = new LoreBuilder();
 
 	protected @Getter @Setter ItemIcon arrowIcon = new ItemIcon(new ItemStack(Material.NETHER_STAR));
-	protected @Getter @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 2));
-	protected @Getter @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.STAINED_GLASS_PANE));
+	protected @Getter @Setter ItemIcon lineIcon = new ItemIcon(new ItemStack(Material.WHITE_STAINED_GLASS_PANE));
+	protected @Getter @Setter ItemIcon knobIcon = new ItemIcon(new ItemStack(Material.PURPLE_STAINED_GLASS_PANE));
 
 	protected T value;
 	protected T step;

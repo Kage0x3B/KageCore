@@ -2,20 +2,18 @@ package de.syscy.kagecore.worldedit;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
-import com.sk89q.worldedit.world.registry.WorldData;
 import de.syscy.kagecore.util.BoundingBox;
 import lombok.experimental.UtilityClass;
-import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.io.*;
@@ -42,7 +40,7 @@ public class SchematicLoader {
 	 */
 	public static Schematic load(World world, File schematicFile) throws IOException {
 		try(FileInputStream fileInputStream = new FileInputStream(schematicFile)) {
-			ClipboardFormat clipboardFormat = ClipboardFormat.findByFile(schematicFile);
+			ClipboardFormat clipboardFormat = ClipboardFormats.findByFile(schematicFile);
 
 			return load(world, fileInputStream, clipboardFormat);
 		}
@@ -67,19 +65,17 @@ public class SchematicLoader {
 			return null;
 		}
 
-		WorldData worldData = weWorld.getWorldData();
-
 		Closer closer = Closer.create();
 
 		BufferedInputStream inputStream = closer.register(new BufferedInputStream(schematicDataStream));
 		ClipboardReader clipboardReader = clipboardFormat.getReader(inputStream);
 
-		Clipboard clipboard = clipboardReader.read(worldData);
-		ClipboardHolder clipboardHolder = new ClipboardHolder(clipboard, worldData);
+		Clipboard clipboard = clipboardReader.read();
+		ClipboardHolder clipboardHolder = new ClipboardHolder(clipboard);
 
 		closer.close();
 
-		return new Schematic(WorldEditUtil.createSession(weWorld), new ClipboardHolder(clipboardHolder.getClipboard(), clipboardHolder.getWorldData()));
+		return new Schematic(WorldEditUtil.createSession(weWorld), new ClipboardHolder(clipboardHolder.getClipboard()));
 	}
 
 	/**
@@ -96,12 +92,12 @@ public class SchematicLoader {
 
 		com.sk89q.worldedit.world.World weWorld = WorldEditUtil.getWEWorld(world);
 
-		CuboidRegion region = new CuboidRegion(toVector(boundingBox.getMin()), toVector(boundingBox.getMax()));
+		CuboidRegion region = new CuboidRegion(WorldEditUtil.toVector(boundingBox.getMin()), WorldEditUtil.toVector(boundingBox.getMax()));
 
 		EditSession editSession = WorldEditUtil.createSession(weWorld);
 
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-		clipboard.setOrigin(new Vector(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()));
+		clipboard.setOrigin(WorldEditUtil.toVector(origin));
 		ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
 
 		try {
@@ -110,10 +106,6 @@ public class SchematicLoader {
 			return null;
 		}
 
-		return new Schematic(editSession, new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
-	}
-
-	private static Vector toVector(Location location) {
-		return new Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		return new Schematic(editSession, new ClipboardHolder(clipboard));
 	}
 }

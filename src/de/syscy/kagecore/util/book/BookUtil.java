@@ -1,22 +1,20 @@
 package de.syscy.kagecore.util.book;
 
-import java.io.File;
-import java.util.List;
-
 import de.syscy.kagecore.KageCore;
-
+import lombok.Getter;
+import lombok.experimental.UtilityClass;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.EnumHand;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta.Generation;
 
-import lombok.Getter;
-import lombok.experimental.UtilityClass;
-import net.minecraft.server.v1_12_R1.EntityPlayer;
-import net.minecraft.server.v1_12_R1.EnumHand;
+import java.io.File;
+import java.util.List;
 
 @UtilityClass
 public class BookUtil {

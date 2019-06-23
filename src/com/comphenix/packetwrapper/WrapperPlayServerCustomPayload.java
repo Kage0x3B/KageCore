@@ -21,6 +21,7 @@ package com.comphenix.packetwrapper;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.wrappers.MinecraftKey;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -41,25 +42,24 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 	 * Retrieve Channel.
 	 * <p>
 	 * Notes: name of the "channel" used to send the data.
-	 *
+	 * 
 	 * @return The current Channel
 	 */
-	public String getChannel() {
-		return handle.getStrings().read(0);
+	public MinecraftKey getChannel() {
+		return handle.getMinecraftKeys().read(0);
 	}
 
 	/**
-	 * Set Channel.
-	 *
-	 * @param value - new value.
+	 * Starting in 1.13, channel names need to be lower case, in the new identifier format,
+	 * i.e. {@code minecraft:brand}. The previously standard {@code |} is no longer allowed.
 	 */
-	public void setChannel(String value) {
-		handle.getStrings().write(0, value);
+	public void setChannel(MinecraftKey value) {
+		handle.getMinecraftKeys().write(0, value);
 	}
 
 	/**
 	 * Retrieve payload contents as a raw Netty buffer
-	 *
+	 * 
 	 * @return Payload contents as a Netty buffer
 	 */
 	public ByteBuf getContentsBuffer() {
@@ -68,7 +68,7 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 
 	/**
 	 * Retrieve payload contents
-	 *
+	 * 
 	 * @return Payload contents as a byte array
 	 */
 	public byte[] getContents() {
@@ -80,16 +80,21 @@ public class WrapperPlayServerCustomPayload extends AbstractPacket {
 
 	/**
 	 * Update payload contents with a Netty buffer
-	 *
+	 * 
 	 * @param contents - new payload content
 	 */
 	public void setContentsBuffer(ByteBuf contents) {
-		handle.getModifier().withType(ByteBuf.class).write(0, MinecraftReflection.getPacketDataSerializer(contents));
+		if (MinecraftReflection.is(MinecraftReflection.getPacketDataSerializerClass(), contents)) {
+			handle.getModifier().withType(ByteBuf.class).write(0, contents);
+		} else {
+			Object serializer = MinecraftReflection.getPacketDataSerializer(contents);
+			handle.getModifier().withType(ByteBuf.class).write(0, serializer);
+		}
 	}
 
 	/**
 	 * Update payload contents with a byte array
-	 *
+	 * 
 	 * @param content - new payload content
 	 */
 	public void setContents(byte[] content) {

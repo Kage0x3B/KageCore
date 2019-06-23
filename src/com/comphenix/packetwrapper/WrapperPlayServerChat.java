@@ -18,8 +18,12 @@
  */
 package com.comphenix.packetwrapper;
 
+import java.util.Arrays;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 public class WrapperPlayServerChat extends AbstractPacket {
@@ -46,14 +50,6 @@ public class WrapperPlayServerChat extends AbstractPacket {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getMessage()}
-	 */
-	@Deprecated
-	public WrappedChatComponent getJsonData() {
-		return getMessage();
-	}
-
-	/**
 	 * Set the message.
 	 * 
 	 * @param value - new value.
@@ -62,12 +58,12 @@ public class WrapperPlayServerChat extends AbstractPacket {
 		handle.getChatComponents().write(0, value);
 	}
 
-	/**
-	 * @deprecated Renamed to {@link #setMessage(WrappedChatComponent)}
-	 */
-	@Deprecated
-	public void setJsonData(WrappedChatComponent value) {
-		setMessage(value);
+	public ChatType getChatType() {
+		return handle.getChatTypes().read(0);
+	}
+
+	public void setChatType(ChatType type) {
+		handle.getChatTypes().write(0, type);
 	}
 
 	/**
@@ -77,18 +73,32 @@ public class WrapperPlayServerChat extends AbstractPacket {
 	 * action bar
 	 * 
 	 * @return The current Position
+	 * @deprecated Magic values replaced by enum
 	 */
+	@Deprecated
 	public byte getPosition() {
-		return handle.getBytes().read(0);
+		Byte position = handle.getBytes().readSafely(0);
+		if (position != null) {
+			return position;
+		} else {
+			return getChatType().getId();
+		}
 	}
 
 	/**
 	 * Set Position.
 	 * 
 	 * @param value - new value.
+	 * @deprecated Magic values replaced by enum
 	 */
+	@Deprecated
 	public void setPosition(byte value) {
-		handle.getBytes().write(0, value);
-	}
+		handle.getBytes().writeSafely(0, value);
 
+		if (EnumWrappers.getChatTypeClass() != null)
+		{
+			Arrays.stream(ChatType.values()).filter(t -> t.getId() == value).findAny()
+			      .ifPresent(t -> handle.getChatTypes().writeSafely(0, t));
+		}
+	}
 }

@@ -24,7 +24,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
 public class WrapperPlayServerPosition extends AbstractPacket {
@@ -143,15 +142,13 @@ public class WrapperPlayServerPosition extends AbstractPacket {
 			.getMinecraftClass("EnumPlayerTeleportFlags",
 					"PacketPlayOutPosition$EnumPlayerTeleportFlags");
 
-	public static enum PlayerTeleportFlag {
-		X, Y, Z, Y_ROT, X_ROT;
+	public enum PlayerTeleportFlag {
+		X, Y, Z, Y_ROT, X_ROT
 	}
 
 	private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier() {
-		return handle.getModifier().withType(
-				Set.class,
-				BukkitConverters.getSetConverter(FLAGS_CLASS, EnumWrappers
-						.getGenericConverter(PlayerTeleportFlag.class)));
+		return handle.getSets(
+				EnumWrappers.getGenericConverter(FLAGS_CLASS, PlayerTeleportFlag.class));
 	}
 
 	public Set<PlayerTeleportFlag> getFlags() {

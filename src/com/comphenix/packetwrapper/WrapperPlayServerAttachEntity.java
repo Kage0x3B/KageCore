@@ -80,7 +80,7 @@ public class WrapperPlayServerAttachEntity extends AbstractPacket {
 	/**
 	 * Retrieve Vehicle ID.
 	 * <p>
-	 * Notes: vechicle's Entity ID
+	 * Notes: vehicle's Entity ID
 	 * 
 	 * @return The current Vehicle ID
 	 */

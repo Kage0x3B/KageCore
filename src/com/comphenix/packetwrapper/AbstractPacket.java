@@ -18,13 +18,14 @@
  */
 package com.comphenix.packetwrapper;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.bukkit.entity.Player;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Objects;
-import org.bukkit.entity.Player;
-
-import java.lang.reflect.InvocationTargetException;
 
 public abstract class AbstractPacket {
 	// The packet we will be modifying
@@ -72,11 +73,18 @@ public abstract class AbstractPacket {
 	}
 
 	/**
+	 * Send the current packet to all online players.
+	 */
+	public void broadcastPacket() {
+		ProtocolLibrary.getProtocolManager().broadcastServerPacket(getHandle());
+	}
+
+	/**
 	 * Simulate receiving the current packet from the given sender.
 	 * 
 	 * @param sender - the sender.
 	 * @throws RuntimeException If the packet cannot be received.
-	 * @deprecated Misspelled. recieve -> receive
+	 * @deprecated Misspelled. recieve to receive
 	 * @see #receivePacket(Player)
 	 */
 	@Deprecated
@@ -100,7 +108,7 @@ public abstract class AbstractPacket {
 			ProtocolLibrary.getProtocolManager().recieveClientPacket(sender,
 					getHandle());
 		} catch (Exception e) {
-			throw new RuntimeException("Cannot recieve packet.", e);
+			throw new RuntimeException("Cannot receive packet.", e);
 		}
 	}
 }

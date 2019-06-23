@@ -123,7 +123,7 @@ public class KButton extends KComponent {
 	@RequiredArgsConstructor
 	@SuppressWarnings("deprecation")
 	public static enum Status {
-		SUCCESS(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 5)), Sound.BLOCK_NOTE_BELL), FAILED(new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 0, (byte) 14)), Sound.ENTITY_ARMORSTAND_BREAK);
+		SUCCESS(new ItemIcon(new ItemStack(Material.LIME_WOOL, 1, (short) 0, (byte) 5)), Sound.BLOCK_NOTE_BLOCK_BELL), FAILED(new ItemIcon(new ItemStack(Material.RED_WOOL)), Sound.ENTITY_ARMOR_STAND_BREAK);
 
 		private final @Getter ItemIcon itemIcon;
 		private final @Getter Sound sound;

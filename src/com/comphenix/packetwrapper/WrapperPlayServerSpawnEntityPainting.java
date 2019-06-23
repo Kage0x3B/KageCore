@@ -81,26 +81,6 @@ public class WrapperPlayServerSpawnEntityPainting extends AbstractPacket {
 	}
 
 	/**
-	 * Retrieve Title.
-	 * <p>
-	 * Notes: name of the painting. Max length 13
-	 * 
-	 * @return The current Title
-	 */
-	public String getTitle() {
-		return handle.getStrings().read(0);
-	}
-
-	/**
-	 * Set Title.
-	 * 
-	 * @param value - new value.
-	 */
-	public void setTitle(String value) {
-		handle.getStrings().write(0, value);
-	}
-
-	/**
 	 * Retrieve Location.
 	 * <p>
 	 * Notes: center coordinates
@@ -126,5 +106,13 @@ public class WrapperPlayServerSpawnEntityPainting extends AbstractPacket {
 
 	public void setDirection(Direction value) {
 		handle.getDirections().write(0, value);
+	}
+
+	public int getPaintingId() {
+		return handle.getIntegers().read(0);
+	}
+
+	public void setPaintingId(int value) {
+		handle.getIntegers().write(0, value);
 	}
 }

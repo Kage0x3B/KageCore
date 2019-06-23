@@ -18,11 +18,8 @@
  */
 package com.comphenix.packetwrapper;
 
-import java.util.Map;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedStatistic;
 
 public class WrapperPlayServerStatistic extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.STATISTIC;
@@ -36,11 +33,5 @@ public class WrapperPlayServerStatistic extends AbstractPacket {
 		super(packet, TYPE);
 	}
 
-	public Map<WrappedStatistic, Integer> getStatistics() {
-		return handle.getStatisticMaps().read(0);
-	}
-
-	public void setStatistics(Map<WrappedStatistic, Integer> value) {
-		handle.getStatisticMaps().write(0, value);
-	}
+	// TODO fix upon request
 }

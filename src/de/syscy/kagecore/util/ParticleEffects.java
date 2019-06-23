@@ -1,18 +1,11 @@
 package de.syscy.kagecore.util;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
 import de.syscy.kagecore.protocol.ProtocolUtil;
-import de.syscy.kagecore.util.ParticleEffects.ParticleData;
 import de.syscy.kagecore.versioncompat.PackageType;
 import de.syscy.kagecore.versioncompat.VersionCompatClassLoader;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
-
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -20,10 +13,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
-import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
-
-import lombok.Getter;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * <b>ParticleEffect Library</b>
@@ -486,7 +477,7 @@ public enum ParticleEffects {
 	private static boolean isWater(Location location) {
 		Material material = location.getBlock().getType();
 
-		return material == Material.WATER || material == Material.STATIONARY_WATER;
+		return material == Material.WATER;
 	}
 
 	/**
@@ -1455,10 +1446,12 @@ public enum ParticleEffects {
 				return;
 			}
 
+			/*
 			try {
 				packet = new WrapperPlayServerWorldParticles();
 
 				packet.setParticleType(Particle.getById(effect.getId()));
+				packet.setParticleType(WrappedParticle.create(new org.bukkit.Particle.);
 
 				packet.setNumberOfParticles(amount);
 				packet.setLongDistance(longDistance);
@@ -1479,7 +1472,7 @@ public enum ParticleEffects {
 				packet.setOffsetZ(offsetZ);
 			} catch(Exception exception) {
 				throw new PacketInstantiationException("Packet instantiation failed", exception);
-			}
+			}*/ //TODO: Fix particles
 		}
 
 		/**

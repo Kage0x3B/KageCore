@@ -42,7 +42,7 @@ public class WrapperPlayServerWindowItems extends AbstractPacket {
 	 * <p>
 	 * Notes: the id of window which items are being sent for. 0 for player
 	 * inventory.
-	 *
+	 * 
 	 * @return The current Window ID
 	 */
 	public int getWindowId() {
@@ -51,7 +51,7 @@ public class WrapperPlayServerWindowItems extends AbstractPacket {
 
 	/**
 	 * Set Window ID.
-	 *
+	 * 
 	 * @param value - new value.
 	 */
 	public void setWindowId(int value) {
@@ -60,7 +60,7 @@ public class WrapperPlayServerWindowItems extends AbstractPacket {
 
 	/**
 	 * Retrieve Slot data.
-	 *
+	 * 
 	 * @return The current Slot data
 	 */
 	public List<ItemStack> getSlotData() {
@@ -69,7 +69,7 @@ public class WrapperPlayServerWindowItems extends AbstractPacket {
 
 	/**
 	 * Set Slot data.
-	 *
+	 * 
 	 * @param value - new value.
 	 */
 	public void setSlotData(List<ItemStack> value) {

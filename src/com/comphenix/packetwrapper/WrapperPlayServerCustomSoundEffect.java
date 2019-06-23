@@ -21,6 +21,7 @@ package com.comphenix.packetwrapper;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.SoundCategory;
+import com.comphenix.protocol.wrappers.MinecraftKey;
 
 public class WrapperPlayServerCustomSoundEffect extends AbstractPacket {
 
@@ -43,8 +44,8 @@ public class WrapperPlayServerCustomSoundEffect extends AbstractPacket {
 	 * 
 	 * @return The current Sound Name
 	 */
-	public String getSoundName() {
-		return handle.getStrings().read(0);
+	public MinecraftKey getSoundName() {
+		return handle.getMinecraftKeys().read(0);
 	}
 
 	/**
@@ -52,8 +53,8 @@ public class WrapperPlayServerCustomSoundEffect extends AbstractPacket {
 	 * 
 	 * @param value - new value.
 	 */
-	public void setSoundName(String value) {
-		handle.getStrings().write(0, value);
+	public void setSoundName(MinecraftKey value) {
+		handle.getMinecraftKeys().write(0, value);
 	}
 
 	/**

@@ -1,18 +1,16 @@
 package de.syscy.kagegui.crafting;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
-
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagegui.IInventoryWrapper;
 import lombok.Getter;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class KCraftingInventoryWrapper implements IInventoryWrapper {
-	private final ItemStack background = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+	private final ItemStack background = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
 
 	private final KCraftingGUI gui;
 

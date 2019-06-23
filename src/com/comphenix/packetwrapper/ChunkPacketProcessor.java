@@ -54,7 +54,7 @@ public class ChunkPacketProcessor {
 		}
 
 		private void incrementIdIndex() {
-			blockIdOffset += ChunkPacketProcessor.BLOCK_ID_LENGHT;
+			blockIdOffset += ChunkPacketProcessor.BLOCK_ID_LENGTH;
 			dataOffset += ChunkPacketProcessor.BYTES_PER_NIBBLE_PART;
 			dataOffset += ChunkPacketProcessor.BYTES_PER_NIBBLE_PART;
 
@@ -72,7 +72,7 @@ public class ChunkPacketProcessor {
 		/**
 		 * Retrieve the starting index of the block ID data.
 		 * <p>
-		 * This will be 4096 bytes in lenght, one byte for each block in the
+		 * This will be 4096 bytes in length, one byte for each block in the
 		 * 16x16x16 chunklet.
 		 * 
 		 * @return The starting location of the block ID data.
@@ -84,7 +84,7 @@ public class ChunkPacketProcessor {
 		/**
 		 * Retrieve the starting index of the meta data (4 bit per block).
 		 * <p>
-		 * This will be 2048 bytes in lenght, one nibblet for each block in the
+		 * This will be 2048 bytes in length, one nibblet for each block in the
 		 * 16x16x16 chunklet.
 		 * 
 		 * @return The starting location of the block meta data.
@@ -97,7 +97,7 @@ public class ChunkPacketProcessor {
 		 * Retrieve the starting index of the torch light data (4 bit per
 		 * block).
 		 * <p>
-		 * This will be 2048 bytes in lenght, one nibblet for each block in the
+		 * This will be 2048 bytes in length, one nibblet for each block in the
 		 * 16x16x16 chunklet.
 		 * 
 		 * @return The starting location of the torch light data.
@@ -109,7 +109,7 @@ public class ChunkPacketProcessor {
 		/**
 		 * Retrieve the starting index of the skylight data (4 bit per block).
 		 * <p>
-		 * This will be 2048 bytes in lenght if the skylight data exists (see
+		 * This will be 2048 bytes in length if the skylight data exists (see
 		 * {@link #hasSkylightOffset()}), no bytes if not.
 		 * 
 		 * @return The starting location of the skylight data.
@@ -130,7 +130,7 @@ public class ChunkPacketProcessor {
 		/**
 		 * Retrieve the extra 4 bits in each block ID, if necessary.
 		 * <p>
-		 * This will be 2048 bytes in lenght if the extra data exists, no bytes
+		 * This will be 2048 bytes in length if the extra data exists, no bytes
 		 * if not.
 		 * 
 		 * @return The starting location of the extra data.
@@ -187,8 +187,21 @@ public class ChunkPacketProcessor {
 	protected static final int CHUNK_SEGMENTS = 16;
 	protected static final int NIBBLES_REQUIRED = 4;
 
+	/**Misspelled.
+	 * @see #BLOCK_ID_LENGTH
+	 */
+	@Deprecated
 	public static final int BLOCK_ID_LENGHT = 4096;
+
+	public static final int BLOCK_ID_LENGTH = 4096;
+
+    /**Misspelled.
+     * @see #DATA_LENGTH
+     */
+	@Deprecated
 	public static final int DATA_LENGHT = 2048;
+
+    public static final int DATA_LENGTH = 2048;
 	public static final int BIOME_ARRAY_LENGTH = 256;
 
 	private int chunkX;
@@ -197,7 +210,7 @@ public class ChunkPacketProcessor {
 	private int extraMask;
 	private int chunkSectionNumber;
 	private int extraSectionNumber;
-	private boolean hasContinous = true;
+	private boolean hasContinuous = true;
 
 	private int startIndex;
 	private int size;
@@ -210,7 +223,7 @@ public class ChunkPacketProcessor {
 	}
 
 	/**
-	 * Construct a chunk packet processor from a givne MAP_CHUNK packet.
+	 * Construct a chunk packet processor from a given MAP_CHUNK packet.
 	 * 
 	 * @param packet - the map chunk packet.
 	 * @return The chunk packet processor.
@@ -235,7 +248,7 @@ public class ChunkPacketProcessor {
 		processor.startIndex = 0;
 
 		if (packet.getBooleans().size() > 0) {
-			processor.hasContinous = packet.getBooleans().read(0);
+			processor.hasContinuous = packet.getBooleans().read(0);
 		}
 		return processor;
 	}
@@ -271,7 +284,7 @@ public class ChunkPacketProcessor {
 	 * processor.chunkZ = z[chunkNum];
 	 * processor.chunkMask = chunkMask[chunkNum];
 	 * processor.extraMask = extraMask[chunkNum];
-	 * processor.hasContinous = true; // Always true
+	 * processor.hasContinuous = true; // Always true
 	 * processor.data = byteArrays.read(1); //packet.buildBuffer;
 	 * // Check for Spigot
 	 * if (processor.data == null || processor.data.length == 0) {
@@ -322,7 +335,7 @@ public class ChunkPacketProcessor {
 				BYTES_PER_NIBBLE_PART
 						* ((NIBBLES_REQUIRED + skylightCount)
 								* chunkSectionNumber + extraSectionNumber)
-						+ (hasContinous ? BIOME_ARRAY_LENGTH : 0);
+						+ (hasContinuous ? BIOME_ARRAY_LENGTH : 0);
 
 		if ((getOffset(2) - startIndex) > data.length) {
 			return;
@@ -336,10 +349,9 @@ public class ChunkPacketProcessor {
 
 	/**
 	 * Retrieve the number of 2048 byte segments per chunklet.
-	 * <p>
+	 * <p<
 	 * This is usually one for The Overworld, and zero for both The End and The
 	 * Nether.
-	 * </p>
 	 * 
 	 * @return Number of skylight byte segments.
 	 */
@@ -377,7 +389,7 @@ public class ChunkPacketProcessor {
 			}
 		}
 
-		if (hasContinous) {
+		if (hasContinuous) {
 			processor.processBiomeArray(new Location(world, chunkX << 4, 0,
 					chunkZ << 4), data, startIndex + size - BIOME_ARRAY_LENGTH);
 		}

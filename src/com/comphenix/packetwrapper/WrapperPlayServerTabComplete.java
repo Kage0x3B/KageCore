@@ -20,6 +20,7 @@ package com.comphenix.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.mojang.brigadier.suggestion.Suggestions;
 
 public class WrapperPlayServerTabComplete extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.TAB_COMPLETE;
@@ -33,36 +34,20 @@ public class WrapperPlayServerTabComplete extends AbstractPacket {
 		super(packet, TYPE);
 	}
 
-	/**
-	 * Retrieve Count.
-	 * <p>
-	 * Notes: number of following strings
-	 * 
-	 * @return The current Count
-	 */
-	public int getCount() {
-		return handle.getStringArrays().read(0).length;
+	public int getTransactionId() {
+		return handle.getIntegers().read(0);
 	}
 
-	/**
-	 * Retrieve Match.
-	 * <p>
-	 * Notes: one eligible command, note that each command is sent separately
-	 * instead of in a single string, hence the need for Count
-	 * 
-	 * @return The current Match
-	 */
-	public String[] getMatches() {
-		return handle.getStringArrays().read(0);
+	public void setTransactionId(int value) {
+		handle.getIntegers().write(0, value);
 	}
 
-	/**
-	 * Set Match.
-	 * 
-	 * @param value - new value.
-	 */
-	public void setMatches(String[] value) {
-		handle.getStringArrays().write(0, value);
+	public Suggestions getSuggestions() {
+		return handle.getSpecificModifier(Suggestions.class).read(0);
+	}
+
+	public void setSuggestions(Suggestions value) {
+		handle.getSpecificModifier(Suggestions.class).write(0, value);
 	}
 
 }

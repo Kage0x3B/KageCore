@@ -19,7 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -281,8 +281,11 @@ public class ItemStackTemplate implements IItemStackTemplate {
 						int amplifier = customEffectSection.getInt("amplifier", 0);
 						boolean ambient = customEffectSection.getBoolean("ambient", false);
 						boolean particles = customEffectSection.getBoolean("particles", true);
-						Color customEffectColor = parseColor(customEffectSection.getString("color", ""));
-						potionMeta.addCustomEffect(new PotionEffect(customEffectType, duration, amplifier, ambient, particles, customEffectColor), true);
+						boolean icon = customEffectSection.getBoolean("icon", particles);
+
+						if(customEffectType != null) {
+							potionMeta.addCustomEffect(new PotionEffect(customEffectType, duration, amplifier, ambient, particles, icon), true);
+						}
 					}
 				}
 			}

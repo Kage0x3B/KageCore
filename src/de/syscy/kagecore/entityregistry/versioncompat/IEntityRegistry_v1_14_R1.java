@@ -1,56 +1,42 @@
 package de.syscy.kagecore.entityregistry.versioncompat;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
-import javax.annotation.Nullable;
-
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
 import de.syscy.kagecore.entityregistry.IEntityRegistry;
-import net.minecraft.server.v1_12_R1.BlockPosition;
-import net.minecraft.server.v1_12_R1.Entity;
-import net.minecraft.server.v1_12_R1.EntityInsentient;
-import net.minecraft.server.v1_12_R1.EntityLiving;
-import net.minecraft.server.v1_12_R1.EntityTypes;
-import net.minecraft.server.v1_12_R1.MinecraftKey;
-import net.minecraft.server.v1_12_R1.RegistryMaterials;
-import net.minecraft.server.v1_12_R1.World;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
+import net.minecraft.server.v1_14_R1.*;
+import org.bukkit.Location;
 
 @SuppressWarnings(value = { "rawtypes", "unchecked" })
-public class IEntityRegistry_v1_12_R1 extends RegistryMaterials implements IEntityRegistry { //TODO: Add support for different versions
+public class IEntityRegistry_v1_14_R1 extends RegistryBlocks<EntityTypes<?>> implements IEntityRegistry { //TODO: Add support for different versions
 	private final BiMap<MinecraftKey, Class<? extends Entity>> keyToClass = HashBiMap.create();
 	private final BiMap<Class<? extends Entity>, MinecraftKey> classToKey = keyToClass.inverse();
 	private final BiMap<Class<? extends Entity>, Integer> classToId = HashBiMap.create();
 
-	private final RegistryMaterials<MinecraftKey, Class<? extends Entity>> wrappedRegistry;
+	private final RegistryBlocks<EntityTypes<?>> wrappedRegistry;
 
-	private IEntityRegistry_v1_12_R1() {
-		wrappedRegistry = EntityTypes.b;
+	private IEntityRegistry_v1_14_R1() {
+		super("pig");
+
+		wrappedRegistry = IRegistry.ENTITY_TYPE;
 	}
 
 	@Override
 	public void init() {
-		try {
-			Field registryMaterialsField = EntityTypes.class.getDeclaredField("b");
-			registryMaterialsField.setAccessible(true);
-
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(registryMaterialsField, registryMaterialsField.getModifiers() & ~Modifier.FINAL);
-
-			registryMaterialsField.set(null, this);
-		} catch(Exception ex) {
-			throw new RuntimeException("Unable to override the old entity RegistryMaterials", ex);
-		}
+		Reflect registryReflect = Reflect.on(IRegistry.class);
+		registryReflect.set("ENTITY_TYPE", this);
 	}
 
+	@Override
+	public void registerEntity(int entityId, String entityName, Class<?> entityClass) {
+		//TODO: Implement overriding entities
+	}
+
+	@Override
+	public org.bukkit.entity.Entity spawnEntity(Class<?> entityClass, Location location) {
+		return null;
+	}
+/*
 	@Override
 	public org.bukkit.entity.Entity spawnEntity(Class<?> entityClass, Location location) {
 		World world = ((CraftWorld) location.getWorld()).getHandle();
@@ -120,4 +106,5 @@ public class IEntityRegistry_v1_12_R1 extends RegistryMaterials implements IEnti
 
 		return wrappedRegistry.a(entityClass);
 	}
+	*/
 }

@@ -17,11 +17,11 @@ public class KCheckButton extends KComponent {
 
 	protected @Getter @Setter String enabledTitle;
 	protected final @Getter LoreBuilder enabledLoreBuilder = new LoreBuilder();
-	protected @Getter @Setter ItemIcon enabledIcon = new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 5));
+	protected @Getter @Setter ItemIcon enabledIcon = new ItemIcon(new ItemStack(Material.LIME_WOOL));
 
 	protected @Getter @Setter String disabledTitle;
 	protected final @Getter LoreBuilder disabledLoreBuilder = new LoreBuilder();
-	protected @Getter @Setter ItemIcon disabledIcon = new ItemIcon(new ItemStack(Material.WOOL, 1, (short) 14));
+	protected @Getter @Setter ItemIcon disabledIcon = new ItemIcon(new ItemStack(Material.RED_WOOL));
 
 	protected @Setter CheckButtonToggleListener toggleListener;
 

@@ -1,20 +1,14 @@
 package de.syscy.kagecore.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import lombok.experimental.ExtensionMethod;
+import net.minecraft.server.v1_14_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_14_R1.NBTTagList;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import lombok.experimental.ExtensionMethod;
-import net.minecraft.server.v1_12_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.NBTTagList;
+import java.io.*;
+import java.math.BigInteger;
 
 @ExtensionMethod(LombokExtensionUtility.class)
 public final class ItemSerializer {
@@ -25,7 +19,7 @@ public final class ItemSerializer {
 
 		for(ItemStack itemStack : itemStacks) {
 			NBTTagCompound outputObject = new NBTTagCompound();
-			net.minecraft.server.v1_12_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+			net.minecraft.server.v1_14_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 
 			if(nmsItemStack != null) {
 				nmsItemStack.save(outputObject);
@@ -47,18 +41,20 @@ public final class ItemSerializer {
 	}
 
 	public static ItemStack[] deserializeItemStacks(String data) {
-		if(data.isNullOrEmpty()) {
+		if(data == null || data.isEmpty()) {
 			return new ItemStack[0];
 		}
 
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(new BigInteger(data, 32).toByteArray());
 
-		NBTTagList itemList = null;
+		NBTTagList itemList;
 
 		try {
 			itemList = NBTCompressedStreamTools.a(new DataInputStream(inputStream)).getList("items", 10); //The 10 stands for the type id of the NBT object the list contains, in this case 10 for NBTTagCompound
 		} catch(IOException ex) {
 			ex.printStackTrace();
+
+			return new ItemStack[0];
 		}
 
 		ItemStack[] items = new ItemStack[itemList.size()];
@@ -67,7 +63,8 @@ public final class ItemSerializer {
 			NBTTagCompound inputObject = (NBTTagCompound) itemList.get(i);
 
 			if(!inputObject.isEmpty()) {
-				items[i] = CraftItemStack.asCraftMirror(new net.minecraft.server.v1_12_R1.ItemStack(inputObject));
+
+				items[i] = CraftItemStack.asCraftMirror(net.minecraft.server.v1_14_R1.ItemStack.a(inputObject));
 			}
 		}
 

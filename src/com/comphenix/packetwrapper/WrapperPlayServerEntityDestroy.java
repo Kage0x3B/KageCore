@@ -26,7 +26,6 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 
 	public WrapperPlayServerEntityDestroy() {
 		super(new PacketContainer(TYPE), TYPE);
-
 		handle.getModifier().writeDefaults();
 	}
 
@@ -38,7 +37,7 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 	 * Retrieve Count.
 	 * <p>
 	 * Notes: length of following array
-	 *
+	 * 
 	 * @return The current Count
 	 */
 	public int getCount() {
@@ -49,7 +48,7 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 	 * Retrieve Entity IDs.
 	 * <p>
 	 * Notes: the list of entities of destroy
-	 *
+	 * 
 	 * @return The current Entity IDs
 	 */
 	public int[] getEntityIDs() {
@@ -58,10 +57,10 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 
 	/**
 	 * Set Entity IDs.
-	 *
+	 * 
 	 * @param value - new value.
 	 */
-	public void setEntityIds(int... value) {
+	public void setEntityIds(int[] value) {
 		handle.getIntegerArrays().write(0, value);
 	}
 

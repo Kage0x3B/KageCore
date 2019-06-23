@@ -26,7 +26,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -182,17 +185,12 @@ public class EntityTemplate implements IEntityTemplate {
 					final int amplifier = currentPotionEffectsSection.getInt("amplifier", 0);
 					final boolean ambient = currentPotionEffectsSection.getBoolean("ambient", false);
 					final boolean particles = currentPotionEffectsSection.getBoolean("particles", true);
-					final Color color = currentPotionEffectsSection.getColor("color", null);
+					final boolean icon = currentPotionEffectsSection.getBoolean("icon", particles);
 
-					PotionEffect potionEffect;
-
-					if(color == null) {
-						potionEffect = new PotionEffect(type, duration, amplifier, ambient, particles);
-					} else {
-						potionEffect = new PotionEffect(type, duration, amplifier, ambient, particles, color);
+					if(type != null) {
+						PotionEffect potionEffect = new PotionEffect(type, duration, amplifier, ambient, particles, icon);
+						livingEntity.addPotionEffect(potionEffect, true);
 					}
-
-					livingEntity.addPotionEffect(potionEffect, true);
 				}
 			}
 
@@ -311,8 +309,7 @@ public class EntityTemplate implements IEntityTemplate {
 					final Variant horseVariant = Variant.valueOf(templateYaml.getString("horseVariant", "horse").toUpperCase());
 					horse.setVariant(horseVariant);
 
-					final org.bukkit.entity.Horse.Color horseColor = org.bukkit.entity.Horse.Color.valueOf(templateYaml.getString("horseColor", "white")
-																													   .toUpperCase());
+					final org.bukkit.entity.Horse.Color horseColor = org.bukkit.entity.Horse.Color.valueOf(templateYaml.getString("horseColor", "white").toUpperCase());
 					horse.setColor(horseColor);
 
 					final Style horseStyle = Style.valueOf(templateYaml.getString("horseStyle", "none").toUpperCase());
@@ -348,13 +345,12 @@ public class EntityTemplate implements IEntityTemplate {
 		specificEntityHandlers.put(EntityType.OCELOT, new LivingEntityHandler<Ocelot>() {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Ocelot ocelot, final YamlConfiguration templateYaml) {
-				final org.bukkit.entity.Ocelot.Type catType = org.bukkit.entity.Ocelot.Type.valueOf(templateYaml.getString("catType", "wild_ocelot")
-																												.toUpperCase());
+				final org.bukkit.entity.Ocelot.Type catType = org.bukkit.entity.Ocelot.Type.valueOf(templateYaml.getString("catType", "wild_ocelot").toUpperCase());
 				ocelot.setCatType(catType);
 
-				ocelot.setSitting(templateYaml.getBoolean("sitting", false));
+				/*ocelot.setSitting(templateYaml.getBoolean("sitting", false));
 
-				ocelot.setTamed(templateYaml.getBoolean("tamed", false));
+				ocelot.setTamed(templateYaml.getBoolean("tamed", false));*/
 			}
 		});
 		specificEntityHandlers.put(EntityType.PIG, new LivingEntityHandler<Pig>() {
@@ -374,8 +370,7 @@ public class EntityTemplate implements IEntityTemplate {
 		specificEntityHandlers.put(EntityType.RABBIT, new LivingEntityHandler<Rabbit>() {
 			@Override
 			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Rabbit rabbit, final YamlConfiguration templateYaml) {
-				final org.bukkit.entity.Rabbit.Type rabbitType = org.bukkit.entity.Rabbit.Type.valueOf(templateYaml.getString("rabbitType", "brown")
-																												   .toUpperCase());
+				final org.bukkit.entity.Rabbit.Type rabbitType = org.bukkit.entity.Rabbit.Type.valueOf(templateYaml.getString("rabbitType", "brown").toUpperCase());
 				rabbit.setRabbitType(rabbitType);
 			}
 		});
@@ -471,7 +466,7 @@ public class EntityTemplate implements IEntityTemplate {
 		villager.setProfession(profession);
 
 		if(templateYaml.contains("riches")) {
-			villager.setRiches(templateYaml.getInt("riches"));
+			//villager.setRiches(templateYaml.getInt("riches"));
 		}
 
 		if(templateYaml.contains("merchantRecipes")) {

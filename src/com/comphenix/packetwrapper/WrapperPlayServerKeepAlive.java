@@ -38,8 +38,8 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket {
 	 * 
 	 * @return The current Keep Alive ID
 	 */
-	public int getKeepAliveId() {
-		return handle.getIntegers().read(0);
+	public long getKeepAliveId() {
+		return handle.getLongs().read(0);
 	}
 
 	/**
@@ -47,8 +47,8 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket {
 	 * 
 	 * @param value - new value.
 	 */
-	public void setKeepAliveId(int value) {
-		handle.getIntegers().write(0, value);
+	public void setKeepAliveId(long value) {
+		handle.getLongs().write(0, value);
 	}
 
 }

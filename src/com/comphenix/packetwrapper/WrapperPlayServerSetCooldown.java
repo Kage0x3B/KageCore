@@ -18,16 +18,18 @@
  */
 package com.comphenix.packetwrapper;
 
+import org.bukkit.Material;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.EquivalentConverter;
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.MethodAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import org.bukkit.Material;
 
 public class WrapperPlayServerSetCooldown extends AbstractPacket {
-	private static final Class<?> ITEM_CLASS = MinecraftReflection.getMinecraftClass("Item");
+	private static final Class<?> ITEM_CLASS = MinecraftReflection
+			.getMinecraftClass("Item");
 	public static final PacketType TYPE = PacketType.Play.Server.SET_COOLDOWN;
 
 	public WrapperPlayServerSetCooldown() {
@@ -40,11 +42,14 @@ public class WrapperPlayServerSetCooldown extends AbstractPacket {
 	}
 
 	public Material getItem() {
-		return handle.getModifier().<Material>withType(ITEM_CLASS, new ItemConverter()).read(0);
+		return handle.getModifier()
+				.<Material> withType(ITEM_CLASS, new ItemConverter()).read(0);
 	}
 
 	public void setItem(Material value) {
-		handle.getModifier().<Material>withType(ITEM_CLASS, new ItemConverter()).write(0, value);
+		handle.getModifier()
+				.<Material> withType(ITEM_CLASS, new ItemConverter())
+				.write(0, value);
 	}
 
 	public int getTicks() {
@@ -60,21 +65,27 @@ public class WrapperPlayServerSetCooldown extends AbstractPacket {
 		private static MethodAccessor getItem = null;
 
 		@Override
-		public Object getGeneric(Material specific) {
-			if(getItem == null) {
-				getItem = Accessors.getMethodAccessor(MinecraftReflection.getCraftBukkitClass("util.CraftMagicNumbers"), "getItem", Material.class);
-			}
-
-			return getItem.invoke(null, specific);
-		}
-
-		@Override
 		public Material getSpecific(Object generic) {
-			if(getMaterial == null) {
-				getMaterial = Accessors.getMethodAccessor(MinecraftReflection.getCraftBukkitClass("util.CraftMagicNumbers"), "getMaterial", ITEM_CLASS);
+			if (getMaterial == null) {
+				getMaterial =
+						Accessors.getMethodAccessor(MinecraftReflection
+								.getCraftBukkitClass("util.CraftMagicNumbers"),
+								"getMaterial", ITEM_CLASS);
 			}
 
 			return (Material) getMaterial.invoke(null, generic);
+		}
+
+		@Override
+		public Object getGeneric(Material specific) {
+			if (getItem == null) {
+				getItem =
+						Accessors.getMethodAccessor(MinecraftReflection
+								.getCraftBukkitClass("util.CraftMagicNumbers"),
+								"getItem", Material.class);
+			}
+
+			return getItem.invoke(null, specific);
 		}
 
 		@Override

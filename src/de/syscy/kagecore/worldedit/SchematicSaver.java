@@ -1,6 +1,7 @@
 package de.syscy.kagecore.worldedit;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -17,7 +18,7 @@ public class SchematicSaver {
 	 * @param schematicFile The file to save the schematic to
 	 */
 	public static boolean save(Schematic schematic, File schematicFile) throws IOException {
-		return save(schematic, schematicFile, ClipboardFormat.SCHEMATIC);
+		return save(schematic, schematicFile, BuiltInClipboardFormat.MCEDIT_SCHEMATIC);
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class SchematicSaver {
 
 		BufferedOutputStream bufferedOutputStream = closer.register(new BufferedOutputStream(schematicOutputStream));
 		ClipboardWriter clipboardWriter = closer.register(clipboardFormat.getWriter(bufferedOutputStream));
-		clipboardWriter.write(clipboard, clipboardHolder.getWorldData());
+		clipboardWriter.write(clipboard);
 
 		try {
 			closer.close();

@@ -1,68 +1,49 @@
 package de.syscy.kagecore.util;
 
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
+import com.destroystokyo.paper.Title;
+import com.destroystokyo.paper.block.TargetBlockInfo;
+import com.destroystokyo.paper.entity.TargetEntityInfo;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
-
-import org.bukkit.Achievement;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.GameMode;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Particle;
-import org.bukkit.Server;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.Statistic;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
+import lombok.Getter;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.InventoryView.Property;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MainHand;
-import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import com.destroystokyo.paper.Title;
-
-import lombok.Getter;
-import net.md_5.bungee.api.chat.BaseComponent;
+import java.net.InetSocketAddress;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public abstract class AbstractPlayerWrapper implements Player {
@@ -149,6 +130,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void closeInventory(InventoryCloseEvent.Reason reason) {
+		bukkitPlayer.closeInventory(reason);
+	}
+
+	@Override
 	@Deprecated
 	public ItemStack getItemInHand() {
 		return bukkitPlayer.getItemInHand();
@@ -226,8 +212,53 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public Block getTargetBlock(int i, TargetBlockInfo.FluidMode fluidMode) {
+		return bukkitPlayer.getTargetBlock(i, fluidMode);
+	}
+
+	@Override
+	public BlockFace getTargetBlockFace(int i, TargetBlockInfo.FluidMode fluidMode) {
+		return bukkitPlayer.getTargetBlockFace(i, fluidMode);
+	}
+
+	@Override
+	public TargetBlockInfo getTargetBlockInfo(int i, TargetBlockInfo.FluidMode fluidMode) {
+		return bukkitPlayer.getTargetBlockInfo(i, fluidMode);
+	}
+
+	@Override
+	public Entity getTargetEntity(int i, boolean b) {
+		return bukkitPlayer.getTargetEntity(i, b);
+	}
+
+	@Override
+	public TargetEntityInfo getTargetEntityInfo(int i, boolean b) {
+		return bukkitPlayer.getTargetEntityInfo(i, b);
+	}
+
+	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> materials, int distance) {
 		return bukkitPlayer.getLastTwoTargetBlocks(materials, distance);
+	}
+
+	@Override
+	public Block getTargetBlockExact(int i) {
+		return bukkitPlayer.getTargetBlockExact(i);
+	}
+
+	@Override
+	public Block getTargetBlockExact(int i, FluidCollisionMode fluidCollisionMode) {
+		return bukkitPlayer.getTargetBlockExact(i, fluidCollisionMode);
+	}
+
+	@Override
+	public RayTraceResult rayTraceBlocks(double v) {
+		return bukkitPlayer.rayTraceBlocks(v);
+	}
+
+	@Override
+	public RayTraceResult rayTraceBlocks(double v, FluidCollisionMode fluidCollisionMode) {
+		return bukkitPlayer.rayTraceBlocks(v, fluidCollisionMode);
 	}
 
 	@Override
@@ -283,6 +314,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public Player getKiller() {
 		return bukkitPlayer.getKiller();
+	}
+
+	@Override
+	public void setKiller(Player player) {
+		bukkitPlayer.setKiller(player);
 	}
 
 	@Override
@@ -376,6 +412,21 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public boolean isSwimming() {
+		return bukkitPlayer.isSwimming();
+	}
+
+	@Override
+	public void setSwimming(boolean b) {
+		bukkitPlayer.setSwimming(b);
+	}
+
+	@Override
+	public boolean isRiptiding() {
+		return bukkitPlayer.isRiptiding();
+	}
+
+	@Override
 	public void setAI(boolean ai) {
 		bukkitPlayer.setAI(ai);
 	}
@@ -393,6 +444,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public boolean isCollidable() {
 		return bukkitPlayer.isCollidable();
+	}
+
+	@Override
+	public <T> T getMemory(MemoryKey<T> memoryKey) {
+		return bukkitPlayer.getMemory(memoryKey);
+	}
+
+	@Override
+	public <T> void setMemory(MemoryKey<T> memoryKey, T t) {
+		bukkitPlayer.setMemory(memoryKey, t);
 	}
 
 	@Override
@@ -423,6 +484,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public World getWorld() {
 		return bukkitPlayer.getWorld();
+	}
+
+	@Override
+	public void setRotation(float v, float v1) {
+		bukkitPlayer.setRotation(v, v1);
 	}
 
 	@Override
@@ -488,6 +554,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public Server getServer() {
 		return bukkitPlayer.getServer();
+	}
+
+	@Override
+	public boolean isPersistent() {
+		return bukkitPlayer.isPersistent();
+	}
+
+	@Override
+	public void setPersistent(boolean b) {
+		bukkitPlayer.setPersistent(b);
 	}
 
 	@Override
@@ -876,6 +952,31 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public String getPlayerListHeader() {
+		return bukkitPlayer.getPlayerListHeader();
+	}
+
+	@Override
+	public String getPlayerListFooter() {
+		return bukkitPlayer.getPlayerListFooter();
+	}
+
+	@Override
+	public void setPlayerListHeader(String s) {
+		bukkitPlayer.setPlayerListHeader(s);
+	}
+
+	@Override
+	public void setPlayerListFooter(String s) {
+		bukkitPlayer.setPlayerListFooter(s);
+	}
+
+	@Override
+	public void setPlayerListHeaderFooter(String s, String s1) {
+		bukkitPlayer.setPlayerListHeaderFooter(s, s1);
+	}
+
+	@Override
 	public void setCompassTarget(Location compassTarget) {
 		bukkitPlayer.setCompassTarget(compassTarget);
 	}
@@ -888,6 +989,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public InetSocketAddress getAddress() {
 		return bukkitPlayer.getAddress();
+	}
+
+	@Override
+	public int getProtocolVersion() {
+		return bukkitPlayer.getProtocolVersion();
+	}
+
+	@Override
+	public InetSocketAddress getVirtualHost() {
+		return bukkitPlayer.getVirtualHost();
 	}
 
 	@Override
@@ -993,9 +1104,8 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public void sendBlockChange(Location location, int blockId, byte data) {
-		bukkitPlayer.sendBlockChange(location, blockId, data);
+	public void sendBlockChange(Location location, BlockData blockData) {
+		bukkitPlayer.sendBlockChange(location, blockData);
 	}
 
 	@Override
@@ -1186,6 +1296,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void giveExp(int i, boolean b) {
+		bukkitPlayer.giveExp(i, b);
+	}
+
+	@Override
+	public int applyMending(int i) {
+		return bukkitPlayer.applyMending(i);
+	}
+
+	@Override
 	public void giveExpLevels(int levels) {
 		bukkitPlayer.giveExpLevels(levels);
 	}
@@ -1256,6 +1376,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public long getLastLogin() {
+		return bukkitPlayer.getLastLogin();
+	}
+
+	@Override
+	public long getLastSeen() {
+		return bukkitPlayer.getLastSeen();
+	}
+
+	@Override
 	public void setBedSpawnLocation(Location location) {
 		bukkitPlayer.setBedSpawnLocation(location);
 	}
@@ -1263,6 +1393,21 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setBedSpawnLocation(Location location, boolean var2) {
 		bukkitPlayer.setBedSpawnLocation(location, var2);
+	}
+
+	@Override
+	public boolean sleep(Location location, boolean b) {
+		return bukkitPlayer.sleep(location, b);
+	}
+
+	@Override
+	public void wakeup(boolean b) {
+		bukkitPlayer.wakeup(b);
+	}
+
+	@Override
+	public Location getBedLocation() {
+		return bukkitPlayer.getBedLocation();
 	}
 
 	@Override
@@ -1281,8 +1426,18 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void hidePlayer(Plugin plugin, Player player) {
+		bukkitPlayer.hidePlayer(plugin, player);
+	}
+
+	@Override
 	public void showPlayer(Player player) {
 		bukkitPlayer.showPlayer(toBukkitPlayer(player));
+	}
+
+	@Override
+	public void showPlayer(Plugin plugin, Player player) {
+		bukkitPlayer.showPlayer(plugin, player);
 	}
 
 	@Override
@@ -1556,6 +1711,31 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public PlayerProfile getPlayerProfile() {
+		return bukkitPlayer.getPlayerProfile();
+	}
+
+	@Override
+	public void setPlayerProfile(PlayerProfile playerProfile) {
+		bukkitPlayer.setPlayerProfile(playerProfile);
+	}
+
+	@Override
+	public float getCooldownPeriod() {
+		return bukkitPlayer.getCooldownPeriod();
+	}
+
+	@Override
+	public float getCooledAttackStrength(float v) {
+		return bukkitPlayer.getCooledAttackStrength(v);
+	}
+
+	@Override
+	public void resetCooldown() {
+		bukkitPlayer.resetCooldown();
+	}
+
+	@Override
 	public void hideTitle() {
 		bukkitPlayer.hideTitle();
 	}
@@ -1578,6 +1758,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setAffectsSpawning(boolean affectsSpawning) {
 		bukkitPlayer.setAffectsSpawning(affectsSpawning);
+	}
+
+	@Override
+	public void updateCommands() {
+		bukkitPlayer.updateCommands();
 	}
 
 	@Override
@@ -1658,6 +1843,31 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public int getShieldBlockingDelay() {
+		return bukkitPlayer.getShieldBlockingDelay();
+	}
+
+	@Override
+	public void setShieldBlockingDelay(int i) {
+		bukkitPlayer.setShieldBlockingDelay(i);
+	}
+
+	@Override
+	public ItemStack getActiveItem() {
+		return bukkitPlayer.getActiveItem();
+	}
+
+	@Override
+	public int getItemUseRemainingTime() {
+		return bukkitPlayer.getItemUseRemainingTime();
+	}
+
+	@Override
+	public int getHandRaisedTime() {
+		return bukkitPlayer.getHandRaisedTime();
+	}
+
+	@Override
 	public Location getOrigin() {
 		return bukkitPlayer.getOrigin();
 	}
@@ -1678,6 +1888,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public BoundingBox getBoundingBox() {
+		return bukkitPlayer.getBoundingBox();
+	}
+
+	@Override
 	public void setCooldown(Material material, int cooldown) {
 		bukkitPlayer.setCooldown(material, cooldown);
 	}
@@ -1688,8 +1903,23 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public Chunk getChunk() {
+		return bukkitPlayer.getChunk();
+	}
+
+	@Override
+	public CreatureSpawnEvent.SpawnReason getEntitySpawnReason() {
+		return bukkitPlayer.getEntitySpawnReason();
+	}
+
+	@Override
 	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
-		return null;
+		return bukkitPlayer.getAdvancementProgress(advancement);
+	}
+
+	@Override
+	public int getClientViewDistance() {
+		return bukkitPlayer.getClientViewDistance();
 	}
 
 	@Override
@@ -1699,12 +1929,22 @@ public abstract class AbstractPlayerWrapper implements Player {
 
 	@Override
 	public String getLocale() {
-		return null;
+		return bukkitPlayer.getLocale();
 	}
 
 	@Override
 	public PistonMoveReaction getPistonMoveReaction() {
 		return bukkitPlayer.getPistonMoveReaction();
+	}
+
+	@Override
+	public BlockFace getFacing() {
+		return bukkitPlayer.getFacing();
+	}
+
+	@Override
+	public Pose getPose() {
+		return bukkitPlayer.getPose();
 	}
 
 	@Override
@@ -1717,6 +1957,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Deprecated
 	public void setShoulderEntityRight(Entity entity) {
 		bukkitPlayer.setShoulderEntityRight(entity);
+	}
+
+	@Override
+	public void openSign(Sign sign) {
+		bukkitPlayer.openSign(sign);
 	}
 
 	@Override
@@ -1744,6 +1989,31 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public Entity releaseRightShoulderEntity() {
 		return bukkitPlayer.releaseRightShoulderEntity();
+	}
+
+	@Override
+	public boolean discoverRecipe(NamespacedKey namespacedKey) {
+		return bukkitPlayer.discoverRecipe(namespacedKey);
+	}
+
+	@Override
+	public int discoverRecipes(Collection<NamespacedKey> collection) {
+		return bukkitPlayer.discoverRecipes(collection);
+	}
+
+	@Override
+	public boolean undiscoverRecipe(NamespacedKey namespacedKey) {
+		return bukkitPlayer.undiscoverRecipe(namespacedKey);
+	}
+
+	@Override
+	public int undiscoverRecipes(Collection<NamespacedKey> collection) {
+		return bukkitPlayer.undiscoverRecipes(collection);
+	}
+
+	@Override
+	public PersistentDataContainer getPersistentDataContainer() {
+		return bukkitPlayer.getPersistentDataContainer();
 	}
 
 	public static Player toBukkitPlayer(Player player) {

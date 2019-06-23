@@ -102,8 +102,7 @@ public class WrapperPlayClientEntityAction extends AbstractPacket {
 	 * Retrieve Jump Boost.
 	 * <p>
 	 * Notes: horse jump boost. Ranged from 0 -> 100.
-	 * </p>
-	 *
+	 * 
 	 * @return The current Jump Boost
 	 */
 	public int getJumpBoost() {

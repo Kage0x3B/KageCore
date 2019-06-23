@@ -1,23 +1,20 @@
 package de.syscy.kagecore.worldedit;
 
-import org.bukkit.Location;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.registry.WorldData;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Location;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schematic {
@@ -60,15 +57,13 @@ public class Schematic {
 	 * Usually this only happens immediately before the schematic is pasted.
 	 */
 	public void bakeTransform() throws WorldEditException, MaxChangedBlocksException {
-		WorldData worldData = editSession.getWorld().getWorldData();
-
-		FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboardHolder.getClipboard(), clipboardHolder.getTransform(), worldData);
+		FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboardHolder.getClipboard(), clipboardHolder.getTransform());
 
 		Clipboard newClipboard = new BlockArrayClipboard(result.getTransformedRegion());
 		newClipboard.setOrigin(clipboardHolder.getClipboard().getOrigin());
 		Operations.complete(result.copyTo(newClipboard));
 
-		clipboardHolder = new ClipboardHolder(newClipboard, worldData);
+		clipboardHolder = new ClipboardHolder(newClipboard);
 	}
 
 	public void paste(Location location) throws WorldEditException {
@@ -78,8 +73,9 @@ public class Schematic {
 	public void paste(Location location, boolean ignoreAirBlocks) throws WorldEditException {
 		editSession.setBlockChangeLimit(Integer.MAX_VALUE);
 
-		Vector position = new Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-		Operation pasteOperation = clipboardHolder.createPaste(editSession, clipboardHolder.getWorldData()).to(position).ignoreAirBlocks(ignoreAirBlocks).build();
+		BlockVector3 position = BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+
+		Operation pasteOperation = clipboardHolder.createPaste(editSession).to(position).ignoreAirBlocks(ignoreAirBlocks).build();
 
 		Operations.complete(pasteOperation);
 	}

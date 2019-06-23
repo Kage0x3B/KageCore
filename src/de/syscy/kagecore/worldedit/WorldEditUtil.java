@@ -1,21 +1,21 @@
 package de.syscy.kagecore.worldedit;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 @UtilityClass
 public class WorldEditUtil {
@@ -58,5 +58,21 @@ public class WorldEditUtil {
 
 	public static EditSession createSession(World world) {
 		return worldEdit.getEditSessionFactory().getEditSession(world, Integer.MAX_VALUE);
+	}
+
+	public static Location toLocation(World world, BlockVector3 vector) {
+		return new Location(Bukkit.getWorld(world.getName()), vector.getX(), vector.getY(), vector.getZ());
+	}
+
+	public static Location toLocation(org.bukkit.World world, BlockVector3 vector) {
+		return new Location(world, vector.getX(), vector.getY(), vector.getZ());
+	}
+
+	public static BlockVector3 toVector(Location location) {
+		return BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	}
+
+	public static BlockVector3 toVector(org.bukkit.util.Vector vector) {
+		return BlockVector3.at(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
 	}
 }
