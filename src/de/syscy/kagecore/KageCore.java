@@ -39,11 +39,11 @@ public class KageCore extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-		getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeePluginMessageListener());
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "bungeecord:main");
+		getServer().getMessenger().registerIncomingPluginChannel(this, "bungeecord:main", new BungeePluginMessageListener());
 
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "KageCore");
-		getServer().getMessenger().registerIncomingPluginChannel(this, "KageCore", new KagePluginMessageListener());
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "kagecore:main");
+		getServer().getMessenger().registerIncomingPluginChannel(this, "kagecore:main", new KagePluginMessageListener());
 
 		pluginDirectory = getDataFolder();
 
