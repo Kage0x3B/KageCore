@@ -35,14 +35,7 @@
  */
 package de.syscy.kagecore.versioncompat.reflect;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -67,6 +60,16 @@ import java.util.Map;
  * @author Irek Matysiewicz
  */
 public class Reflect {
+	private static Field modifiersField;
+
+	static {
+		try {
+			modifiersField = Field.class.getDeclaredField("modifiers");
+			modifiersField.setAccessible(true);
+		} catch(NoSuchFieldException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	// ---------------------------------------------------------------------
 	// Static API used as entrance points to the fluent API
@@ -229,6 +232,27 @@ public class Reflect {
 	}
 
 	/**
+	 * Set a field value, even if it's final
+	 *
+	 * @param name The field name
+	 * @param value The new field value
+	 * @return The same wrapped object, to be used for further reflection.
+	 * @throws ReflectException If any reflection exception occurred.
+	 */
+	public Reflect setFinal(final String name, final Object value) throws ReflectException {
+		try {
+			final Field field = field0(name);
+
+			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+			field.set(object, unwrap(value));
+			return this;
+		} catch(final Exception e) {
+			throw new ReflectException(e);
+		}
+	}
+
+	/**
 	 * Get a field value.
 	 * <p>
 	 * This is roughly equivalent to {@link Field#get(Object)}. If the wrapped
@@ -245,7 +269,7 @@ public class Reflect {
 	 * @see #field(String)
 	 */
 	public <T> T get(final String name) throws ReflectException {
-		return field(name).<T> get();
+		return field(name).get();
 	}
 
 	/**
