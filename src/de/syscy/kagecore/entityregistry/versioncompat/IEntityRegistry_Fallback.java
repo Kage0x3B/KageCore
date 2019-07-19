@@ -13,12 +13,12 @@ public class IEntityRegistry_Fallback implements IEntityRegistry {
 	}
 
 	@Override
-	public void registerEntity(int entityId, String entityName, Class<?> entityClass) {
+	public void registerEntity(String entityName, String replacingName, Object entityConstructor) {
 		throw new UnsupportedOperationException("Custom entities are not supported on this version.");
 	}
 
 	@Override
-	public Entity spawnEntity(Class<?> entityClass, Location location) {
+	public Entity spawnEntity(String entityName, Location location) {
 		throw new UnsupportedOperationException("Custom entities are not supported on this version.");
 	}
 }

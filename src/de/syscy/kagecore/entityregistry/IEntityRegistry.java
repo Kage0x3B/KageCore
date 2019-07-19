@@ -4,9 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 public interface IEntityRegistry {
-	public void init();
+	void init();
 
-	public void registerEntity(int entityId, String entityName, Class<?> entityClass);
+	void registerEntity(String entityName, String replacingName, Object entityConstructor);
 
-	public Entity spawnEntity(Class<?> entityClass, Location location);
+	Entity spawnEntity(String entityName, Location location);
 }

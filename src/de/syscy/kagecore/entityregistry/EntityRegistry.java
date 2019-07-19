@@ -17,11 +17,11 @@ public class EntityRegistry {
 		return entityRegistry;
 	}
 
-	public static void registerEntity(int entityId, String entityName, Class<?> entityClass) {
-		entityRegistry.registerEntity(entityId, entityName, entityClass);
+	public static void registerEntity(String entityName, String replacingName, Object entityConstructor) {
+		entityRegistry.registerEntity(entityName, replacingName, entityConstructor);
 	}
 
-	public static Entity spawnEntity(Class<?> entityClass, Location location) {
-		return entityRegistry.spawnEntity(entityClass, location);
+	public static Entity spawnEntity(String entityName, Location location) {
+		return entityRegistry.spawnEntity(entityName, location);
 	}
 }
