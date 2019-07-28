@@ -18,7 +18,7 @@ public class SchematicSaver {
 	 * @param schematicFile The file to save the schematic to
 	 */
 	public static boolean save(Schematic schematic, File schematicFile) throws IOException {
-		return save(schematic, schematicFile, BuiltInClipboardFormat.MCEDIT_SCHEMATIC);
+		return save(schematic, schematicFile, BuiltInClipboardFormat.SPONGE_SCHEMATIC);
 	}
 
 	/**
