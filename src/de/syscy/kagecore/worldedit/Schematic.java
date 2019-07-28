@@ -1,7 +1,6 @@
 package de.syscy.kagecore.worldedit;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -56,7 +55,7 @@ public class Schematic {
 	 * Applies the current transform to the clipboard.
 	 * Usually this only happens immediately before the schematic is pasted.
 	 */
-	public void bakeTransform() throws WorldEditException, MaxChangedBlocksException {
+	public void bakeTransform() throws WorldEditException {
 		FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboardHolder.getClipboard(), clipboardHolder.getTransform());
 
 		Clipboard newClipboard = new BlockArrayClipboard(result.getTransformedRegion());
@@ -75,8 +74,9 @@ public class Schematic {
 
 		BlockVector3 position = BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 
-		Operation pasteOperation = clipboardHolder.createPaste(editSession).to(position).ignoreAirBlocks(ignoreAirBlocks).build();
+		Operation pasteOperation = clipboardHolder.createPaste(editSession).to(position).ignoreAirBlocks(ignoreAirBlocks).copyBiomes(false).copyEntities(false).build();
 
-		Operations.complete(pasteOperation);
+		Operations.completeLegacy(pasteOperation);
+		editSession.flushSession();
 	}
 }
