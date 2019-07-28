@@ -3,10 +3,7 @@ package de.syscy.kagecore.translation;
 import com.google.common.base.Splitter;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.util.Util;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -26,6 +23,7 @@ import java.util.regex.Pattern;
 public class Translator {
 	public static char SIGN = '$';
 	private static Pattern tsPattern = Pattern.compile("\\" + SIGN + "[\\w\\d.]+(;!?[A-Za-z0-9_ ]+)*;");
+	private static Pattern tsPatternFallback = Pattern.compile("\\" + SIGN + "[\\w\\d-]+(;!?[A-Za-z0-9_ ]+)*;");
 	private static List<Character> partTypeIdentifiers = Arrays.asList('i', 'd', 'l', 'f');
 
 	private static @Getter @Setter(value = AccessLevel.PROTECTED) boolean enabled = false;
@@ -215,28 +213,33 @@ public class Translator {
 			return string;
 		}
 
-		TranslateString[] parts = parse(string);
 
 		StringBuilder result = new StringBuilder();
-
-		for(TranslateString part : parts) {
-			part.append(result, language);
-		}
+		translateString(string, language, result);
 
 		return result.toString();
 	}
 
-	private static TranslateString[] parse(String string) {
+	private static void translateString(String string, String language, StringBuilder stringBuilder) {
 		ArrayList<TranslateString> translateStrings = new ArrayList<>();
-		Matcher matcher = tsPattern.matcher(string);
 
-		for(int i = 0, len = string.length(); i < len;) {
+		Matcher matcher = tsPatternFallback.matcher(string);
+		boolean dashFallback = true;
+
+		if(!matcher.find()) {
+			matcher = tsPattern.matcher(string);
+			dashFallback = false;
+		} else {
+			matcher.reset();
+		}
+
+		for(int i = 0, len = string.length(); i < len; ) {
 			if(matcher.find(i)) {
 				if(matcher.start() != i) {
 					translateStrings.add(new FixedString(string.substring(i, matcher.start())));
 				}
 
-				translateStrings.add(new TranslatableString(string.substring(matcher.start(), matcher.end())));
+				translateStrings.add(new TranslatableString(string.substring(matcher.start(), matcher.end()), dashFallback));
 				i = matcher.end();
 			} else {
 				translateStrings.add(new FixedString(string.substring(i)));
@@ -245,14 +248,14 @@ public class Translator {
 			}
 		}
 
-		return translateStrings.toArray(new TranslateString[0]);
+		translateStrings.forEach(s -> s.append(stringBuilder, language));
 	}
 
 	private interface TranslateString {
 		void append(StringBuilder stringBuilder, String language);
 	}
 
-	@AllArgsConstructor
+	@RequiredArgsConstructor
 	private static class FixedString implements TranslateString {
 		private final String string;
 
@@ -265,10 +268,16 @@ public class Translator {
 	@AllArgsConstructor
 	private static class TranslatableString implements TranslateString {
 		private String string;
+		private final boolean dashFallback;
 
 		@Override
 		public void append(StringBuilder stringBuilder, String language) {
 			string = string.substring(1, string.length() - 1);
+
+			if(dashFallback) {
+				string = string.replace('-', '.');
+			}
+
 			String[] parts = string.split(";");
 			Object[] args = new Object[parts.length - 1];
 

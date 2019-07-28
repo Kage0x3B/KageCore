@@ -19,6 +19,7 @@ import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,6 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @UtilityClass
 public class PacketTranslator {
@@ -150,11 +152,31 @@ public class PacketTranslator {
 	}
 
 	private static Object tryTranslateObject(Object object, Player player) {
-		return object instanceof String ? Translator.tryTranslateString((String) object, player) : object;
+		if(object instanceof WrappedChatComponent) {
+			return translateChatComponent((WrappedChatComponent) object, player);
+		} else if(object instanceof IChatBaseComponent) {
+			return translateChatComponent((IChatBaseComponent) object, player);
+		} else if(object instanceof Optional) {
+			Optional<?> optional = (Optional) object;
+
+			if(optional.isPresent()) {
+				return Optional.of(tryTranslateObject(optional.get(), player));
+			}
+		} else if(object instanceof String) {
+			return Translator.tryTranslateString((String) object, player);
+		}
+
+		return object;
 	}
 
 	private static WrappedChatComponent translateChatComponent(WrappedChatComponent chatComponent, Player player) {
 		return WrappedChatComponent.fromJson(Translator.tryTranslateString(chatComponent.getJson(), player));
+	}
+
+	private static IChatBaseComponent translateChatComponent(IChatBaseComponent chatComponent, Player player) {
+		String json = IChatBaseComponent.ChatSerializer.a(chatComponent);
+
+		return IChatBaseComponent.ChatSerializer.a(Translator.tryTranslateString(json, player));
 	}
 
 	private static ItemStack translateItemStack(ItemStack itemStack, Player player) {
