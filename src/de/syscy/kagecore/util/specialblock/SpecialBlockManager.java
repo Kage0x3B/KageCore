@@ -1,20 +1,20 @@
 package de.syscy.kagecore.util.specialblock;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.World;
+import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.command.CommandBase;
+import de.syscy.kagecore.command.CommandManager;
+import de.syscy.kagecore.command.PlayerCommandBase;
+import de.syscy.kagecore.command.argument.CommandArgument;
+import de.syscy.kagecore.command.argument.StringArgument;
+import de.syscy.kagecore.command.exception.InvalidSpecialBlockTypeException;
+import de.syscy.kagecore.command.exception.MarkSpecialBlockFailedException;
+import de.syscy.kagecore.translation.Translator;
+import de.syscy.kagecore.util.ParticleUtil;
+import lombok.Getter;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,22 +26,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-
-import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.command.CommandBase;
-import de.syscy.kagecore.command.CommandManager;
-import de.syscy.kagecore.command.PlayerCommandBase;
-import de.syscy.kagecore.command.argument.CommandArgument;
-import de.syscy.kagecore.command.argument.StringArgument;
-import de.syscy.kagecore.command.exception.InvalidSpecialBlockTypeException;
-import de.syscy.kagecore.command.exception.MarkSpecialBlockFailedException;
-import de.syscy.kagecore.translation.Translator;
-import de.syscy.kagecore.util.ParticleEffects.OrdinaryColor;
-import de.syscy.kagecore.util.ParticleUtil;
-import lombok.Getter;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class SpecialBlockManager extends CommandManager<JavaPlugin> implements Listener {
 	//@formatter:off
@@ -139,7 +127,7 @@ public class SpecialBlockManager extends CommandManager<JavaPlugin> implements L
 				}
 
 				for(Entry<Location, String> specialBlockEntry : specialBlocksByLocation.entrySet()) {
-					ParticleUtil.drawCube(specialBlockEntry.getKey(), new OrdinaryColor(colors[colorIndexFromString(specialBlockEntry.getValue())]), currentHighlightingPlayers);
+					ParticleUtil.drawCube(specialBlockEntry.getKey(), colors[colorIndexFromString(specialBlockEntry.getValue())], currentHighlightingPlayers);
 				}
 			}
 		}, 5, 5);
