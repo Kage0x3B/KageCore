@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 
 public class WrapperPlayClientTradeSelect extends AbstractPacket {
-	public static final PacketType TYPE = PacketType.Play.Client.TRADE_SELECT;
+	public static final PacketType TYPE = PacketType.Play.Client.TR_SEL;
 
 	public WrapperPlayClientTradeSelect() {
 		super(new PacketContainer(TYPE), TYPE);

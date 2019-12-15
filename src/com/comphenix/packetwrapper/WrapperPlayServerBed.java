@@ -27,7 +27,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 
 public class WrapperPlayServerBed extends AbstractPacket {
-	public static final PacketType TYPE = PacketType.Play.Server.BED;
+	public static final PacketType TYPE = PacketType.Play.Server.USE_BED;
 
 	public WrapperPlayServerBed() {
 		super(new PacketContainer(TYPE), TYPE);

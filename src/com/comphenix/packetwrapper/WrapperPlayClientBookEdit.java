@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class WrapperPlayClientBookEdit extends AbstractPacket {
 
-    public static final PacketType TYPE = PacketType.Play.Client.BOOK_EDIT;
+    public static final PacketType TYPE = PacketType.Play.Client.B_EDIT;
     
     public WrapperPlayClientBookEdit() {
         super(new PacketContainer(TYPE), TYPE);
