@@ -74,11 +74,9 @@ public class BookUtil {
 
 		try {
 			EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
-			nmsPlayer.a(CraftItemStack.asNMSCopy(bookItem), EnumHand.MAIN_HAND);
+			nmsPlayer.openBook(CraftItemStack.asNMSCopy(bookItem), EnumHand.MAIN_HAND);
 			//			Reflect nmsPlayerReflect = Reflect.on(Reflect.on(player).call("getHandle"));
-			//
 			//			Object nmsBookItemObject = CRAFT_ITEMSTACK.call("asNMSCopy", bookItem).get();
-			//
 			//			nmsPlayerReflect.call("a", nmsBookItemObject, MAIN_HAND_ENUM);
 		} catch(Exception ex) {
 			ex.printStackTrace();

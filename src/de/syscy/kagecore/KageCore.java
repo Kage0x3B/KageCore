@@ -2,13 +2,13 @@ package de.syscy.kagecore;
 
 import com.google.common.base.Joiner;
 import de.syscy.kagecore.command.CommandManager;
+import de.syscy.kagecore.command.commands.ExecuteJSCommand;
 import de.syscy.kagecore.command.commands.ShowTranslationKeysCommand;
 import de.syscy.kagecore.command.commands.TestNotificationCommand;
 import de.syscy.kagecore.entityregistry.EntityRegistry;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
 import de.syscy.kagecore.util.BoundingBox;
-import de.syscy.kagecore.util.ExecuteJSCommand;
 import de.syscy.kagecore.util.GlowUtil;
 import de.syscy.kagecore.util.book.BookUtil;
 import de.syscy.kagecore.util.bungee.BungeePluginMessageListener;
@@ -82,12 +82,7 @@ public class KageCore extends JavaPlugin {
 		//		GlowUtil.initPacketListener(this);
 		Bukkit.getPluginManager().registerEvents(new GlowUtil(), this);
 
-		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-			@Override
-			public void run() {
-				KageGUI.init(KageCore.this);
-			}
-		}, 1);
+		Bukkit.getScheduler().runTaskLater(this, () -> KageGUI.init(KageCore.this), 1);
 	}
 
 	@Override

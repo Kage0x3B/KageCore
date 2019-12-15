@@ -1,21 +1,18 @@
 package de.syscy.kagecore.util.loottable.entry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-
 import com.comphenix.protocol.wrappers.nbt.NbtBase;
-
 import de.syscy.kagecore.util.ItemAttributes;
 import de.syscy.kagecore.util.loottable.LootTableInfo;
 import de.syscy.kagecore.util.loottable.condition.LootItemCondition;
 import de.syscy.kagecore.util.loottable.function.LootItemFunction;
 import de.syscy.kagecore.util.loottable.value.LootValue;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class LootItem extends LootSelectorEntry {
 	private List<LootItemFunction> functions;
@@ -29,7 +26,7 @@ public class LootItem extends LootSelectorEntry {
 	}
 
 	@Override
-	public void generateLoot(Collection<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo) {
+	public void generateLoot(List<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo) {
 		ItemStack itemStack = lootTableInfo.getLootTableRegistry().getPlugin().getItemStackFactory().create(templateName);
 		NbtBase<?> attributesBackup = ItemAttributes.backup(itemStack);
 
@@ -44,17 +41,29 @@ public class LootItem extends LootSelectorEntry {
 		itemStack = ItemAttributes.restore(itemStack, attributesBackup);
 
 		if(itemStack.getAmount() > 0) {
-			if(itemStack.getAmount() < itemStack.getType().getMaxStackSize()) {
+			if(itemStack.getAmount() <= itemStack.getMaxStackSize()) {
 				itemStacks.add(itemStack);
 			} else {
-				ItemStack itemStack2 = itemStack.clone();
+				int fullStacks = itemStack.getAmount() / itemStack.getMaxStackSize();
+				int rest = itemStack.getAmount() % itemStack.getMaxStackSize();
+
+				itemStack.setAmount(itemStack.getMaxStackSize());
+
+				for(int i = 0; i < fullStacks; i++) {
+					itemStacks.add(itemStack.clone());
+				}
+
+				itemStack.setAmount(rest);
+				itemStacks.add(itemStack);
+
+				/*ItemStack itemStack2;
 
 				for(int i = itemStack.getAmount(); i > 0; i -= itemStack2.getAmount()) {
 					itemStack2 = itemStack.clone();
 					itemStack2.setAmount(Math.min(itemStack.getMaxStackSize(), i));
 
 					itemStacks.add(itemStack2);
-				}
+				}*/
 			}
 		}
 	}

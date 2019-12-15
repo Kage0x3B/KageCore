@@ -20,13 +20,9 @@ public class EntityRegistry {
 	}
 
 	public static void registerEntity(String entityName, String replacingName, EntityConstructor entityConstructor, EnumCreatureType creatureType) {
-		if(!(entityConstructor instanceof EntityTypes.b)) {
-			throw new IllegalArgumentException("No valid entity constructor given");
-		}
-
 		Map<String, Type<?>> types = (Map<String, Type<?>>) DataConverterRegistry.a().getSchema(DataFixUtils.makeKey(SharedConstants.a().getWorldVersion())).findChoiceType(DataConverterTypes.ENTITY).types();
 		types.put("minecraft:" + entityName, types.get("minecraft:" + replacingName));
-		EntityTypes.a<net.minecraft.server.v1_14_R1.Entity> a = EntityTypes.a.a((EntityTypes.b) entityConstructor, creatureType);
+		EntityTypes.a<net.minecraft.server.v1_14_R1.Entity> a = EntityTypes.a.a(entityConstructor, creatureType);
 		registeredEntityMap.put(entityName.toLowerCase(), IRegistry.a(IRegistry.ENTITY_TYPE, entityName, a.a(entityName)));
 	}
 
@@ -58,7 +54,7 @@ public class EntityRegistry {
 		}
 	}
 
-	public interface EntityConstructor<T extends net.minecraft.server.v1_14_R1.Entity> {
+	public interface EntityConstructor<T extends net.minecraft.server.v1_14_R1.Entity> extends EntityTypes.b<T> {
 		T create(EntityTypes<T> type, World world);
 	}
 }

@@ -1,17 +1,15 @@
 package de.syscy.kagecore.util.loottable;
 
-import java.io.File;
-import java.util.concurrent.ExecutionException;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.factory.IFactoryProviderPlugin;
 import lombok.Getter;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 public class LootTableRegistry {
 	private final @Getter IFactoryProviderPlugin plugin;

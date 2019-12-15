@@ -1,15 +1,13 @@
 package de.syscy.kagecore.util.loottable.entry;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-
 import de.syscy.kagecore.util.loottable.LootTableInfo;
 import de.syscy.kagecore.util.loottable.condition.LootItemCondition;
 import de.syscy.kagecore.util.loottable.value.LootValue;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Random;
 
 public class LootSelectorEmpty extends LootSelectorEntry {
 	private LootSelectorEmpty(LootValue weight, LootValue quality, List<LootItemCondition> conditions) {
@@ -17,7 +15,7 @@ public class LootSelectorEmpty extends LootSelectorEntry {
 	}
 
 	@Override
-	public void generateLoot(Collection<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo) {
+	public void generateLoot(List<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo) {
 
 	}
 

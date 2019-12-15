@@ -1,32 +1,27 @@
-package de.syscy.kagecore.util;
+package de.syscy.kagecore.command.commands;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.command.CommandBase;
+import de.syscy.kagecore.command.argument.StringListArgument;
+import de.syscy.kagecore.worldedit.SchematicLoader;
+import de.syscy.kagecore.worldedit.SchematicSaver;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-
-import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.command.CommandBase;
-import de.syscy.kagecore.command.argument.StringListArgument;
-import lombok.RequiredArgsConstructor;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.*;
 
 public class ExecuteJSCommand extends CommandBase<KageCore> {
 	private ScriptEngine scriptEngine;
@@ -75,7 +70,7 @@ public class ExecuteJSCommand extends CommandBase<KageCore> {
 			Player player = (Player) sender;
 
 			bindings.put("player", player);
-			bindings.put("p", (Player) sender);
+			bindings.put("p", player);
 
 			bindings.put("world", player.getWorld());
 			bindings.put("w", player.getWorld());
@@ -85,6 +80,9 @@ public class ExecuteJSCommand extends CommandBase<KageCore> {
 		}
 
 		bindings.put("server", sender.getServer());
+		bindings.put("kc", plugin);
+		bindings.put("SchematicSaver", SchematicSaver.class);
+		bindings.put("SchematicLoader", SchematicLoader.class);
 
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			bindings.put(player.getName(), player);

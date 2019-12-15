@@ -145,27 +145,27 @@ public class WrapperPlayServerExplosion extends AbstractPacket {
 	}
 
 	public float getPlayerVelocityX() {
-		return handle.getFloat().read(0);
-	}
-
-	public void setPlayerVelocityX(float value) {
-		handle.getFloat().write(0, value);
-	}
-
-	public float getPlayerVelocityY() {
 		return handle.getFloat().read(1);
 	}
 
-	public void setPlayerVelocityY(float value) {
+	public void setPlayerVelocityX(float value) {
 		handle.getFloat().write(1, value);
 	}
 
-	public float getPlayerVelocityZ() {
+	public float getPlayerVelocityY() {
 		return handle.getFloat().read(2);
 	}
 
-	public void setPlayerVelocityZ(float value) {
+	public void setPlayerVelocityY(float value) {
 		handle.getFloat().write(2, value);
+	}
+
+	public float getPlayerVelocityZ() {
+		return handle.getFloat().read(3);
+	}
+
+	public void setPlayerVelocityZ(float value) {
+		handle.getFloat().write(3, value);
 	}
 
 }

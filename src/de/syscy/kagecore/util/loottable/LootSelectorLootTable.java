@@ -1,16 +1,14 @@
 package de.syscy.kagecore.util.loottable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-
 import de.syscy.kagecore.util.loottable.condition.LootItemCondition;
 import de.syscy.kagecore.util.loottable.entry.LootSelectorEntry;
 import de.syscy.kagecore.util.loottable.value.LootValue;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class LootSelectorLootTable extends LootSelectorEntry {
 	private String lootTableName;
@@ -22,9 +20,9 @@ public class LootSelectorLootTable extends LootSelectorEntry {
 	}
 
 	@Override
-	public void generateLoot(Collection<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo) {
+	public void generateLoot(List<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo) {
 		LootTable lootTable = lootTableInfo.getLootTableRegistry().getLootTable(lootTableName);
-		itemStacks.addAll(lootTable.generateLoot(random, lootTableInfo));
+		lootTable.generateLoot(random, lootTableInfo, itemStacks);
 	}
 
 	@Override

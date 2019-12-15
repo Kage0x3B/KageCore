@@ -1,24 +1,19 @@
 package de.syscy.kagecore.util.loottable.entry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import de.syscy.kagecore.util.loottable.LootSelectorLootTable;
 import de.syscy.kagecore.util.loottable.LootTableInfo;
 import de.syscy.kagecore.util.loottable.condition.LootItemCondition;
 import de.syscy.kagecore.util.loottable.value.LootValue;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.*;
 
+@ToString
 @AllArgsConstructor
 public abstract class LootSelectorEntry implements ConfigurationSerializable {
 	private @Getter LootValue weight;
@@ -30,7 +25,7 @@ public abstract class LootSelectorEntry implements ConfigurationSerializable {
 		return Math.max(0, (int) Math.floor((float) weight.getValue(random) + (float) quality.getValue(random) * luck));
 	}
 
-	public abstract void generateLoot(Collection<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo);
+	public abstract void generateLoot(List<ItemStack> itemStacks, Random random, LootTableInfo lootTableInfo);
 
 	@Override
 	public Map<String, Object> serialize() {

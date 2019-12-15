@@ -1,19 +1,17 @@
 package de.syscy.kagecore.util.loottable;
 
-import java.util.Set;
-
+import lombok.Getter;
 import org.bukkit.World;
 
-import com.google.common.collect.Sets;
-
-import lombok.Getter;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class LootTableInfo {
 	private final @Getter LootTableRegistry lootTableRegistry;
 	private final @Getter World world;
 	private final @Getter float luck;
 
-	private final Set<LootTable> lootTables = Sets.newLinkedHashSet();
+	private final Set<LootTable> lootTables = new LinkedHashSet<>();
 
 	private LootTableInfo(LootTableRegistry lootTableRegistry, World world, float luck) {
 		this.lootTableRegistry = lootTableRegistry;

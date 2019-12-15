@@ -12,16 +12,15 @@ import com.comphenix.protocol.wrappers.nbt.NbtBase;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtList;
 import com.comphenix.protocol.wrappers.nbt.NbtType;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.protocol.ProtocolUtil;
-import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.server.v1_14_R1.MerchantRecipe;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -41,7 +40,8 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.OPEN_WINDOW);
 		packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
 		packetTypes.add(PacketType.Play.Server.SET_SLOT);
-		packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
+		//packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
+		packetTypes.add(PacketType.Play.Server.OPEN_WINDOW_MERCHANT);
 
 		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
 			@Override
@@ -112,15 +112,16 @@ public class PacketTranslator {
 			} else if(event.getPacketType().equals(PacketType.Play.Server.SET_SLOT)) {
 				WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(packet);
 				wrapper.setSlotData(translateItemStack(wrapper.getSlotData(), player));
-			} else if(event.getPacketType().equals(PacketType.Play.Server.CUSTOM_PAYLOAD)) {
-				handlePluginMessage(new WrapperPlayServerCustomPayload(packet), player);
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private void handlePluginMessage(WrapperPlayServerCustomPayload wrapper, Player player) {
+	/*private void handleTradeListMessage(PacketEvent event) {
+		PacketPlayOutOpenWindowMerchant merchantPacket = (PacketPlayOutOpenWindowMerchant) event.getPacket().getHandle();
+		event.setCancelled(true);
+		merchantPacket.
 		if(wrapper.getChannel().equals("MC|TrList")) {
 			ByteBuf in = wrapper.getContentsBuffer();
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -149,7 +150,7 @@ public class PacketTranslator {
 
 			wrapper.setContents(out.toByteArray());
 		}
-	}
+	}*/
 
 	private static Object tryTranslateObject(Object object, Player player) {
 		if(object instanceof WrappedChatComponent) {
@@ -211,6 +212,18 @@ public class PacketTranslator {
 		itemStack.setItemMeta(itemMeta);
 
 		return itemStack;
+	}
+
+	public static MerchantRecipe translateMerchantRecipe(MerchantRecipe merchantRecipe, Player player) {
+		net.minecraft.server.v1_14_R1.ItemStack itemStack1 = translateNmsItemStack(merchantRecipe.buyingItem1, player);
+		net.minecraft.server.v1_14_R1.ItemStack buyingItem2 = translateNmsItemStack(merchantRecipe.buyingItem2, player);
+		net.minecraft.server.v1_14_R1.ItemStack sellingItem = translateNmsItemStack(merchantRecipe.sellingItem, player);
+
+		return new MerchantRecipe(itemStack1, buyingItem2, sellingItem, merchantRecipe.uses, merchantRecipe.maxUses, merchantRecipe.xp, merchantRecipe.k());
+	}
+
+	private static net.minecraft.server.v1_14_R1.ItemStack translateNmsItemStack(net.minecraft.server.v1_14_R1.ItemStack itemStack, Player player) {
+		return CraftItemStack.asNMSCopy(translateItemStack(CraftItemStack.asCraftMirror(itemStack), player));
 	}
 
 	private static WrappedWatchableObject translateWatchableObject(WrappedWatchableObject watchableObject, Player player) {

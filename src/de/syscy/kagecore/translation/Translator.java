@@ -155,6 +155,10 @@ public class Translator {
 	}
 
 	public static String translate(String language, String key, Object... args) {
+		if(key == null) {
+			return "null";
+		}
+
 		if(key.contains(" ")) {
 			return key;
 		}

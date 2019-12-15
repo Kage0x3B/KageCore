@@ -1,24 +1,16 @@
 package de.syscy.kagecore.util.loottable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
+import com.google.common.collect.Lists;
+import de.syscy.kagecore.KageCore;
+import de.syscy.kagecore.util.MathUtil;
+import lombok.AllArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.common.collect.Lists;
-
-import de.syscy.kagecore.KageCore;
-import de.syscy.kagecore.util.MathUtil;
-import lombok.AllArgsConstructor;
+import java.util.*;
 
 @AllArgsConstructor
 public class LootTable implements ConfigurationSerializable {
@@ -27,8 +19,12 @@ public class LootTable implements ConfigurationSerializable {
 	private List<LootSelector> entries;
 
 	public List<ItemStack> generateLoot(Random random, LootTableInfo lootTableInfo) {
-		ArrayList<ItemStack> lootItemList = Lists.newArrayList();
+		List<ItemStack> lootItemList = new ArrayList<>(32);
 
+		return generateLoot(random, lootTableInfo, lootItemList);
+	}
+
+	public List<ItemStack> generateLoot(Random random, LootTableInfo lootTableInfo, List<ItemStack> lootItemList) {
 		if(lootTableInfo.addLootTable(this)) {
 			for(LootSelector lootSelector : entries) {
 				lootSelector.generateLoot(lootItemList, random, lootTableInfo);

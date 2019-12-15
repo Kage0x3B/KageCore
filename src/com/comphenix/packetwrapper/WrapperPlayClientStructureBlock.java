@@ -20,10 +20,11 @@ package com.comphenix.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.BlockPosition;
 
 public class WrapperPlayClientStructureBlock extends AbstractPacket {
 
-    public static final PacketType TYPE = PacketType.Play.Client.STRUCT;
+    public static final PacketType TYPE = PacketType.Play.Client.STRUCTURE_BLOCK;
     
     public WrapperPlayClientStructureBlock() {
         super(new PacketContainer(TYPE), TYPE);

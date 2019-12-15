@@ -1,16 +1,17 @@
 package de.syscy.kagecore.util.loottable.condition;
 
+import de.syscy.kagecore.util.loottable.LootTableInfo;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-
-import de.syscy.kagecore.util.loottable.LootTableInfo;
-import lombok.AllArgsConstructor;
-
+@ToString
 @AllArgsConstructor
 public abstract class LootItemCondition implements ConfigurationSerializable {
 	private static Map<String, LootItemConditionFactory<?>> registeredConditions = new HashMap<>();
@@ -55,9 +56,9 @@ public abstract class LootItemCondition implements ConfigurationSerializable {
 		return registeredConditions.get(type).create(yaml);
 	}
 
-	public static interface LootItemConditionFactory<T extends LootItemCondition> {
-		public String getType();
+	public interface LootItemConditionFactory<T extends LootItemCondition> {
+		String getType();
 
-		public T create(ConfigurationSection yaml);
+		T create(ConfigurationSection yaml);
 	}
 }
