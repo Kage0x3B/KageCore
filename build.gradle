@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-	compile 'org.projectlombok:lombok:1.16.2'
-	annotationProcessor 'org.projectlombok:lombok:1.16.2'
+	compile 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
 	compile files('libs/paperspigot-1.14.4.jar')
 	compile files('libs/worldedit-bukkit-7.0.1-rc2.jar')
