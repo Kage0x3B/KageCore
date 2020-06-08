@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-	compile 'org.projectlombok:lombok:1.18.12'
+	compileOnly 'org.projectlombok:lombok:1.18.12'
 	annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
 	compile files('libs/paperspigot-1.14.4.jar')

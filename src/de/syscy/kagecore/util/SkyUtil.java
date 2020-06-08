@@ -29,7 +29,7 @@ public class SkyUtil {
 		private final @Getter float internalValue;
 	}
 
-	private class Unsafe {
+	private static class Unsafe {
 		public void sendSkyColorChangeUnsafe(Player player, float skyColorValue) {
 			WrapperPlayServerGameStateChange packet = new WrapperPlayServerGameStateChange();
 			packet.setReason(7);
