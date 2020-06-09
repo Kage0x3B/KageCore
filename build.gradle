@@ -9,6 +9,10 @@ sourceSets.main.resources.srcDirs = [ "res/" ]
 repositories {
 	maven {
 		url "https://repo.syscy.de/repository/maven-public/"
+		metadataSources {
+			mavenPom()
+			artifact()
+		}
 	}
 }
 
@@ -16,9 +20,9 @@ dependencies {
 	compileOnly "org.projectlombok:lombok:1.18.12"
 	annotationProcessor "org.projectlombok:lombok:1.18.12"
 
-	compile "com.sk89q.worldedit:worldedit-bukkit:7.1.0"
-	compile "com.comphenix.protocol:ProtocolLib-API:4.4.0"
-	compile "com.destroystokyo:paper-nms:1.14.4-SNAPSHOT"
+	implementation "com.sk89q.worldedit:worldedit-bukkit:7.1.0"
+    implementation "com.comphenix.protocol:ProtocolLib-API:4.4.0"
+    implementation "com.destroystokyo:paper-nms:1.14.4-SNAPSHOT"
 }
 
 javadoc {
