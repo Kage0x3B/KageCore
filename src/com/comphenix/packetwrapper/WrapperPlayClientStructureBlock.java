@@ -23,7 +23,7 @@ import com.comphenix.protocol.events.PacketContainer;
 
 public class WrapperPlayClientStructureBlock extends AbstractPacket {
 
-    public static final PacketType TYPE = PacketType.Play.Client.STRUCT;
+    public static final PacketType TYPE = PacketType.Play.Client.STRUCTURE_BLOCK;
     
     public WrapperPlayClientStructureBlock() {
         super(new PacketContainer(TYPE), TYPE);

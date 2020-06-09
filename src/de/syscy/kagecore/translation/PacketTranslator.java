@@ -41,7 +41,7 @@ public class PacketTranslator {
 		packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
 		packetTypes.add(PacketType.Play.Server.SET_SLOT);
 		//packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
-		packetTypes.add(PacketType.Play.Server.OPEN_WINDOW_MERCHANT);
+		//packetTypes.add(PacketType.Play.Server.OPEN_WINDOW_MERCHANT);
 
 		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
 			@Override
