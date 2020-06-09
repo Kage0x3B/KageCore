@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-	compile "org.projectlombok:lombok:1.16.2"
-	annotationProcessor "org.projectlombok:lombok:1.16.2"
+	compileOnly "org.projectlombok:lombok:1.18.12"
+	annotationProcessor "org.projectlombok:lombok:1.18.12"
 
 	compile "com.sk89q.worldedit:worldedit-bukkit:7.1.0"
 	compile "com.comphenix.protocol:ProtocolLib-API:4.4.0"
