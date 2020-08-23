@@ -22,9 +22,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.BlockPosition;
 
-import net.minecraft.server.v1_15_R1.BlockPropertyStructureMode;
-import net.minecraft.server.v1_15_R1.EnumBlockMirror;
-import net.minecraft.server.v1_15_R1.TileEntityStructure;
+import net.minecraft.server.v1_14_R1.BlockPropertyStructureMode;
+import net.minecraft.server.v1_14_R1.EnumBlockMirror;
+import net.minecraft.server.v1_14_R1.TileEntityStructure;
 
 public class WrapperPlayClientStruct extends AbstractPacket {
 
