@@ -21,7 +21,7 @@ dependencies {
 	annotationProcessor "org.projectlombok:lombok:1.18.12"
 
 	implementation "com.sk89q.worldedit:worldedit-bukkit:7.1.0"
-    implementation "com.comphenix.protocol:ProtocolLib-API:4.4.0"
+    implementation "com.comphenix.protocol:ProtocolLib:4.5.0"
     implementation "com.destroystokyo:paper-nms:1.14.4-SNAPSHOT"
 }
 
