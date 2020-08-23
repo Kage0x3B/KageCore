@@ -21,52 +21,53 @@ package com.comphenix.packetwrapper;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 
-import org.bukkit.inventory.ItemStack;
+public class WrapperPlayServerViewCentre extends AbstractPacket {
 
-public class WrapperPlayClientBookEdit extends AbstractPacket {
-
-    public static final PacketType TYPE = PacketType.Play.Client.B_EDIT;
+    public static final PacketType TYPE = PacketType.Play.Server.VIEW_CENTRE;
     
-    public WrapperPlayClientBookEdit() {
+    public WrapperPlayServerViewCentre() {
         super(new PacketContainer(TYPE), TYPE);
         handle.getModifier().writeDefaults();
     }
     
-    public WrapperPlayClientBookEdit(PacketContainer packet) {
+    public WrapperPlayServerViewCentre(PacketContainer packet) {
         super(packet, TYPE);
     }
     
     /**
-     * Retrieve New book.
-     * @return The current New book
-     */
-    public ItemStack getNewBook() {
-        return handle.getItemModifier().read(0);
-    }
-    
-    /**
-     * Set New book.
-     * @param value - new value.
-     */
-    public void setNewBook(ItemStack value) {
-        handle.getItemModifier().write(0, value);
-    }
-    
-    /**
-     * Retrieve Is signing.
+     * Retrieve Chunk X.
      * <p>
-     * Notes: true if the player is signing the book; false if the player is saving a draft.
-     * @return The current Is signing
+     * Notes: chunk X coordinate of the player's position
+     * @return The current Chunk X
      */
-    public boolean getIsSigning() {
-        return handle.getBooleans().read(0);
+    public int getChunkX() {
+        return handle.getIntegers().read(0);
     }
     
     /**
-     * Set Is signing.
+     * Set Chunk X.
      * @param value - new value.
      */
-    public void setIsSigning(boolean value) {
-        handle.getBooleans().write(0, value);
+    public void setChunkX(int value) {
+        handle.getIntegers().write(0, value);
     }
+    
+    /**
+     * Retrieve Chunk Z.
+     * <p>
+     * Notes: chunk Z coordinate of the player's position
+     * @return The current Chunk Z
+     */
+    public int getChunkZ() {
+        return handle.getIntegers().read(1);
+    }
+    
+    /**
+     * Set Chunk Z.
+     * @param value - new value.
+     */
+    public void setChunkZ(int value) {
+        handle.getIntegers().write(1, value);
+    }
+    
 }

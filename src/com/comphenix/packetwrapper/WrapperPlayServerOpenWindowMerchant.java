@@ -20,20 +20,37 @@ package com.comphenix.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.BlockPosition;
 
-public class WrapperPlayClientStructureBlock extends AbstractPacket {
+public class WrapperPlayServerOpenWindowMerchant extends AbstractPacket {
 
-    public static final PacketType TYPE = PacketType.Play.Client.STRUCT;
+    public static final PacketType TYPE = PacketType.Play.Server.OPEN_WINDOW_MERCHANT;
     
-    public WrapperPlayClientStructureBlock() {
+    public WrapperPlayServerOpenWindowMerchant() {
         super(new PacketContainer(TYPE), TYPE);
         handle.getModifier().writeDefaults();
     }
     
-    public WrapperPlayClientStructureBlock(PacketContainer packet) {
+    public WrapperPlayServerOpenWindowMerchant(PacketContainer packet) {
         super(packet, TYPE);
     }
-
-    // TODO manually upon request
+    
+    // Cannot generate getter a
+    // Cannot generate setter a
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
+    // Cannot find type for b
 }

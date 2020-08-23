@@ -24,11 +24,13 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import com.comphenix.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.PacketConstructor;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
@@ -294,21 +296,23 @@ public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
 	}
 
 	/**
-	 * Retrieve the data watcher.
+	 * Retrieve the data watcher. This was removed in 1.15
 	 * <p>
 	 * Content varies by mob, see Entities.
 	 * 
 	 * @return The current Metadata
 	 */
+	@Removed
 	public WrappedDataWatcher getMetadata() {
 		return handle.getDataWatcherModifier().read(0);
 	}
 
 	/**
-	 * Set the data watcher.
+	 * Set the data watcher. This was removed in 1.15.
 	 * 
 	 * @param value - new value.
 	 */
+	@Removed
 	public void setMetadata(WrappedDataWatcher value) {
 		handle.getDataWatcherModifier().write(0, value);
 	}

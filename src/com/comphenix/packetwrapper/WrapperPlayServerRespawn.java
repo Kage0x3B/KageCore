@@ -20,6 +20,7 @@ package com.comphenix.packetwrapper;
 
 import org.bukkit.WorldType;
 
+import com.comphenix.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
@@ -45,7 +46,7 @@ public class WrapperPlayServerRespawn extends AbstractPacket {
 	 * @return The current Dimension
 	 */
 	public int getDimension() {
-		return handle.getIntegers().read(0);
+		return handle.getDimensions().optionRead(0).orElse(0);
 	}
 
 	/**
@@ -54,7 +55,7 @@ public class WrapperPlayServerRespawn extends AbstractPacket {
 	 * @param value - new value.
 	 */
 	public void setDimension(int value) {
-		handle.getIntegers().write(0, value);
+		handle.getDimensions().write(0, value);
 	}
 
 	/**
@@ -64,6 +65,7 @@ public class WrapperPlayServerRespawn extends AbstractPacket {
 	 * 
 	 * @return The current Difficulty
 	 */
+	@Removed
 	public Difficulty getDifficulty() {
 		return handle.getDifficulties().read(0);
 	}
@@ -73,6 +75,7 @@ public class WrapperPlayServerRespawn extends AbstractPacket {
 	 * 
 	 * @param value - new value.
 	 */
+	@Removed
 	public void setDifficulty(Difficulty value) {
 		handle.getDifficulties().write(0, value);
 	}

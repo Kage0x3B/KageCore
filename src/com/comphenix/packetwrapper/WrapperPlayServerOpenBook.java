@@ -20,53 +20,37 @@ package com.comphenix.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers.Hand;
 
-import org.bukkit.inventory.ItemStack;
+public class WrapperPlayServerOpenBook extends AbstractPacket {
 
-public class WrapperPlayClientBookEdit extends AbstractPacket {
-
-    public static final PacketType TYPE = PacketType.Play.Client.B_EDIT;
+    public static final PacketType TYPE = PacketType.Play.Server.OPEN_BOOK;
     
-    public WrapperPlayClientBookEdit() {
+    public WrapperPlayServerOpenBook() {
         super(new PacketContainer(TYPE), TYPE);
         handle.getModifier().writeDefaults();
     }
     
-    public WrapperPlayClientBookEdit(PacketContainer packet) {
+    public WrapperPlayServerOpenBook(PacketContainer packet) {
         super(packet, TYPE);
     }
     
     /**
-     * Retrieve New book.
-     * @return The current New book
-     */
-    public ItemStack getNewBook() {
-        return handle.getItemModifier().read(0);
-    }
-    
-    /**
-     * Set New book.
-     * @param value - new value.
-     */
-    public void setNewBook(ItemStack value) {
-        handle.getItemModifier().write(0, value);
-    }
-    
-    /**
-     * Retrieve Is signing.
+     * Retrieve Hand.
      * <p>
-     * Notes: true if the player is signing the book; false if the player is saving a draft.
-     * @return The current Is signing
+     * Notes: 0: Main hand, 1: Off hand
+     * @return The current Hand
      */
-    public boolean getIsSigning() {
-        return handle.getBooleans().read(0);
+    public Hand getHand() {
+        return handle.getHands().read(0);
     }
     
     /**
-     * Set Is signing.
+     * Set Hand.
      * @param value - new value.
      */
-    public void setIsSigning(boolean value) {
-        handle.getBooleans().write(0, value);
+    public void setHand(Hand value) {
+        handle.getHands().write(0, value);
     }
+    
 }

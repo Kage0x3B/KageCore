@@ -20,53 +20,37 @@ package com.comphenix.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 
-import org.bukkit.inventory.ItemStack;
+public class WrapperPlayClientDifficultyChange extends AbstractPacket {
 
-public class WrapperPlayClientBookEdit extends AbstractPacket {
-
-    public static final PacketType TYPE = PacketType.Play.Client.B_EDIT;
+    public static final PacketType TYPE = PacketType.Play.Client.DIFFICULTY_CHANGE;
     
-    public WrapperPlayClientBookEdit() {
+    public WrapperPlayClientDifficultyChange() {
         super(new PacketContainer(TYPE), TYPE);
         handle.getModifier().writeDefaults();
     }
     
-    public WrapperPlayClientBookEdit(PacketContainer packet) {
+    public WrapperPlayClientDifficultyChange(PacketContainer packet) {
         super(packet, TYPE);
     }
     
     /**
-     * Retrieve New book.
-     * @return The current New book
-     */
-    public ItemStack getNewBook() {
-        return handle.getItemModifier().read(0);
-    }
-    
-    /**
-     * Set New book.
-     * @param value - new value.
-     */
-    public void setNewBook(ItemStack value) {
-        handle.getItemModifier().write(0, value);
-    }
-    
-    /**
-     * Retrieve Is signing.
+     * Retrieve New difficulty.
      * <p>
-     * Notes: true if the player is signing the book; false if the player is saving a draft.
-     * @return The current Is signing
+     * Notes: 0: peaceful, 1: easy, 2: normal, 3: hard
+     * @return The current New difficulty
      */
-    public boolean getIsSigning() {
-        return handle.getBooleans().read(0);
+    public Difficulty getNewDifficulty() {
+        return handle.getDifficulties().read(0);
     }
     
     /**
-     * Set Is signing.
+     * Set New difficulty.
      * @param value - new value.
      */
-    public void setIsSigning(boolean value) {
-        handle.getBooleans().write(0, value);
+    public void setNewDifficulty(Difficulty value) {
+        handle.getDifficulties().write(0, value);
     }
+    
 }

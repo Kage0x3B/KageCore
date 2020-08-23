@@ -65,7 +65,7 @@ public class WrapperPlayClientCustomPayload extends AbstractPacket {
 	 * @return Payload contents as a byte array
 	 */
 	public byte[] getContents() {
-		ByteBuf buffer = getContentsBuffer();
+		ByteBuf buffer = getContentsBuffer().copy();
 		byte[] array = new byte[buffer.readableBytes()];
 		buffer.readBytes(array);
 		return array;
