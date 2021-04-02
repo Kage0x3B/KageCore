@@ -3,28 +3,39 @@ apply plugin: 'maven'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = [ "res/" ]
+sourceSets.main.java.srcDirs = ["src/"]
+sourceSets.main.resources.srcDirs = ["res/"]
 
 repositories {
-	maven {
-		url "https://repo.syscy.de/repository/maven-public/"
-		metadataSources {
-			mavenPom()
-			artifact()
-		}
-	}
+    mavenCentral()
+    maven {
+        url "https://repo.syscy.de/repository/maven-public/"
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    maven {
+        url "https://maven.enginehub.org/repo/"
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    maven { url "https://repo.dmulloy2.net/repository/public/" }
 }
 
 dependencies {
-	compileOnly "org.projectlombok:lombok:1.18.12"
-	annotationProcessor "org.projectlombok:lombok:1.18.12"
+    compileOnly "org.projectlombok:lombok:1.18.12"
+    annotationProcessor "org.projectlombok:lombok:1.18.12"
 
-	implementation "com.sk89q.worldedit:worldedit-bukkit:7.1.0"
+    implementation "it.unimi.dsi:fastutil:8.5.4"
+    implementation "com.sk89q.worldedit:worldedit-bukkit:7.2.4"
     implementation "com.comphenix.protocol:ProtocolLib:4.5.0"
-    implementation "com.destroystokyo:paper-nms:1.14.4-SNAPSHOT"
+    implementation "net.pl3x:purpur-server:1.16.5-SNAPSHOT"
 }
 
 javadoc {
-	failOnError = false
+    failOnError = false
 }
