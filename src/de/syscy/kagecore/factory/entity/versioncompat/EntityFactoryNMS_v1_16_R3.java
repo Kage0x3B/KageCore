@@ -2,12 +2,12 @@ package de.syscy.kagecore.factory.entity.versioncompat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.syscy.kagecore.factory.entity.EntityFactoryNMS;
-import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Entity;
 
-public class EntityFactoryNMS_v1_14_R1 implements EntityFactoryNMS {
+public class EntityFactoryNMS_v1_16_R3 implements EntityFactoryNMS {
 	@Override
 	public Entity createEntity(String entityTypeID, Location location, String nbt) {
 		final WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
@@ -27,7 +27,7 @@ public class EntityFactoryNMS_v1_14_R1 implements EntityFactoryNMS {
 
 		nbtTagCompound.setString("id", entityTypeID);
 
-		net.minecraft.server.v1_14_R1.Entity entity = EntityTypes.a(nbtTagCompound, nmsWorld, e -> {
+		net.minecraft.server.v1_16_R3.Entity entity = EntityTypes.a(nbtTagCompound, nmsWorld, e -> {
 			e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
 			return !nmsWorld.addEntitySerialized(e) ? null : e;
@@ -45,7 +45,7 @@ public class EntityFactoryNMS_v1_14_R1 implements EntityFactoryNMS {
 
 		/*final WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
 
-		net.minecraft.server.v1_14_R1.Entity nmsEntity;
+		net.minecraft.server.v1_16_R3.Entity nmsEntity;
 
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		boolean nbtInitialized = false;

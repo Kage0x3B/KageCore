@@ -1,10 +1,10 @@
 package de.syscy.kagecore.util;
 
 import lombok.experimental.ExtensionMethod;
-import net.minecraft.server.v1_14_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.NBTTagList;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.NBTTagList;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
@@ -19,7 +19,7 @@ public final class ItemSerializer {
 
 		for(ItemStack itemStack : itemStacks) {
 			NBTTagCompound outputObject = new NBTTagCompound();
-			net.minecraft.server.v1_14_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+			net.minecraft.server.v1_16_R3.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 
 			if(nmsItemStack != null) {
 				nmsItemStack.save(outputObject);
@@ -50,7 +50,7 @@ public final class ItemSerializer {
 		NBTTagList itemList;
 
 		try {
-			itemList = NBTCompressedStreamTools.a(new DataInputStream(inputStream)).getList("items", 10); //The 10 stands for the type id of the NBT object the list contains, in this case 10 for NBTTagCompound
+			itemList = NBTCompressedStreamTools.a((DataInput) new DataInputStream(inputStream)).getList("items", 10); //The 10 stands for the type id of the NBT object the list contains, in this case 10 for NBTTagCompound
 		} catch(IOException ex) {
 			ex.printStackTrace();
 
@@ -64,7 +64,7 @@ public final class ItemSerializer {
 
 			if(!inputObject.isEmpty()) {
 
-				items[i] = CraftItemStack.asCraftMirror(net.minecraft.server.v1_14_R1.ItemStack.a(inputObject));
+				items[i] = CraftItemStack.asCraftMirror(net.minecraft.server.v1_16_R3.ItemStack.a(inputObject));
 			}
 		}
 

@@ -156,12 +156,11 @@ public class EntityTemplate implements IEntityTemplate {
 				pig.setSaddle(templateYaml.getBoolean("saddled", false));
 			}
 		});
-		specificEntityHandlers.put(EntityType.PIG_ZOMBIE, new LivingEntityHandler<PigZombie>() {
+		specificEntityHandlers.put(EntityType.PIGLIN, new LivingEntityHandler<Piglin>() {
 			@Override
-			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final PigZombie pigZombie,
+			public void handleLivingEntitySuperclass(final IFactoryProviderPlugin plugin, final Piglin piglin,
 													 final YamlConfiguration templateYaml) {
-				pigZombie.setAnger(templateYaml.getInt("anger", 0));
-				pigZombie.setAngry(templateYaml.getBoolean("angry", false));
+				piglin.setIsAbleToHunt(templateYaml.getBoolean("isAbleToHunt", false));
 			}
 		});
 		specificEntityHandlers.put(EntityType.POLAR_BEAR, new LivingEntityHandler<PolarBear>());

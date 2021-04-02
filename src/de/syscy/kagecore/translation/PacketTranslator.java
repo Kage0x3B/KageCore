@@ -16,11 +16,11 @@ import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import lombok.experimental.UtilityClass;
-import net.minecraft.server.v1_14_R1.IChatBaseComponent;
-import net.minecraft.server.v1_14_R1.MerchantRecipe;
+import net.minecraft.server.v1_16_R3.IChatBaseComponent;
+import net.minecraft.server.v1_16_R3.MerchantRecipe;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -215,14 +215,14 @@ public class PacketTranslator {
 	}
 
 	public static MerchantRecipe translateMerchantRecipe(MerchantRecipe merchantRecipe, Player player) {
-		net.minecraft.server.v1_14_R1.ItemStack itemStack1 = translateNmsItemStack(merchantRecipe.buyingItem1, player);
-		net.minecraft.server.v1_14_R1.ItemStack buyingItem2 = translateNmsItemStack(merchantRecipe.buyingItem2, player);
-		net.minecraft.server.v1_14_R1.ItemStack sellingItem = translateNmsItemStack(merchantRecipe.sellingItem, player);
+		net.minecraft.server.v1_16_R3.ItemStack itemStack1 = translateNmsItemStack(merchantRecipe.buyingItem1, player);
+		net.minecraft.server.v1_16_R3.ItemStack buyingItem2 = translateNmsItemStack(merchantRecipe.buyingItem2, player);
+		net.minecraft.server.v1_16_R3.ItemStack sellingItem = translateNmsItemStack(merchantRecipe.sellingItem, player);
 
-		return new MerchantRecipe(itemStack1, buyingItem2, sellingItem, merchantRecipe.uses, merchantRecipe.maxUses, merchantRecipe.xp, merchantRecipe.k());
+		return new MerchantRecipe(itemStack1, buyingItem2, sellingItem, merchantRecipe.uses, merchantRecipe.maxUses, merchantRecipe.xp, merchantRecipe.getPriceMultiplier());
 	}
 
-	private static net.minecraft.server.v1_14_R1.ItemStack translateNmsItemStack(net.minecraft.server.v1_14_R1.ItemStack itemStack, Player player) {
+	private static net.minecraft.server.v1_16_R3.ItemStack translateNmsItemStack(net.minecraft.server.v1_16_R3.ItemStack itemStack, Player player) {
 		return CraftItemStack.asNMSCopy(translateItemStack(CraftItemStack.asCraftMirror(itemStack), player));
 	}
 

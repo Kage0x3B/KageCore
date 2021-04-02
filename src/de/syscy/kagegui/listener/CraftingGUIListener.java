@@ -3,7 +3,7 @@ package de.syscy.kagegui.listener;
 import de.syscy.kagegui.KageGUI;
 import de.syscy.kagegui.crafting.KCraftingGUI;
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventoryCrafting;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryCrafting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

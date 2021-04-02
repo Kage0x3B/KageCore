@@ -1136,24 +1136,6 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public void awardAchievement(Achievement achievement) {
-		bukkitPlayer.awardAchievement(achievement);
-	}
-
-	@Override
-	@Deprecated
-	public void removeAchievement(Achievement achievement) {
-		bukkitPlayer.removeAchievement(achievement);
-	}
-
-	@Override
-	@Deprecated
-	public boolean hasAchievement(Achievement achievement) {
-		return bukkitPlayer.hasAchievement(achievement);
-	}
-
-	@Override
 	public void incrementStatistic(Statistic statistic) throws IllegalArgumentException {
 		bukkitPlayer.incrementStatistic(statistic);
 	}

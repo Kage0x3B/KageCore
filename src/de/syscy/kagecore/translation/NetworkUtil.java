@@ -4,8 +4,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
-import net.minecraft.server.v1_14_R1.*;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 import java.io.IOException;
 
