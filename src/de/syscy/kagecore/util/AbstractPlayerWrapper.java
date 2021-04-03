@@ -1,11 +1,13 @@
 package de.syscy.kagecore.util;
 
+import com.destroystokyo.paper.ClientOption;
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.block.TargetBlockInfo;
 import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import de.syscy.kagecore.versioncompat.reflect.Reflect;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -167,6 +169,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public Location getPotentialBedLocation() {
+		return bukkitPlayer.getPotentialBedLocation();
+	}
+
+	@Override
 	public GameMode getGameMode() {
 		return bukkitPlayer.getGameMode();
 	}
@@ -279,6 +286,26 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setMaximumAir(int maximumAir) {
 		bukkitPlayer.setMaximumAir(maximumAir);
+	}
+
+	@Override
+	public int getArrowCooldown() {
+		return bukkitPlayer.getArrowCooldown();
+	}
+
+	@Override
+	public void setArrowCooldown(int i) {
+		bukkitPlayer.setArrowCooldown(i);
+	}
+
+	@Override
+	public int getArrowsInBody() {
+		return bukkitPlayer.getArrowsInBody();
+	}
+
+	@Override
+	public void setArrowsInBody(int i) {
+		bukkitPlayer.setArrowsInBody(i);
 	}
 
 	@Override
@@ -437,6 +464,21 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void attack(Entity entity) {
+		bukkitPlayer.attack(entity);
+	}
+
+	@Override
+	public void swingMainHand() {
+		bukkitPlayer.swingMainHand();
+	}
+
+	@Override
+	public void swingOffHand() {
+		bukkitPlayer.swingOffHand();
+	}
+
+	@Override
 	public void setCollidable(boolean collidable) {
 		bukkitPlayer.setCollidable(collidable);
 	}
@@ -444,6 +486,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public boolean isCollidable() {
 		return bukkitPlayer.isCollidable();
+	}
+
+	@Override
+	public Set<UUID> getCollidableExemptions() {
+		return bukkitPlayer.getCollidableExemptions();
 	}
 
 	@Override
@@ -457,8 +504,28 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public EntityCategory getCategory() {
+		return bukkitPlayer.getCategory();
+	}
+
+	@Override
+	public void setInvisible(boolean b) {
+		bukkitPlayer.setInvisible(b);
+	}
+
+	@Override
+	public boolean isInvisible() {
+		return bukkitPlayer.isInvisible();
+	}
+
+	@Override
 	public AttributeInstance getAttribute(Attribute attribute) {
 		return bukkitPlayer.getAttribute(attribute);
+	}
+
+	@Override
+	public void registerAttribute(Attribute attribute) {
+		bukkitPlayer.registerAttribute(attribute);
 	}
 
 	@Override
@@ -654,6 +721,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public Component customName() {
+		return bukkitPlayer.customName();
+	}
+
+	@Override
+	public void customName(Component component) {
+		bukkitPlayer.customName(component);
+	}
+
+	@Override
 	public String getCustomName() {
 		return bukkitPlayer.getCustomName();
 	}
@@ -739,6 +816,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void sendMessage(UUID uuid, String s) {
+		bukkitPlayer.sendMessage(uuid, s);
+	}
+
+	@Override
+	public void sendMessage(UUID uuid, String[] strings) {
+		bukkitPlayer.sendMessage(uuid, strings);
+	}
+
+	@Override
 	public boolean isPermissionSet(String permission) {
 		return bukkitPlayer.isPermissionSet(permission);
 	}
@@ -821,6 +908,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setHealth(double health) {
 		bukkitPlayer.setHealth(health);
+	}
+
+	@Override
+	public double getAbsorptionAmount() {
+		return bukkitPlayer.getAbsorptionAmount();
+	}
+
+	@Override
+	public void setAbsorptionAmount(double v) {
+		bukkitPlayer.setAbsorptionAmount(v);
 	}
 
 	@Override
@@ -932,6 +1029,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public Component displayName() {
+		return bukkitPlayer.displayName();
+	}
+
+	@Override
+	public void displayName(Component component) {
+		bukkitPlayer.displayName(component);
+	}
+
+	@Override
 	public String getDisplayName() {
 		return bukkitPlayer.getDisplayName();
 	}
@@ -939,6 +1046,26 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setDisplayName(String displayName) {
 		bukkitPlayer.setDisplayName(displayName);
+	}
+
+	@Override
+	public void playerListName(Component component) {
+		bukkitPlayer.playerListName(component);
+	}
+
+	@Override
+	public Component playerListName() {
+		return bukkitPlayer.playerListName();
+	}
+
+	@Override
+	public Component playerListHeader() {
+		return bukkitPlayer.playerListHeader();
+	}
+
+	@Override
+	public Component playerListFooter() {
+		return bukkitPlayer.playerListFooter();
 	}
 
 	@Override
@@ -1007,8 +1134,18 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void sendRawMessage(UUID uuid, String s) {
+		bukkitPlayer.sendRawMessage(uuid, s);
+	}
+
+	@Override
 	public void kickPlayer(String reason) {
 		bukkitPlayer.kickPlayer(reason);
+	}
+
+	@Override
+	public void kick(Component component) {
+		bukkitPlayer.kick(component);
 	}
 
 	@Override
@@ -1109,6 +1246,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void sendBlockDamage(Location location, float v) {
+		bukkitPlayer.sendBlockDamage(location, v);
+	}
+
+	@Override
 	@Deprecated
 	public void sendBlockChange(Location location, Material material, byte data) {
 		bukkitPlayer.sendBlockChange(location, material, data);
@@ -1121,8 +1263,23 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void sendSignChange(Location location, List<Component> list) throws IllegalArgumentException {
+		bukkitPlayer.sendSignChange(location, list);
+	}
+
+	@Override
+	public void sendSignChange(Location location, List<Component> list, DyeColor dyeColor) throws IllegalArgumentException {
+		bukkitPlayer.sendSignChange(location, list, dyeColor);
+	}
+
+	@Override
 	public void sendSignChange(Location location, String[] lines) throws IllegalArgumentException {
 		bukkitPlayer.sendSignChange(location, lines);
+	}
+
+	@Override
+	public void sendSignChange(Location location, String[] strings, DyeColor dyeColor) throws IllegalArgumentException {
+		bukkitPlayer.sendSignChange(location, strings, dyeColor);
 	}
 
 	@Override
@@ -1323,6 +1480,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void sendExperienceChange(float v) {
+		bukkitPlayer.sendExperienceChange(v);
+	}
+
+	@Override
+	public void sendExperienceChange(float v, int i) {
+		bukkitPlayer.sendExperienceChange(v, i);
+	}
+
+	@Override
 	public float getExhaustion() {
 		return bukkitPlayer.getExhaustion();
 	}
@@ -1350,6 +1517,36 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setFoodLevel(int foodLevel) {
 		bukkitPlayer.setFoodLevel(foodLevel);
+	}
+
+	@Override
+	public int getSaturatedRegenRate() {
+		return bukkitPlayer.getSaturatedRegenRate();
+	}
+
+	@Override
+	public void setSaturatedRegenRate(int i) {
+		bukkitPlayer.setSaturatedRegenRate(i);
+	}
+
+	@Override
+	public int getUnsaturatedRegenRate() {
+		return bukkitPlayer.getUnsaturatedRegenRate();
+	}
+
+	@Override
+	public void setUnsaturatedRegenRate(int i) {
+		bukkitPlayer.setUnsaturatedRegenRate(i);
+	}
+
+	@Override
+	public int getStarvationRate() {
+		return bukkitPlayer.getStarvationRate();
+	}
+
+	@Override
+	public void setStarvationRate(int i) {
+		bukkitPlayer.setStarvationRate(i);
 	}
 
 	@Override
@@ -1431,6 +1628,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Deprecated
 	public boolean isOnGround() {
 		return bukkitPlayer.isOnGround();
+	}
+
+	@Override
+	public boolean isInWater() {
+		return bukkitPlayer.isInWater();
 	}
 
 	@Override
@@ -1593,8 +1795,78 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public boolean isAfk() {
+		return bukkitPlayer.isAfk();
+	}
+
+	@Override
+	public void setAfk(boolean afk) {
+		bukkitPlayer.setAfk(afk);
+	}
+
+	@Override
+	public void resetIdleTimer() {
+		bukkitPlayer.resetIdleTimer();
+	}
+
+	@Override
+	public boolean isSpawnInvulnerable() {
+		return bukkitPlayer.isSpawnInvulnerable();
+	}
+
+	@Override
+	public int getSpawnInvulnerableTicks() {
+		return bukkitPlayer.getSpawnInvulnerableTicks();
+	}
+
+	@Override
+	public void setSpawnInvulnerableTicks(int ticks) {
+		bukkitPlayer.setSpawnInvulnerableTicks(ticks);
+	}
+
+	@Override
 	public boolean isHandRaised() {
 		return bukkitPlayer.isHandRaised();
+	}
+
+	@Override
+	public boolean isJumping() {
+		return bukkitPlayer.isJumping();
+	}
+
+	@Override
+	public void setJumping(boolean jumping) {
+		bukkitPlayer.setJumping(jumping);
+	}
+
+	@Override
+	public void playPickupItemAnimation(Item item, int i) {
+		bukkitPlayer.playPickupItemAnimation(item, i);
+	}
+
+	@Override
+	public float getHurtDirection() {
+		return bukkitPlayer.getHurtDirection();
+	}
+
+	@Override
+	public void setHurtDirection(float v) {
+		bukkitPlayer.setHurtDirection(v);
+	}
+
+	@Override
+	public float getSafeFallDistance() {
+		return bukkitPlayer.getSafeFallDistance();
+	}
+
+	@Override
+	public void setSafeFallDistance(float v) {
+		bukkitPlayer.setSafeFallDistance(v);
+	}
+
+	@Override
+	public void broadcastItemBreak(EquipmentSlot equipmentSlot) {
+		bukkitPlayer.broadcastItemBreak(equipmentSlot);
 	}
 
 	@Override
@@ -1650,6 +1922,36 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public InventoryView openMerchant(Merchant merchant, boolean arg1) {
 		return bukkitPlayer.openMerchant(merchant, arg1);
+	}
+
+	@Override
+	public InventoryView openAnvil(Location location, boolean b) {
+		return bukkitPlayer.openAnvil(location, b);
+	}
+
+	@Override
+	public InventoryView openCartographyTable(Location location, boolean b) {
+		return bukkitPlayer.openCartographyTable(location, b);
+	}
+
+	@Override
+	public InventoryView openGrindstone(Location location, boolean b) {
+		return bukkitPlayer.openGrindstone(location, b);
+	}
+
+	@Override
+	public InventoryView openLoom(Location location, boolean b) {
+		return bukkitPlayer.openLoom(location, b);
+	}
+
+	@Override
+	public InventoryView openSmithingTable(Location location, boolean b) {
+		return bukkitPlayer.openSmithingTable(location, b);
+	}
+
+	@Override
+	public InventoryView openStonecutter(Location location, boolean b) {
+		return bukkitPlayer.openStonecutter(location, b);
 	}
 
 	@Override
@@ -1718,6 +2020,31 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public <T> T getClientOption(ClientOption<T> clientOption) {
+		return bukkitPlayer.getClientOption(clientOption);
+	}
+
+	@Override
+	public Firework boostElytra(ItemStack itemStack) {
+		return bukkitPlayer.boostElytra(itemStack);
+	}
+
+	@Override
+	public void sendOpLevel(byte b) {
+		bukkitPlayer.sendOpLevel(b);
+	}
+
+	@Override
+	public Set<Player> getTrackedPlayers() {
+		return bukkitPlayer.getTrackedPlayers();
+	}
+
+	@Override
+	public String getClientBrandName() {
+		return bukkitPlayer.getClientBrandName();
+	}
+
+	@Override
 	public void hideTitle() {
 		bukkitPlayer.hideTitle();
 	}
@@ -1733,6 +2060,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void sendActionBar(BaseComponent... baseComponents) {
+		bukkitPlayer.sendActionBar(baseComponents);
+	}
+
+	@Override
 	public void sendTitle(Title title) {
 		bukkitPlayer.sendTitle(title);
 	}
@@ -1745,6 +2077,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void updateCommands() {
 		bukkitPlayer.updateCommands();
+	}
+
+	@Override
+	public void openBook(ItemStack itemStack) {
+		bukkitPlayer.openBook(itemStack);
 	}
 
 	@Override
@@ -1783,6 +2120,26 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void setViewDistance(int viewDistance) {
 		bukkitPlayer.setViewDistance(viewDistance);
+	}
+
+	@Override
+	public int getNoTickViewDistance() {
+		return bukkitPlayer.getNoTickViewDistance();
+	}
+
+	@Override
+	public void setNoTickViewDistance(int i) {
+		bukkitPlayer.setNoTickViewDistance(i);
+	}
+
+	@Override
+	public int getSendViewDistance() {
+		return bukkitPlayer.getSendViewDistance();
+	}
+
+	@Override
+	public void setSendViewDistance(int i) {
+		bukkitPlayer.setSendViewDistance(i);
 	}
 
 	@Override
@@ -1837,6 +2194,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public ItemStack getActiveItem() {
 		return bukkitPlayer.getActiveItem();
+	}
+
+	@Override
+	public void clearActiveItem() {
+		bukkitPlayer.clearActiveItem();
 	}
 
 	@Override
@@ -1895,6 +2257,66 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public boolean isInRain() {
+		return bukkitPlayer.isInRain();
+	}
+
+	@Override
+	public boolean isInBubbleColumn() {
+		return bukkitPlayer.isInBubbleColumn();
+	}
+
+	@Override
+	public boolean isInWaterOrRain() {
+		return bukkitPlayer.isInWaterOrRain();
+	}
+
+	@Override
+	public boolean isInWaterOrBubbleColumn() {
+		return bukkitPlayer.isInWaterOrBubbleColumn();
+	}
+
+	@Override
+	public boolean isInWaterOrRainOrBubbleColumn() {
+		return bukkitPlayer.isInWaterOrRainOrBubbleColumn();
+	}
+
+	@Override
+	public boolean isInLava() {
+		return bukkitPlayer.isInLava();
+	}
+
+	@Override
+	public boolean isTicking() {
+		return bukkitPlayer.isTicking();
+	}
+
+	@Override
+	public Player getRider() {
+		return bukkitPlayer.getRider();
+	}
+
+	@Override
+	public boolean hasRider() {
+		return bukkitPlayer.hasRider();
+	}
+
+	@Override
+	public boolean isRidable() {
+		return bukkitPlayer.isRidable();
+	}
+
+	@Override
+	public boolean isRidableInWater() {
+		return bukkitPlayer.isRidableInWater();
+	}
+
+	@Override
+	public boolean spawnAt(Location location, CreatureSpawnEvent.SpawnReason spawnReason) {
+		return bukkitPlayer.spawnAt(location, spawnReason);
+	}
+
+	@Override
 	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
 		return bukkitPlayer.getAdvancementProgress(advancement);
 	}
@@ -1902,6 +2324,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public int getClientViewDistance() {
 		return bukkitPlayer.getClientViewDistance();
+	}
+
+	@Override
+	public Locale locale() {
+		return bukkitPlayer.locale();
 	}
 
 	@Override
@@ -1947,6 +2374,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public boolean dropItem(boolean b) {
+		return bukkitPlayer.dropItem(b);
+	}
+
+	@Override
 	@Deprecated
 	public Entity getShoulderEntityLeft() {
 		return bukkitPlayer.getShoulderEntityLeft();
@@ -1974,6 +2406,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public float getAttackCooldown() {
+		return bukkitPlayer.getAttackCooldown();
+	}
+
+	@Override
 	public boolean discoverRecipe(NamespacedKey namespacedKey) {
 		return bukkitPlayer.discoverRecipe(namespacedKey);
 	}
@@ -1991,6 +2428,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public int undiscoverRecipes(Collection<NamespacedKey> collection) {
 		return bukkitPlayer.undiscoverRecipes(collection);
+	}
+
+	@Override
+	public boolean hasDiscoveredRecipe(NamespacedKey namespacedKey) {
+		return bukkitPlayer.hasDiscoveredRecipe(namespacedKey);
+	}
+
+	@Override
+	public Set<NamespacedKey> getDiscoveredRecipes() {
+		return bukkitPlayer.getDiscoveredRecipes();
 	}
 
 	@Override
