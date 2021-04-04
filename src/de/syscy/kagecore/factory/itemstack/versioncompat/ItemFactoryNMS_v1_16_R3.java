@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemFactoryNMS_v1_12_R1 implements IItemFactoryNMS {
+public class ItemFactoryNMS_v1_16_R3 implements IItemFactoryNMS {
 	@Override
 	public ItemStack createItemStack(Material material, int data, String nbt) throws Exception {
 		net.minecraft.server.v1_16_R3.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(new ItemStack(material, 1, (short) 0, (byte) data));
