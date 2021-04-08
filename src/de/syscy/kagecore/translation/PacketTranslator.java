@@ -15,12 +15,18 @@ import com.comphenix.protocol.wrappers.nbt.NbtType;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.event.LanguageChangeEvent;
 import de.syscy.kagecore.protocol.ProtocolUtil;
+import de.syscy.kagecore.versioncompat.reflect.Reflect;
+import io.papermc.paper.adventure.ChatProcessor;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 import net.minecraft.server.v1_16_R3.MerchantRecipe;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -29,94 +35,108 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class PacketTranslator {
-	public static void initPacketRewriting(KageCore plugin) {
-		List<PacketType> packetTypes = new ArrayList<>();
-		packetTypes.add(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
-		packetTypes.add(PacketType.Play.Server.ENTITY_METADATA);
-		packetTypes.add(PacketType.Play.Server.TILE_ENTITY_DATA);
-		packetTypes.add(PacketType.Play.Server.OPEN_WINDOW);
-		packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
-		packetTypes.add(PacketType.Play.Server.SET_SLOT);
-		//packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
-		//packetTypes.add(PacketType.Play.Server.OPEN_WINDOW_MERCHANT);
+    private static final Pattern DISABLED_URL_PATTERN = Pattern.compile("");
+    private static final Pattern URL_SCHEME_PATTERN = Pattern.compile("^[a-z][a-z0-9+\\-.]*:");
 
-		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
-			@Override
-			public void onPacketReceiving(final PacketEvent event) {
-				Bukkit.getScheduler().runTaskLater(plugin, () -> {
-					WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
+    public static void initPacketRewriting(KageCore plugin) {
+        List<PacketType> packetTypes = new ArrayList<>();
+        packetTypes.add(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
+        packetTypes.add(PacketType.Play.Server.ENTITY_METADATA);
+        packetTypes.add(PacketType.Play.Server.TILE_ENTITY_DATA);
+        packetTypes.add(PacketType.Play.Server.OPEN_WINDOW);
+        packetTypes.add(PacketType.Play.Server.WINDOW_ITEMS);
+        packetTypes.add(PacketType.Play.Server.SET_SLOT);
+        //packetTypes.add(PacketType.Play.Server.CUSTOM_PAYLOAD);
+        //packetTypes.add(PacketType.Play.Server.OPEN_WINDOW_MERCHANT);
 
-					String language = wrapper.getLocale().substring(0, 2);
-					String lastLanguage = Translator.getPlayerLanguages().get(event.getPlayer());
+        extendUrlMatcher();
 
-					if(lastLanguage == null || lastLanguage.isEmpty()) {
-						lastLanguage = Translator.getDefaultLocale();
-					}
+        ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.SETTINGS) {
+            @Override
+            public void onPacketReceiving(final PacketEvent event) {
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    WrapperPlayClientSettings wrapper = new WrapperPlayClientSettings(event.getPacket());
 
-					Translator.getPlayerLanguages().put(event.getPlayer(), language);
+                    String language = wrapper.getLocale().substring(0, 2);
+                    String lastLanguage = Translator.getPlayerLanguages().get(event.getPlayer());
 
-					Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
-				}, 0);
-			}
-		});
+                    if (lastLanguage == null || lastLanguage.isEmpty()) {
+                        lastLanguage = Translator.getDefaultLocale();
+                    }
 
-		ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, packetTypes) {
-			@Override
-			public void onPacketSending(PacketEvent event) {
-				handlePacket(event);
-			}
-		});
+                    Translator.getPlayerLanguages().put(event.getPlayer(), language);
 
-		Translator.setEnabled(true);
-	}
+                    Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(event.getPlayer(), language, lastLanguage));
+                }, 0);
+            }
+        });
 
-	private void handlePacket(PacketEvent event) {
-		PacketContainer packet = event.getPacket();
-		Player player = event.getPlayer();
+        ProtocolUtil.getProtocolManager().addPacketListener(new PacketAdapter(plugin, packetTypes) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                handlePacket(event);
+            }
+        });
 
-		try {
-			if(event.getPacketType().equals(PacketType.Play.Server.SPAWN_ENTITY_LIVING)) {
-				WrapperPlayServerSpawnEntityLiving wrapper = new WrapperPlayServerSpawnEntityLiving(packet);
-				wrapper.setMetadata(translateDataWatcher(wrapper.getMetadata(), player));
-			} else if(event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
-				WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(packet);
-				List<WrappedWatchableObject> metadata = new ArrayList<>();
+        Translator.setEnabled(true);
+    }
 
-				for(WrappedWatchableObject watchableObject : wrapper.getMetadata()) {
-					metadata.add(translateWatchableObject(watchableObject, player));
-				}
+    private static void extendUrlMatcher() {
+        Reflect chatProcessorClass = Reflect.onClass(ChatProcessor.class);
+        Reflect craftChatMessageClass = Reflect.onClass(CraftChatMessage.class);
 
-				wrapper.setMetadata(metadata);
-			} else if(event.getPacketType().equals(PacketType.Play.Server.TILE_ENTITY_DATA)) {
-				WrapperPlayServerTileEntityData wrapper = new WrapperPlayServerTileEntityData(packet);
+        // TODO: Currently disabled, maybe re-enable with regex which ignores translation keys
+        TextReplacementConfig customUrlReplacementConfig = TextReplacementConfig.builder().match(DISABLED_URL_PATTERN).replacement((url) -> url).build();
 
-				if(wrapper.getNbtData() != null) {
-					wrapper.setNbtData(translateNBT(wrapper.getNbtData(), player));
-				}
-			} else if(event.getPacketType().equals(PacketType.Play.Server.OPEN_WINDOW)) {
-				WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(packet);
-				wrapper.setWindowTitle(translateChatComponent(wrapper.getWindowTitle(), player));
-			} else if(event.getPacketType().equals(PacketType.Play.Server.WINDOW_ITEMS)) {
-				WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(packet);
+        chatProcessorClass.set("URL_REPLACEMENT_CONFIG", customUrlReplacementConfig);
+        craftChatMessageClass.set("LINK_PATTERN", DISABLED_URL_PATTERN);
+    }
 
-				List<ItemStack> newItemStacks = new ArrayList<>();
+    private void handlePacket(PacketEvent event) {
+        PacketContainer packet = event.getPacket();
+        Player player = event.getPlayer();
 
-				for(ItemStack itemStack : wrapper.getSlotData()) {
-					newItemStacks.add(translateItemStack(itemStack, player));
-				}
+        try {
+            if (event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
+                WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(packet);
+                List<WrappedWatchableObject> metadata = new ArrayList<>();
 
-				wrapper.setSlotData(newItemStacks);
-			} else if(event.getPacketType().equals(PacketType.Play.Server.SET_SLOT)) {
-				WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(packet);
-				wrapper.setSlotData(translateItemStack(wrapper.getSlotData(), player));
-			}
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+                for (WrappedWatchableObject watchableObject : wrapper.getMetadata()) {
+                    metadata.add(translateWatchableObject(watchableObject, player));
+                }
+
+                wrapper.setMetadata(metadata);
+            } else if (event.getPacketType().equals(PacketType.Play.Server.TILE_ENTITY_DATA)) {
+                WrapperPlayServerTileEntityData wrapper = new WrapperPlayServerTileEntityData(packet);
+
+                if (wrapper.getNbtData() != null) {
+                    wrapper.setNbtData(translateNBT(wrapper.getNbtData(), player));
+                }
+            } else if (event.getPacketType().equals(PacketType.Play.Server.OPEN_WINDOW)) {
+                WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(packet);
+                wrapper.setWindowTitle(translateChatComponent(wrapper.getWindowTitle(), player));
+            } else if (event.getPacketType().equals(PacketType.Play.Server.WINDOW_ITEMS)) {
+                WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(packet);
+
+                List<ItemStack> newItemStacks = new ArrayList<>();
+
+                for (ItemStack itemStack : wrapper.getSlotData()) {
+                    newItemStacks.add(translateItemStack(itemStack, player));
+                }
+
+                wrapper.setSlotData(newItemStacks);
+            } else if (event.getPacketType().equals(PacketType.Play.Server.SET_SLOT)) {
+                WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(packet);
+                wrapper.setSlotData(translateItemStack(wrapper.getSlotData(), player));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
 	/*private void handleTradeListMessage(PacketEvent event) {
 		PacketPlayOutOpenWindowMerchant merchantPacket = (PacketPlayOutOpenWindowMerchant) event.getPacket().getHandle();
@@ -152,148 +172,193 @@ public class PacketTranslator {
 		}
 	}*/
 
-	private static Object tryTranslateObject(Object object, Player player) {
-		if(object instanceof WrappedChatComponent) {
-			return translateChatComponent((WrappedChatComponent) object, player);
-		} else if(object instanceof IChatBaseComponent) {
-			return translateChatComponent((IChatBaseComponent) object, player);
-		} else if(object instanceof Optional) {
-			Optional<?> optional = (Optional) object;
+    private static Object tryTranslateObject(Object object, Player player) {
+        if (object instanceof WrappedChatComponent) {
+            return translateChatComponent((WrappedChatComponent) object, player);
+        } else if (object instanceof IChatBaseComponent) {
+            return translateChatComponent((IChatBaseComponent) object, player);
+        } else if (object instanceof Optional) {
+            Optional<?> optional = (Optional) object;
 
-			if(optional.isPresent()) {
-				return Optional.of(tryTranslateObject(optional.get(), player));
-			}
-		} else if(object instanceof String) {
-			return Translator.tryTranslateString((String) object, player);
-		}
+            if (optional.isPresent()) {
+                return Optional.of(tryTranslateObject(optional.get(), player));
+            }
+        } else if (object instanceof String) {
+            return Translator.tryTranslateString((String) object, player);
+        }
 
-		return object;
-	}
+        return object;
+    }
 
-	private static WrappedChatComponent translateChatComponent(WrappedChatComponent chatComponent, Player player) {
-		return WrappedChatComponent.fromJson(Translator.tryTranslateString(chatComponent.getJson(), player));
-	}
+    private static WrappedChatComponent translateChatComponent(WrappedChatComponent chatComponent, Player player) {
+        return WrappedChatComponent.fromJson(Translator.tryTranslateString(chatComponent.getJson(), player));
+    }
 
-	private static IChatBaseComponent translateChatComponent(IChatBaseComponent chatComponent, Player player) {
-		String json = IChatBaseComponent.ChatSerializer.a(chatComponent);
+    private static IChatBaseComponent translateChatComponent(IChatBaseComponent chatComponent, Player player) {
+        String json = IChatBaseComponent.ChatSerializer.componentToJson(chatComponent);
 
-		return IChatBaseComponent.ChatSerializer.a(Translator.tryTranslateString(json, player));
-	}
+        return IChatBaseComponent.ChatSerializer.jsonToComponent(Translator.tryTranslateString(json, player));
+    }
 
-	private static ItemStack translateItemStack(ItemStack itemStack, Player player) {
-		if(itemStack == null || !itemStack.hasItemMeta()) {
-			return itemStack;
-		}
+    private static ItemStack translateItemStack(ItemStack itemStack, Player player) {
+        if (itemStack == null || !itemStack.hasItemMeta()) {
+            return itemStack;
+        }
 
-		ItemMeta itemMeta = itemStack.getItemMeta();
+        ItemMeta itemMeta = itemStack.getItemMeta();
 
-		if(itemMeta.hasDisplayName()) {
-			itemMeta.setDisplayName(Translator.tryTranslateString(itemMeta.getDisplayName(), player));
-		}
+        if (itemMeta != null && itemMeta.hasDisplayName()) {
+            itemMeta.displayName(translateTextComponent(itemMeta.displayName(), player));
 
-		if(itemMeta.hasLore()) {
-			List<String> newLore = new ArrayList<>();
+            itemMeta.setDisplayName(Translator.tryTranslateString(itemMeta.getDisplayName(), player));
+        }
 
-			for(String loreString : itemMeta.getLore()) {
-				newLore.add(Translator.tryTranslateString(loreString, player));
-			}
+        if (itemMeta != null && itemMeta.hasLore()) {
+            itemMeta.setLore(translateList(itemMeta.getLore(), player));
+        }
 
-			itemMeta.setLore(newLore);
-		}
+        if (itemStack.getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta bookMeta = (BookMeta) itemMeta;
 
-		if(itemStack.getType().equals(Material.WRITTEN_BOOK)) {
-			BookMeta bookMeta = (BookMeta) itemMeta;
+            bookMeta = bookMeta.title(translateTextComponent(bookMeta.title(), player));
+            bookMeta = bookMeta.author(translateTextComponent(bookMeta.author(), player));
 
-			bookMeta.setTitle(Translator.tryTranslateString(bookMeta.getTitle(), player));
-			bookMeta.setAuthor(Translator.tryTranslateString(bookMeta.getAuthor(), player));
-			bookMeta.setPages(translateList(bookMeta.getPages(), player));
-		}
+            for (int i = 0; i < bookMeta.getPageCount(); i++) {
+                bookMeta.page(i, translateTextComponent(bookMeta.page(i), player));
+            }
+        }
 
-		itemStack.setItemMeta(itemMeta);
+        itemStack.setItemMeta(itemMeta);
 
-		return itemStack;
-	}
+        return itemStack;
+    }
 
-	public static MerchantRecipe translateMerchantRecipe(MerchantRecipe merchantRecipe, Player player) {
-		net.minecraft.server.v1_16_R3.ItemStack itemStack1 = translateNmsItemStack(merchantRecipe.buyingItem1, player);
-		net.minecraft.server.v1_16_R3.ItemStack buyingItem2 = translateNmsItemStack(merchantRecipe.buyingItem2, player);
-		net.minecraft.server.v1_16_R3.ItemStack sellingItem = translateNmsItemStack(merchantRecipe.sellingItem, player);
+    private static Component translateTextComponent(Component component, Player player) {
+        try {
+            if (component instanceof TextComponent) {
+                TextComponent textComponent = (TextComponent) component;
 
-		return new MerchantRecipe(itemStack1, buyingItem2, sellingItem, merchantRecipe.uses, merchantRecipe.maxUses, merchantRecipe.xp, merchantRecipe.getPriceMultiplier());
-	}
+                component = textComponent.content(Translator.tryTranslateString(textComponent.content(), player));
+            }
 
-	private static net.minecraft.server.v1_16_R3.ItemStack translateNmsItemStack(net.minecraft.server.v1_16_R3.ItemStack itemStack, Player player) {
-		return CraftItemStack.asNMSCopy(translateItemStack(CraftItemStack.asCraftMirror(itemStack), player));
-	}
+            List<Component> childrenList = component.children();
 
-	private static WrappedWatchableObject translateWatchableObject(WrappedWatchableObject watchableObject, Player player) {
-		watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
+            if (childrenList.size() > 0) {
+                List<Component> newChildren = new ArrayList<>(childrenList.size());
 
-		return watchableObject;
-	}
+                for (Component childComponent : childrenList) {
+                    newChildren.add(translateTextComponent(childComponent, player));
+                }
 
-	private static WrappedDataWatcher translateDataWatcher(WrappedDataWatcher dataWatcher, Player player) {
-		for(WrappedWatchableObject watchableObject : dataWatcher) {
-			watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
-		}
+                component = component.children(newChildren);
+            }
 
-		return dataWatcher;
-	}
+            return component;
 
-	@SuppressWarnings("unchecked")
-	public static NbtBase<?> translateNBT(NbtBase<?> nbt, Player player) {
-		if(nbt.getType().equals(NbtType.TAG_STRING)) {
-			return translateNBTString((NbtBase<String>) nbt, player);
-		} else if(nbt.getType().equals(NbtType.TAG_COMPOUND)) {
-			return translateNBTCompound((NbtCompound) nbt, player);
-		} else if(nbt.getType().equals(NbtType.TAG_LIST)) {
-			NbtList<?> nbtList = (NbtList<?>) nbt;
+            /*String componentJson = GsonComponentSerializer.gson().serialize(component);
+            componentJson = Translator.tryTranslateString(componentJson, player);
 
-			if(nbtList.getElementType() == NbtType.TAG_STRING) {
-				return translateNBTStringList((NbtList<String>) nbtList, player);
-			}
-		}
+            return GsonComponentSerializer.gson().deserialize(componentJson);*/
+        } catch (Exception ex) {
+            return component;
+        }
+    }
 
-		return nbt;
-	}
+    public static MerchantRecipe translateMerchantRecipe(MerchantRecipe merchantRecipe, Player player) {
+        net.minecraft.server.v1_16_R3.ItemStack itemStack1 = translateNmsItemStack(merchantRecipe.buyingItem1, player);
+        net.minecraft.server.v1_16_R3.ItemStack buyingItem2 = translateNmsItemStack(merchantRecipe.buyingItem2, player);
+        net.minecraft.server.v1_16_R3.ItemStack sellingItem = translateNmsItemStack(merchantRecipe.sellingItem, player);
 
-	private static NbtBase<String> translateNBTString(NbtBase<String> nbtString, Player player) {
-		nbtString.setValue(Translator.tryTranslateString(nbtString.getValue(), player));
+        return new MerchantRecipe(itemStack1, buyingItem2, sellingItem, merchantRecipe.uses, merchantRecipe.maxUses, merchantRecipe.xp, merchantRecipe.getPriceMultiplier());
+    }
 
-		return nbtString;
-	}
+    private static net.minecraft.server.v1_16_R3.ItemStack translateNmsItemStack(net.minecraft.server.v1_16_R3.ItemStack itemStack, Player player) {
+        return CraftItemStack.asNMSCopy(translateItemStack(CraftItemStack.asCraftMirror(itemStack), player));
+    }
 
-	private static NbtCompound translateNBTCompound(NbtCompound nbtCompound, Player player) {
-		for(String key : nbtCompound.getKeys()) {
-			nbtCompound.put(key, translateNBT(nbtCompound.getValue(key), player));
-		}
+    private static WrappedWatchableObject translateWatchableObject(WrappedWatchableObject watchableObject, Player player) {
+        watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
 
-		return nbtCompound;
-	}
+        return watchableObject;
+    }
 
-	private static NbtList<String> translateNBTStringList(NbtList<String> nbtList, Player player) {
-		List<NbtBase<String>> newList = new ArrayList<>();
+    private static WrappedDataWatcher translateDataWatcher(WrappedDataWatcher dataWatcher, Player player) {
+        for (WrappedWatchableObject watchableObject : dataWatcher) {
+            watchableObject.setValue(tryTranslateObject(watchableObject.getValue(), player));
+        }
 
-		for(NbtBase<String> nbtString : nbtList.asCollection()) {
-			newList.add(translateNBTString(nbtString, player));
-		}
+        return dataWatcher;
+    }
 
-		nbtList.setValue(newList);
+    @SuppressWarnings("unchecked")
+    public static NbtBase<?> translateNBT(NbtBase<?> nbt, Player player) {
+        if (nbt.getType().equals(NbtType.TAG_STRING)) {
+            return translateNBTString((NbtBase<String>) nbt, player);
+        } else if (nbt.getType().equals(NbtType.TAG_COMPOUND)) {
+            return translateNBTCompound((NbtCompound) nbt, player);
+        } else if (nbt.getType().equals(NbtType.TAG_LIST)) {
+            NbtList<?> nbtList = (NbtList<?>) nbt;
 
-		return nbtList;
-	}
+            if (nbtList.getElementType() == NbtType.TAG_STRING) {
+                return translateNBTStringList((NbtList<String>) nbtList, player);
+            }
+        }
 
-	private static List<String> translateList(List<String> list, Player player) {
-		if(list.size() <= 0) {
-			return list;
-		}
+        return nbt;
+    }
 
-		List<String> newList = new ArrayList<>(list.size());
+    private static NbtBase<String> translateNBTString(NbtBase<String> nbtString, Player player) {
+        nbtString.setValue(Translator.tryTranslateString(nbtString.getValue(), player));
 
-		for(String string : list) {
-			newList.add(Translator.tryTranslateString(string, player));
-		}
+        return nbtString;
+    }
 
-		return newList;
-	}
+    private static NbtCompound translateNBTCompound(NbtCompound nbtCompound, Player player) {
+        for (String key : nbtCompound.getKeys()) {
+            nbtCompound.put(key, translateNBT(nbtCompound.getValue(key), player));
+        }
+
+        return nbtCompound;
+    }
+
+    private static NbtList<String> translateNBTStringList(NbtList<String> nbtList, Player player) {
+        List<NbtBase<String>> newList = new ArrayList<>();
+
+        for (NbtBase<String> nbtString : nbtList.asCollection()) {
+            newList.add(translateNBTString(nbtString, player));
+        }
+
+        nbtList.setValue(newList);
+
+        return nbtList;
+    }
+
+    private static List<String> translateList(List<String> list, Player player) {
+        if (list.size() <= 0) {
+            return list;
+        }
+
+        List<String> newList = new ArrayList<>(list.size());
+
+        for (String string : list) {
+            System.out.println("'" + string + "' TO '" + Translator.tryTranslateString(string, player) + "'");
+            newList.add(Translator.tryTranslateString(string, player));
+        }
+
+        return newList;
+    }
+
+    private static List<Component> translateTextComponentList(List<Component> list, Player player) {
+        if (list.size() <= 0) {
+            return list;
+        }
+
+        List<Component> newList = new ArrayList<>(list.size());
+
+        for (Component component : list) {
+            newList.add(translateTextComponent(component, player));
+        }
+
+        return newList;
+    }
 }
