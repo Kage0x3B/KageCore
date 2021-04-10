@@ -341,7 +341,6 @@ public class PacketTranslator {
         List<String> newList = new ArrayList<>(list.size());
 
         for (String string : list) {
-            System.out.println("'" + string + "' TO '" + Translator.tryTranslateString(string, player) + "'");
             newList.add(Translator.tryTranslateString(string, player));
         }
 
