@@ -3,7 +3,6 @@ package de.syscy.kagecore.util;
 import com.comphenix.packetwrapper.AbstractPacket;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import com.mysql.jdbc.StringUtils;
 import de.syscy.kagecore.KageCore;
 import de.syscy.kagecore.protocol.ProtocolUtil;
 import de.syscy.kagecore.translation.Translator;
@@ -20,7 +19,7 @@ public class LombokExtensionUtility {
 	private static final String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 	public static boolean isNullOrEmpty(String string) {
-		return StringUtils.isNullOrEmpty(string);
+		return string == null || string.isEmpty();
 	}
 
 	public static String improveLook(String string) {

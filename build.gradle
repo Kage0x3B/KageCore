@@ -27,12 +27,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:1.18.12"
-    annotationProcessor "org.projectlombok:lombok:1.18.12"
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor "org.projectlombok:lombok:1.18.20"
 
     implementation "it.unimi.dsi:fastutil:8.5.4"
-    implementation "com.sk89q.worldedit:worldedit-bukkit:7.2.4"
-    implementation "com.comphenix.protocol:ProtocolLib:4.5.0"
+    implementation "com.sk89q.worldedit:worldedit-bukkit:7.2.6"
+    implementation "com.comphenix.protocol:ProtocolLib:4.7.0"
     implementation "net.pl3x:purpur-server:1.16.5-SNAPSHOT"
 }
 
