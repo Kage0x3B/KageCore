@@ -26,6 +26,7 @@ import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.*;
@@ -386,6 +387,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public boolean hasLineOfSight(Entity entity) {
 		return bukkitPlayer.hasLineOfSight(entity);
+	}
+
+	@Override
+	public boolean hasLineOfSight(Location location) {
+		return bukkitPlayer.hasLineOfSight(location);
 	}
 
 	@Override
@@ -1149,6 +1155,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void kick(Component component, PlayerKickEvent.Cause cause) {
+		bukkitPlayer.kick(component, cause);
+	}
+
+	@Override
 	public void chat(String message) {
 		bukkitPlayer.chat(message);
 	}
@@ -1825,8 +1836,23 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public void setFlyingFallDamage(boolean b) {
+		bukkitPlayer.setFlyingFallDamage(b);
+	}
+
+	@Override
+	public boolean hasFlyingFallDamage() {
+		return bukkitPlayer.hasFlyingFallDamage();
+	}
+
+	@Override
 	public boolean isHandRaised() {
 		return bukkitPlayer.isHandRaised();
+	}
+
+	@Override
+	public EquipmentSlot getHandRaised() {
+		return bukkitPlayer.getHandRaised();
 	}
 
 	@Override
@@ -1867,6 +1893,16 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public void broadcastItemBreak(EquipmentSlot equipmentSlot) {
 		bukkitPlayer.broadcastItemBreak(equipmentSlot);
+	}
+
+	@Override
+	public boolean shouldBurnInDay() {
+		return bukkitPlayer.shouldBurnInDay();
+	}
+
+	@Override
+	public void setShouldBurnInDay(boolean b) {
+		bukkitPlayer.setShouldBurnInDay(b);
 	}
 
 	@Override
@@ -2242,6 +2278,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public boolean isDeeplySleeping() {
+		return bukkitPlayer.isDeeplySleeping();
+	}
+
+	@Override
 	public boolean fromMobSpawner() {
 		return bukkitPlayer.fromMobSpawner();
 	}
@@ -2317,6 +2358,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	}
 
 	@Override
+	public boolean isInDaylight() {
+		return bukkitPlayer.isInDaylight();
+	}
+
+	@Override
 	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
 		return bukkitPlayer.getAdvancementProgress(advancement);
 	}
@@ -2329,6 +2375,11 @@ public abstract class AbstractPlayerWrapper implements Player {
 	@Override
 	public Locale locale() {
 		return bukkitPlayer.locale();
+	}
+
+	@Override
+	public int getPing() {
+		return bukkitPlayer.getPing();
 	}
 
 	@Override
